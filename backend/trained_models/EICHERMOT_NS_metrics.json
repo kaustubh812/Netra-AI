@@ -1,0 +1,19 @@
+{
+  "symbol": "EICHERMOT.NS",
+  "accuracy": 0.4963768115942029,
+  "precision": 0.5185185185185185,
+  "recall": 0.05017921146953405,
+  "f1_score": 0.0915032679738562,
+  "confusion_matrix": [
+    [
+      260,
+      13
+    ],
+    [
+      265,
+      14
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

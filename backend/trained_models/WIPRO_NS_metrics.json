@@ -1,0 +1,19 @@
+{
+  "symbol": "WIPRO.NS",
+  "accuracy": 0.5253623188405797,
+  "precision": 0.5454545454545454,
+  "recall": 0.1992619926199262,
+  "f1_score": 0.2918918918918919,
+  "confusion_matrix": [
+    [
+      236,
+      45
+    ],
+    [
+      217,
+      54
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

@@ -1,0 +1,19 @@
+{
+  "symbol": "LTIM.NS",
+  "accuracy": 0.5009074410163339,
+  "precision": 0.4891304347826087,
+  "recall": 0.6741573033707865,
+  "f1_score": 0.5669291338582677,
+  "confusion_matrix": [
+    [
+      96,
+      188
+    ],
+    [
+      87,
+      180
+    ]
+  ],
+  "train_samples": 1640,
+  "test_samples": 551
+}

@@ -1,0 +1,19 @@
+{
+  "symbol": "TECHM.NS",
+  "accuracy": 0.5054347826086957,
+  "precision": 0.5555555555555556,
+  "recall": 0.08992805755395683,
+  "f1_score": 0.15479876160990713,
+  "confusion_matrix": [
+    [
+      254,
+      20
+    ],
+    [
+      253,
+      25
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

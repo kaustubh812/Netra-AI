@@ -1,0 +1,19 @@
+{
+  "symbol": "POWERGRID.NS",
+  "accuracy": 0.5144927536231884,
+  "precision": 0.5142857142857142,
+  "recall": 0.8327402135231317,
+  "f1_score": 0.6358695652173914,
+  "confusion_matrix": [
+    [
+      50,
+      221
+    ],
+    [
+      47,
+      234
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

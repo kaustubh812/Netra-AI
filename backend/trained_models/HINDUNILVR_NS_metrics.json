@@ -1,0 +1,19 @@
+{
+  "symbol": "HINDUNILVR.NS",
+  "accuracy": 0.5072463768115942,
+  "precision": 0.49065420560747663,
+  "recall": 0.7954545454545454,
+  "f1_score": 0.6069364161849711,
+  "confusion_matrix": [
+    [
+      70,
+      218
+    ],
+    [
+      54,
+      210
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

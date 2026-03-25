@@ -1,0 +1,19 @@
+{
+  "symbol": "DIVISLAB.NS",
+  "accuracy": 0.5018115942028986,
+  "precision": 0.5130434782608696,
+  "recall": 0.4199288256227758,
+  "f1_score": 0.461839530332681,
+  "confusion_matrix": [
+    [
+      159,
+      112
+    ],
+    [
+      163,
+      118
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

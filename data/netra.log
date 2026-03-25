@@ -1,0 +1,53 @@
+2026-03-24 23:57:12,673 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-24 23:57:12,689 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-24 23:57:12,689 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-24 23:57:12,691 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-24 23:57:12,691 [INFO] scheduler: Scheduler configured with 3 jobs
+2026-03-24 23:57:12,691 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-24 23:57:12,693 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-24 23:57:12,695 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-24 23:57:12,696 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-24 23:57:12,697 [INFO] main: Netra backend started — scheduler active
+2026-03-25 00:10:45,528 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-25 00:10:45,537 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-25 00:10:45,537 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-25 00:10:45,537 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-25 00:10:45,537 [INFO] scheduler: Scheduler configured with 3 jobs
+2026-03-25 00:10:45,537 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-25 00:10:45,537 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-25 00:10:45,537 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-25 00:10:45,537 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-25 00:10:45,549 [INFO] main: Netra backend started — scheduler active
+2026-03-25 00:13:16,196 [WARNING] option_chain: No option chain data returned from NSE
+2026-03-25 00:14:49,464 [WARNING] option_chain: No option chain data returned from NSE
+2026-03-25 00:18:21,966 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-25 00:18:21,983 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-25 00:18:21,983 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-25 00:18:21,984 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-25 00:18:21,984 [INFO] scheduler: Scheduler configured with 3 jobs
+2026-03-25 00:18:21,984 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-25 00:18:21,984 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-25 00:18:21,984 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-25 00:18:21,984 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-25 00:18:21,984 [INFO] main: Netra backend started — scheduler active
+2026-03-25 00:18:37,277 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 00:18:37,288 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 00:19:31,538 [ERROR] yfinance: 
+1 Failed download:
+2026-03-25 00:19:31,539 [ERROR] yfinance: 
+1 Failed download:
+2026-03-25 00:19:31,539 [ERROR] yfinance: ['INDUSINDBK.NS']: TypeError("'NoneType' object is not subscriptable")
+2026-03-25 00:19:31,539 [ERROR] yfinance: 
+1 Failed download:
+2026-03-25 00:19:31,540 [ERROR] yfinance: ['INDUSINDBK.NS']: TypeError("'NoneType' object is not subscriptable")
+2026-03-25 00:19:31,554 [ERROR] yfinance: ['INDUSINDBK.NS']: TypeError("'NoneType' object is not subscriptable")
+2026-03-25 00:19:32,344 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 00:19:32,500 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 00:19:32,515 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 00:19:32,987 [WARNING] option_chain: No option chain data returned from NSE
+2026-03-25 00:22:08,933 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 00:22:09,013 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 00:22:09,550 [WARNING] option_chain: No option chain data returned from NSE
+2026-03-25 08:17:13,756 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 08:17:13,974 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-25 08:17:14,772 [WARNING] option_chain: No option chain data returned from NSE

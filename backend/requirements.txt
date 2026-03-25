@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+yfinance
+pandas
+numpy
+ta
+xgboost
+scikit-learn
+optuna
+joblib
+apscheduler
+requests
+python-dateutil
+pytz
+pydantic

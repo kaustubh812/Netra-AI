@@ -1,0 +1,19 @@
+{
+  "symbol": "MARUTI.NS",
+  "accuracy": 0.5036231884057971,
+  "precision": 0.4793814432989691,
+  "recall": 0.34962406015037595,
+  "f1_score": 0.4043478260869565,
+  "confusion_matrix": [
+    [
+      185,
+      101
+    ],
+    [
+      173,
+      93
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

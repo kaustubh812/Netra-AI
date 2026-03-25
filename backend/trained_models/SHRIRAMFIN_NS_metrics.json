@@ -1,0 +1,19 @@
+{
+  "symbol": "SHRIRAMFIN.NS",
+  "accuracy": 0.4782608695652174,
+  "precision": 0.4,
+  "recall": 0.0353356890459364,
+  "f1_score": 0.06493506493506493,
+  "confusion_matrix": [
+    [
+      254,
+      15
+    ],
+    [
+      273,
+      10
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}

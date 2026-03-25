@@ -1,0 +1,19 @@
+{
+  "symbol": "NTPC.NS",
+  "accuracy": 0.5126811594202898,
+  "precision": 0.5112612612612613,
+  "recall": 0.8136200716845878,
+  "f1_score": 0.627939142461964,
+  "confusion_matrix": [
+    [
+      56,
+      217
+    ],
+    [
+      52,
+      227
+    ]
+  ],
+  "train_samples": 1719,
+  "test_samples": 552
+}
