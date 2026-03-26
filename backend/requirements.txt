@@ -13,3 +13,5 @@ requests
 python-dateutil
 pytz
 pydantic
+openai
+feedparser

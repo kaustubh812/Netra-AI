@@ -1,0 +1,21 @@
+# Environment variables (API keys)
+.env
+backend/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Data & models (large files)
+data/*.db
+data/*.log
+backend/trained_models/
+
+# Node
+node_modules/
+.next/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -14,10 +14,17 @@ import pandas as pd
 import joblib
 import optuna
 from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
 )
+
+try:
+    from lightgbm import LGBMClassifier
+    HAS_LIGHTGBM = True
+except ImportError:
+    HAS_LIGHTGBM = False
 
 from config import (
     MODEL_DIR, XGBOOST_DEFAULT_PARAMS, OPTUNA_N_TRIALS, TRAIN_TEST_SPLIT_YEAR,
@@ -29,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 # Feature columns used by the model (excluding target and price data)
 FEATURE_COLS = [
+    # Original indicators
     "rsi", "macd", "macd_signal", "macd_hist",
     "sma_20", "sma_50", "sma_200", "ema_12", "ema_26",
     "bb_upper", "bb_middle", "bb_lower", "bb_position",
@@ -38,6 +46,22 @@ FEATURE_COLS = [
     "volume_sma_20", "volume_ratio",
     "high_52w", "low_52w", "pct_from_52w_high", "pct_from_52w_low",
     "day_of_week",
+    # Ichimoku
+    "ichimoku_tenkan", "ichimoku_kijun", "ichimoku_signal", "ichimoku_tk_cross",
+    # Fibonacci
+    "fib_proximity",
+    # Multi-timeframe
+    "rsi_weekly", "macd_weekly", "macd_weekly_signal", "rsi_5", "rsi_divergence",
+    # Momentum
+    "returns_1d", "returns_5d", "returns_10d", "returns_20d",
+    "roc_10", "roc_20",
+    "price_sma20_ratio", "price_sma50_ratio", "price_sma200_ratio",
+    "sma_20_50_cross", "sma_50_200_cross",
+    # Candlestick
+    "candle_body_pct", "candle_upper_shadow_pct", "candle_lower_shadow_pct",
+    "is_doji", "is_hammer",
+    # Volatility
+    "volatility_20d", "volatility_5d", "volatility_ratio", "atr_pct",
 ]
 
 
@@ -110,13 +134,8 @@ def train_model(
     else:
         best_params = XGBOOST_DEFAULT_PARAMS.copy()
 
-    # Train final model
-    model = XGBClassifier(**best_params)
-    model.fit(
-        X_train, y_train,
-        eval_set=[(X_test, y_test)],
-        verbose=False,
-    )
+    # Train ensemble model (XGBoost + LightGBM + RandomForest)
+    model = _build_ensemble(best_params, X_train, y_train, X_test, y_test)
 
     # Evaluate
     y_pred = model.predict(X_test)
@@ -148,6 +167,58 @@ def train_model(
 
     metrics["model_path"] = str(model_path)
     return metrics
+
+
+def _build_ensemble(
+    xgb_params: dict,
+    X_train: pd.DataFrame, y_train: pd.Series,
+    X_test: pd.DataFrame, y_test: pd.Series,
+) -> VotingClassifier:
+    """
+    Build a soft-voting ensemble of XGBoost + LightGBM + RandomForest.
+    Falls back to XGBoost-only if LightGBM is not installed.
+    """
+    xgb = XGBClassifier(**xgb_params)
+
+    rf = RandomForestClassifier(
+        n_estimators=300,
+        max_depth=8,
+        min_samples_split=10,
+        min_samples_leaf=5,
+        max_features="sqrt",
+        random_state=42,
+        n_jobs=-1,
+    )
+
+    estimators = [("xgb", xgb), ("rf", rf)]
+    weights = [0.50, 0.25]
+
+    if HAS_LIGHTGBM:
+        lgbm = LGBMClassifier(
+            n_estimators=xgb_params.get("n_estimators", 500),
+            max_depth=xgb_params.get("max_depth", 6),
+            learning_rate=xgb_params.get("learning_rate", 0.05),
+            subsample=xgb_params.get("subsample", 0.8),
+            colsample_bytree=xgb_params.get("colsample_bytree", 0.8),
+            min_child_weight=xgb_params.get("min_child_weight", 3),
+            reg_alpha=xgb_params.get("reg_alpha", 0.1),
+            reg_lambda=xgb_params.get("reg_lambda", 1.0),
+            random_state=42,
+            verbose=-1,
+        )
+        estimators.append(("lgbm", lgbm))
+        weights = [0.40, 0.20, 0.40]
+        logger.info("Using 3-model ensemble: XGBoost + LightGBM + RandomForest")
+    else:
+        logger.info("LightGBM not available; using 2-model ensemble: XGBoost + RandomForest")
+
+    ensemble = VotingClassifier(
+        estimators=estimators,
+        voting="soft",
+        weights=weights,
+    )
+    ensemble.fit(X_train, y_train)
+    return ensemble
 
 
 def _optimize_hyperparams(X_train: pd.DataFrame, y_train: pd.Series, n_trials: int) -> dict:
@@ -197,8 +268,8 @@ def _optimize_hyperparams(X_train: pd.DataFrame, y_train: pd.Series, n_trials: i
     return best
 
 
-def load_model(symbol: str) -> Optional[XGBClassifier]:
-    """Load a trained model from disk."""
+def load_model(symbol: str):
+    """Load a trained model from disk. Returns XGBClassifier or VotingClassifier."""
     model_path = MODEL_DIR / f"{symbol.replace('.', '_').replace('^', 'IDX_')}.joblib"
     if model_path.exists():
         return joblib.load(model_path)
@@ -288,8 +359,7 @@ def train_general_model(optimize: bool = False) -> dict:
     else:
         best_params = XGBOOST_DEFAULT_PARAMS.copy()
 
-    model = XGBClassifier(**best_params)
-    model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
+    model = _build_ensemble(best_params, X_train, y_train, X_test, y_test)
 
     y_pred = model.predict(X_test)
     metrics = {

@@ -6,26 +6,36 @@ interface SignalBadgeProps {
   size?: "sm" | "md" | "lg";
 }
 
+const SIGNAL_COLORS: Record<string, string> = {
+  BUY: "bg-ngreen/20 text-ngreen border-ngreen/30",
+  SELL: "bg-nred/20 text-nred border-nred/30",
+  HOLD: "bg-amber/20 text-amber border-amber/30",
+};
+
+const SIGNAL_GLOW: Record<string, string> = {
+  BUY: "shadow-[0_0_12px_rgba(0,200,83,0.3)]",
+  SELL: "shadow-[0_0_12px_rgba(255,23,68,0.3)]",
+  HOLD: "shadow-[0_0_12px_rgba(255,171,0,0.3)]",
+};
+
+const SIZE_CLASSES: Record<string, string> = {
+  sm: "px-2 py-0.5 text-xs",
+  md: "px-3 py-1 text-sm",
+  lg: "px-5 py-2.5 text-lg",
+};
+
 export function SignalBadge({ signal, confidence, size = "md" }: SignalBadgeProps) {
   const clean = signal.replace(" (CAUTION)", "");
   const hasCaution = signal.includes("CAUTION");
 
-  const colors: Record<string, string> = {
-    BUY: "bg-ngreen/20 text-ngreen border-ngreen/30 glow-green",
-    SELL: "bg-nred/20 text-nred border-nred/30 glow-red",
-    HOLD: "bg-amber/20 text-amber border-amber/30 glow-amber",
-  };
-
-  const sizes: Record<string, string> = {
-    sm: "px-2 py-0.5 text-xs",
-    md: "px-3 py-1 text-sm",
-    lg: "px-4 py-2 text-lg",
-  };
+  const colorClass = SIGNAL_COLORS[clean] || SIGNAL_COLORS.HOLD;
+  const glowClass = size === "lg" ? (SIGNAL_GLOW[clean] || "") : "";
+  const sizeClass = SIZE_CLASSES[size] || SIZE_CLASSES.md;
 
   return (
     <span className="inline-flex items-center gap-1.5">
       <span
-        className={`inline-block rounded border font-mono font-bold ${colors[clean] || colors.HOLD} ${sizes[size]}`}
+        className={`inline-block rounded-lg border font-mono font-bold ${colorClass} ${glowClass} ${sizeClass}`}
       >
         {clean}
       </span>

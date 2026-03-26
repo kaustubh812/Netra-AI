@@ -1,19 +1,19 @@
 {
   "symbol": "INDUSINDBK.NS",
-  "accuracy": 0.5036231884057971,
-  "precision": 0.48881789137380194,
-  "recall": 0.5730337078651685,
-  "f1_score": 0.5275862068965518,
+  "accuracy": 0.5136116152450091,
+  "precision": 0.5,
+  "recall": 0.6529850746268657,
+  "f1_score": 0.5663430420711975,
   "confusion_matrix": [
     [
-      125,
-      160
+      108,
+      175
     ],
     [
-      114,
-      153
+      93,
+      175
     ]
   ],
   "train_samples": 1719,
-  "test_samples": 552
+  "test_samples": 551
 }

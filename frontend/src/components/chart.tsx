@@ -20,6 +20,9 @@ interface ChartProps {
 
 const PERIODS = ["1M", "3M", "6M", "1Y", "5Y"] as const;
 
+const PERIOD_ACTIVE = "bg-cyan/15 text-cyan border border-cyan/30 shadow-[0_0_8px_rgba(0,229,255,0.15)]";
+const PERIOD_INACTIVE = "bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground hover:bg-white/[0.06]";
+
 export function StockChart({ symbol }: ChartProps) {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<IChartApi | null>(null);
@@ -29,7 +32,6 @@ export function StockChart({ symbol }: ChartProps) {
   useEffect(() => {
     if (!chartRef.current) return;
 
-    // Clean up previous chart
     if (chartInstance.current) {
       chartInstance.current.remove();
       chartInstance.current = null;
@@ -37,14 +39,14 @@ export function StockChart({ symbol }: ChartProps) {
 
     const chart = createChart(chartRef.current, {
       layout: {
-        background: { color: "#12121a" },
+        background: { color: "#0f0f18" },
         textColor: "#e0e0e0",
         fontFamily: "'JetBrains Mono', monospace",
         fontSize: 11,
       },
       grid: {
-        vertLines: { color: "#1a1a2530" },
-        horzLines: { color: "#1a1a2530" },
+        vertLines: { color: "rgba(255,255,255,0.02)" },
+        horzLines: { color: "rgba(255,255,255,0.02)" },
       },
       crosshair: {
         mode: 0,
@@ -52,14 +54,14 @@ export function StockChart({ symbol }: ChartProps) {
         horzLine: { color: "#00e5ff40", width: 1, style: 2 },
       },
       timeScale: {
-        borderColor: "#2a2a3a",
+        borderColor: "rgba(255,255,255,0.06)",
         timeVisible: false,
       },
       rightPriceScale: {
-        borderColor: "#2a2a3a",
+        borderColor: "rgba(255,255,255,0.06)",
       },
       width: chartRef.current.clientWidth,
-      height: 500,
+      height: 480,
     });
 
     chartInstance.current = chart;
@@ -82,7 +84,6 @@ export function StockChart({ symbol }: ChartProps) {
       scaleMargins: { top: 0.85, bottom: 0 },
     });
 
-    // Fetch data
     setLoading(true);
     api.getChart(symbol, period)
       .then((data: ChartData) => {
@@ -97,13 +98,12 @@ export function StockChart({ symbol }: ChartProps) {
         const volumes: HistogramData<Time>[] = data.candles.map((c) => ({
           time: c.time as Time,
           value: c.volume,
-          color: c.close >= c.open ? "#00c85330" : "#ff174430",
+          color: c.close >= c.open ? "#00c85320" : "#ff174420",
         }));
 
         candleSeries.setData(candles);
         volumeSeries.setData(volumes);
 
-        // Add signal markers
         if (data.markers.length) {
           const markers: SeriesMarker<Time>[] = data.markers.map((m) => ({
             time: m.time as Time,
@@ -120,7 +120,6 @@ export function StockChart({ symbol }: ChartProps) {
       })
       .catch(() => setLoading(false));
 
-    // Resize handler
     const handleResize = () => {
       if (chartRef.current && chartInstance.current) {
         chartInstance.current.applyOptions({ width: chartRef.current.clientWidth });
@@ -136,16 +135,14 @@ export function StockChart({ symbol }: ChartProps) {
   }, [symbol, period]);
 
   return (
-    <div>
-      <div className="flex gap-1 mb-3">
+    <div className="glass-card rounded-xl p-4 animate-fade-in">
+      <div className="flex gap-1.5 mb-3">
         {PERIODS.map((p) => (
           <button
             key={p}
             onClick={() => setPeriod(p)}
-            className={`px-3 py-1 rounded text-xs font-mono transition-colors ${
-              period === p
-                ? "bg-cyan/20 text-cyan border border-cyan/30"
-                : "bg-surface-2 text-foreground/50 border border-border hover:text-foreground"
+            className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
+              period === p ? PERIOD_ACTIVE : PERIOD_INACTIVE
             }`}
           >
             {p}
@@ -154,11 +151,11 @@ export function StockChart({ symbol }: ChartProps) {
       </div>
       <div className="relative">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-surface/80 z-10 rounded-lg">
-            <span className="text-foreground/40">Loading chart...</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-surface/80 backdrop-blur-sm z-10 rounded-lg">
+            <div className="shimmer h-3 w-32 rounded" />
           </div>
         )}
-        <div ref={chartRef} className="rounded-lg overflow-hidden border border-border" />
+        <div ref={chartRef} className="rounded-lg overflow-hidden" />
       </div>
     </div>
   );

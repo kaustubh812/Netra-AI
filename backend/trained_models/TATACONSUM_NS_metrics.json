@@ -1,19 +1,19 @@
 {
   "symbol": "TATACONSUM.NS",
-  "accuracy": 0.5126811594202898,
-  "precision": 0.4979253112033195,
-  "recall": 0.898876404494382,
-  "f1_score": 0.6408544726301736,
+  "accuracy": 0.5117967332123412,
+  "precision": 0.4989293361884368,
+  "recall": 0.8694029850746269,
+  "f1_score": 0.6340136054421769,
   "confusion_matrix": [
     [
-      43,
-      242
+      49,
+      234
     ],
     [
-      27,
-      240
+      35,
+      233
     ]
   ],
   "train_samples": 1719,
-  "test_samples": 552
+  "test_samples": 551
 }

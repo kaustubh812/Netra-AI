@@ -1,19 +1,19 @@
 {
   "symbol": "BAJFINANCE.NS",
-  "accuracy": 0.5217391304347826,
-  "precision": 0.5714285714285714,
-  "recall": 0.24199288256227758,
-  "f1_score": 0.34,
+  "accuracy": 0.5190562613430127,
+  "precision": 0.580952380952381,
+  "recall": 0.21631205673758866,
+  "f1_score": 0.3152454780361757,
   "confusion_matrix": [
     [
-      220,
-      51
+      225,
+      44
     ],
     [
-      213,
-      68
+      221,
+      61
     ]
   ],
   "train_samples": 1719,
-  "test_samples": 552
+  "test_samples": 551
 }

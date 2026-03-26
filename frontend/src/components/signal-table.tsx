@@ -8,11 +8,23 @@ import { SignalBadge } from "./signal-badge";
 
 type SortKey = "name" | "ltp" | "change_pct" | "signal" | "confidence";
 
+const ROW_STYLES = {
+  BUY: "bg-ngreen/[0.02] hover:bg-ngreen/[0.06]",
+  SELL: "bg-nred/[0.02] hover:bg-nred/[0.06]",
+  DEFAULT: "hover:bg-white/[0.02]",
+} as const;
+
+const SIGNAL_DOT = {
+  BUY: "bg-ngreen",
+  SELL: "bg-nred",
+  HOLD: "bg-amber",
+} as const;
+
 export function SignalTable() {
   const { data, isLoading } = useQuery({
     queryKey: ["stocks"],
     queryFn: api.getStocks,
-    refetchInterval: 30 * 1000, // Refresh every 30 seconds for live prices
+    refetchInterval: 30 * 1000,
   });
 
   const [sortKey, setSortKey] = useState<SortKey>("confidence");
@@ -39,76 +51,106 @@ export function SignalTable() {
     return sortAsc ? cmp : -cmp;
   });
 
-  const rowBg = (signal?: string) => {
-    if (signal === "BUY") return "bg-ngreen/[0.03] hover:bg-ngreen/[0.07]";
-    if (signal === "SELL") return "bg-nred/[0.03] hover:bg-nred/[0.07]";
-    return "hover:bg-surface-2";
+  const getRowStyle = (signal?: string) => {
+    if (signal === "BUY") return ROW_STYLES.BUY;
+    if (signal === "SELL") return ROW_STYLES.SELL;
+    return ROW_STYLES.DEFAULT;
+  };
+
+  const getSignalDot = (signal?: string) => {
+    if (signal === "BUY") return SIGNAL_DOT.BUY;
+    if (signal === "SELL") return SIGNAL_DOT.SELL;
+    return SIGNAL_DOT.HOLD;
   };
 
   const SortHeader = ({ label, col }: { label: string; col: SortKey }) => (
     <th
-      className="px-3 py-2 text-left text-xs font-medium text-foreground/50 cursor-pointer select-none hover:text-cyan"
+      className="px-4 py-3 text-left text-xs font-medium text-foreground/40 cursor-pointer select-none hover:text-cyan transition-colors"
       onClick={() => handleSort(col)}
     >
-      {label} {sortKey === col ? (sortAsc ? "↑" : "↓") : ""}
+      {label} {sortKey === col ? (sortAsc ? "\u2191" : "\u2193") : ""}
     </th>
   );
 
   if (isLoading) {
     return (
-      <div className="bg-surface rounded-lg border border-border p-8 text-center text-foreground/40">
-        Loading stocks...
+      <div className="glass-card rounded-xl overflow-hidden">
+        <div className="p-8 text-center">
+          <div className="shimmer h-4 w-40 rounded mx-auto" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-surface rounded-lg border border-border overflow-hidden">
+    <div className="glass-card rounded-xl overflow-hidden animate-fade-in animate-fade-in-d4">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-border bg-surface-2">
+          <thead className="border-b border-white/[0.06] bg-white/[0.02] sticky top-0 z-10 backdrop-blur-sm">
             <tr>
               <SortHeader label="Stock" col="name" />
               <SortHeader label="LTP" col="ltp" />
               <SortHeader label="Change %" col="change_pct" />
               <SortHeader label="Signal" col="signal" />
-              <SortHeader label="Confidence" col="confidence" />
-              <th className="px-3 py-2 text-left text-xs font-medium text-foreground/50">Entry</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-foreground/50">Stop Loss</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-foreground/50">Target</th>
+              <SortHeader label="Strength" col="confidence" />
+              <th className="px-4 py-3 text-left text-xs font-medium text-foreground/40">Entry</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-foreground/40">Stop Loss</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-foreground/40">Target</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border/50">
+          <tbody className="divide-y divide-white/[0.03]">
             {sorted.map((stock) => (
-              <tr key={stock.symbol} className={`transition-colors ${rowBg(stock.signal)}`}>
-                <td className="px-3 py-2.5">
-                  <Link
-                    href={`/stock/${encodeURIComponent(stock.symbol)}`}
-                    className="text-cyan hover:underline font-medium"
-                  >
-                    {stock.name}
-                  </Link>
+              <tr key={stock.symbol} className={`transition-colors ${getRowStyle(stock.signal)}`}>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    {stock.signal && (
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${getSignalDot(stock.signal)}`} />
+                    )}
+                    <Link
+                      href={`/stock/${encodeURIComponent(stock.symbol)}`}
+                      className="text-cyan hover:underline font-medium"
+                    >
+                      {stock.name}
+                    </Link>
+                  </div>
                 </td>
-                <td className="px-3 py-2.5 font-mono">
-                  {stock.ltp?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "—"}
+                <td className="px-4 py-3 font-mono">
+                  {stock.ltp?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "\u2014"}
                 </td>
-                <td className={`px-3 py-2.5 font-mono ${(stock.change_pct ?? 0) >= 0 ? "text-ngreen" : "text-nred"}`}>
-                  {stock.change_pct !== undefined ? `${stock.change_pct >= 0 ? "+" : ""}${stock.change_pct.toFixed(2)}%` : "—"}
+                <td className="px-4 py-3">
+                  {stock.change_pct !== undefined ? (
+                    <span className={`inline-flex items-center gap-1 font-mono text-xs px-2 py-0.5 rounded-full ${stock.change_pct >= 0 ? "bg-ngreen/10 text-ngreen" : "bg-nred/10 text-nred"}`}>
+                      {stock.change_pct >= 0 ? "\u25B2" : "\u25BC"} {stock.change_pct >= 0 ? "+" : ""}{stock.change_pct.toFixed(2)}%
+                    </span>
+                  ) : "\u2014"}
                 </td>
-                <td className="px-3 py-2.5">
-                  {stock.signal ? <SignalBadge signal={stock.signal} size="sm" /> : "—"}
+                <td className="px-4 py-3">
+                  {stock.signal ? <SignalBadge signal={stock.signal} size="sm" /> : "\u2014"}
                 </td>
-                <td className="px-3 py-2.5 font-mono">
-                  {stock.confidence !== undefined ? `${stock.confidence.toFixed(0)}%` : "—"}
+                <td className="px-4 py-3">
+                  {stock.confidence !== undefined ? (
+                    <div className="flex items-center gap-2.5">
+                      <div className="confidence-bar w-20">
+                        <div
+                          className="confidence-bar-fill"
+                          style={{
+                            width: `${stock.confidence}%`,
+                            backgroundColor: stock.confidence > 65 ? "rgba(0,200,83,0.7)" : stock.confidence > 45 ? "rgba(255,171,0,0.7)" : "rgba(255,23,68,0.7)",
+                          }}
+                        />
+                      </div>
+                      <span className="font-mono text-xs text-foreground/60">{stock.confidence.toFixed(0)}%</span>
+                    </div>
+                  ) : "\u2014"}
                 </td>
-                <td className="px-3 py-2.5 font-mono text-foreground/70">
-                  {stock.entry_price?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "—"}
+                <td className="px-4 py-3 font-mono text-foreground/60">
+                  {stock.entry_price?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "\u2014"}
                 </td>
-                <td className="px-3 py-2.5 font-mono text-nred/70">
-                  {stock.stop_loss?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "—"}
+                <td className="px-4 py-3 font-mono text-nred/60">
+                  {stock.stop_loss?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "\u2014"}
                 </td>
-                <td className="px-3 py-2.5 font-mono text-ngreen/70">
-                  {stock.target_price?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "—"}
+                <td className="px-4 py-3 font-mono text-ngreen/60">
+                  {stock.target_price?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "\u2014"}
                 </td>
               </tr>
             ))}

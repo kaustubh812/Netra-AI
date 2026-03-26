@@ -142,6 +142,92 @@ def calculate_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
     result["high_52w"] = result["high"].rolling(window=252, min_periods=1).max()
     result["low_52w"] = result["low"].rolling(window=252, min_periods=1).min()
 
+    # ─── Ichimoku Cloud ──────────────────────────────────────────────────
+    high_9 = result["high"].rolling(window=9).max()
+    low_9 = result["low"].rolling(window=9).min()
+    high_26 = result["high"].rolling(window=26).max()
+    low_26 = result["low"].rolling(window=26).min()
+    high_52 = result["high"].rolling(window=52).max()
+    low_52 = result["low"].rolling(window=52).min()
+
+    result["ichimoku_tenkan"] = (high_9 + low_9) / 2  # Conversion line
+    result["ichimoku_kijun"] = (high_26 + low_26) / 2  # Base line
+    result["ichimoku_senkou_a"] = ((result["ichimoku_tenkan"] + result["ichimoku_kijun"]) / 2).shift(26)
+    result["ichimoku_senkou_b"] = ((high_52 + low_52) / 2).shift(26)
+    # Cloud signal: 1 if price above cloud, -1 if below, 0 if inside
+    cloud_top = result[["ichimoku_senkou_a", "ichimoku_senkou_b"]].max(axis=1)
+    cloud_bottom = result[["ichimoku_senkou_a", "ichimoku_senkou_b"]].min(axis=1)
+    result["ichimoku_signal"] = np.where(
+        result["close"] > cloud_top, 1,
+        np.where(result["close"] < cloud_bottom, -1, 0)
+    )
+    # TK cross: 1 if tenkan > kijun (bullish), -1 if below
+    result["ichimoku_tk_cross"] = np.where(
+        result["ichimoku_tenkan"] > result["ichimoku_kijun"], 1, -1
+    )
+
+    # ─── Fibonacci Retracement Levels ──────────────────────────────────
+    fib_high = result["high"].rolling(window=50).max()
+    fib_low = result["low"].rolling(window=50).min()
+    fib_range = fib_high - fib_low
+    result["fib_236"] = fib_high - 0.236 * fib_range
+    result["fib_382"] = fib_high - 0.382 * fib_range
+    result["fib_500"] = fib_high - 0.500 * fib_range
+    result["fib_618"] = fib_high - 0.618 * fib_range
+    # Distance from nearest fib level (normalized)
+    fib_levels = result[["fib_236", "fib_382", "fib_500", "fib_618"]]
+    result["fib_proximity"] = fib_levels.sub(result["close"], axis=0).abs().min(axis=1) / result["close"]
+
+    # ─── Multi-Timeframe Features ──────────────────────────────────────
+    # Weekly RSI (using 5-day periods as proxy for weekly)
+    result["rsi_weekly"] = RSIIndicator(result["close"], window=70).rsi()  # 14 weeks * 5 days
+    # Weekly MACD
+    macd_weekly = MACD(result["close"], window_slow=130, window_fast=60, window_sign=45)
+    result["macd_weekly"] = macd_weekly.macd()
+    result["macd_weekly_signal"] = macd_weekly.macd_signal()
+    # Short-term RSI (5-day)
+    result["rsi_5"] = RSIIndicator(result["close"], window=5).rsi()
+    # RSI divergence: short vs long
+    result["rsi_divergence"] = result["rsi_5"] - result["rsi"]
+
+    # ─── Price Momentum Features ───────────────────────────────────────
+    result["returns_1d"] = result["close"].pct_change(1)
+    result["returns_5d"] = result["close"].pct_change(5)
+    result["returns_10d"] = result["close"].pct_change(10)
+    result["returns_20d"] = result["close"].pct_change(20)
+    # Momentum: rate of change
+    result["roc_10"] = (result["close"] / result["close"].shift(10) - 1) * 100
+    result["roc_20"] = (result["close"] / result["close"].shift(20) - 1) * 100
+    # Price relative to moving averages
+    result["price_sma20_ratio"] = result["close"] / result["sma_20"]
+    result["price_sma50_ratio"] = result["close"] / result["sma_50"]
+    result["price_sma200_ratio"] = result["close"] / result["sma_200"]
+    # SMA crossover features
+    result["sma_20_50_cross"] = np.where(result["sma_20"] > result["sma_50"], 1, -1)
+    result["sma_50_200_cross"] = np.where(result["sma_50"] > result["sma_200"], 1, -1)
+
+    # ─── Candlestick Pattern Features ──────────────────────────────────
+    body = result["close"] - result["open"]
+    body_abs = body.abs()
+    upper_shadow = result["high"] - result[["close", "open"]].max(axis=1)
+    lower_shadow = result[["close", "open"]].min(axis=1) - result["low"]
+    candle_range = result["high"] - result["low"]
+
+    result["candle_body_pct"] = body / candle_range.replace(0, np.nan)
+    result["candle_upper_shadow_pct"] = upper_shadow / candle_range.replace(0, np.nan)
+    result["candle_lower_shadow_pct"] = lower_shadow / candle_range.replace(0, np.nan)
+    # Doji detection (small body relative to range)
+    result["is_doji"] = (body_abs / candle_range.replace(0, np.nan) < 0.1).astype(int)
+    # Hammer/shooting star
+    result["is_hammer"] = ((lower_shadow > 2 * body_abs) & (upper_shadow < body_abs)).astype(int)
+
+    # ─── Volatility Features ───────────────────────────────────────────
+    result["volatility_20d"] = result["returns_1d"].rolling(window=20).std() * np.sqrt(252)
+    result["volatility_5d"] = result["returns_1d"].rolling(window=5).std() * np.sqrt(252)
+    result["volatility_ratio"] = result["volatility_5d"] / result["volatility_20d"].replace(0, np.nan)
+    # ATR percentage
+    result["atr_pct"] = result["atr"] / result["close"] * 100
+
     # ─── Derived Features ────────────────────────────────────────────────
     result["pct_from_52w_high"] = (result["close"] - result["high_52w"]) / result["high_52w"] * 100
     result["pct_from_52w_low"] = (result["close"] - result["low_52w"]) / result["low_52w"] * 100

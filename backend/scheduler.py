@@ -32,6 +32,22 @@ def _generate_signals_job():
     logger.info("Scheduler: Generated %d signals", len(signals))
 
 
+def _fetch_news_job():
+    """Job: Fetch and score news sentiment."""
+    from news_sentiment import fetch_and_score_news
+    logger.info("Scheduler: Fetching news sentiment...")
+    result = fetch_and_score_news()
+    logger.info("Scheduler: News sentiment done — scored %d headlines", result.get("scored", 0))
+
+
+def _fetch_fundamentals_job():
+    """Job: Refresh fundamentals data (weekly)."""
+    from fundamentals import fetch_all_fundamentals
+    logger.info("Scheduler: Fetching fundamentals...")
+    fetch_all_fundamentals()
+    logger.info("Scheduler: Fundamentals refresh done")
+
+
 def _retrain_models_job():
     """Job: Retrain all models (weekly)."""
     from model import train_all_models
@@ -67,6 +83,33 @@ def create_scheduler() -> BackgroundScheduler:
         replace_existing=True,
     )
 
+    # Fetch news sentiment every 30 minutes during market hours (8:30 AM - 4 PM)
+    scheduler.add_job(
+        _fetch_news_job,
+        CronTrigger(day_of_week="mon-fri", hour="8-15", minute="0,30", timezone=IST),
+        id="fetch_news",
+        name="Fetch and score news sentiment",
+        replace_existing=True,
+    )
+
+    # Pre-market news at 8:30 AM IST
+    scheduler.add_job(
+        _fetch_news_job,
+        CronTrigger(day_of_week="mon-fri", hour=8, minute=30, timezone=IST),
+        id="premarket_news",
+        name="Pre-market news fetch",
+        replace_existing=True,
+    )
+
+    # Refresh fundamentals every Saturday at 7 AM IST (weekly, slow-moving data)
+    scheduler.add_job(
+        _fetch_fundamentals_job,
+        CronTrigger(day_of_week="sat", hour=7, minute=0, timezone=IST),
+        id="fetch_fundamentals",
+        name="Weekly fundamentals refresh",
+        replace_existing=True,
+    )
+
     # Retrain models every Sunday at 6 AM IST
     scheduler.add_job(
         _retrain_models_job,
@@ -76,5 +119,5 @@ def create_scheduler() -> BackgroundScheduler:
         replace_existing=True,
     )
 
-    logger.info("Scheduler configured with 3 jobs")
+    logger.info("Scheduler configured with 6 jobs")
     return scheduler

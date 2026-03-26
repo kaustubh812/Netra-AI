@@ -102,9 +102,52 @@ def init_db():
                 UNIQUE(symbol)
             );
 
+            CREATE TABLE IF NOT EXISTS fundamentals (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                trailingPE REAL, forwardPE REAL, priceToBook REAL,
+                returnOnEquity REAL, returnOnAssets REAL,
+                marketCap REAL, enterpriseValue REAL,
+                debtToEquity REAL, currentRatio REAL,
+                revenueGrowth REAL, earningsGrowth REAL,
+                profitMargins REAL, operatingMargins REAL,
+                dividendYield REAL, bookValue REAL,
+                earningsQuarterlyGrowth REAL, pegRatio REAL,
+                trailingEps REAL, forwardEps REAL,
+                sector TEXT, industry TEXT, beta REAL,
+                fiftyTwoWeekHigh REAL, fiftyTwoWeekLow REAL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(symbol)
+            );
+
+            CREATE TABLE IF NOT EXISTS macro_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                indicator TEXT NOT NULL,
+                name TEXT,
+                symbol TEXT,
+                price REAL, change REAL, change_pct REAL,
+                weekly_change_pct REAL,
+                high REAL, low REAL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(indicator)
+            );
+
+            CREATE TABLE IF NOT EXISTS news_sentiment (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                headline TEXT NOT NULL,
+                source TEXT,
+                url TEXT,
+                sentiment_score REAL,
+                reasoning TEXT,
+                fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(symbol, headline)
+            );
+
             CREATE INDEX IF NOT EXISTS idx_stock_data_symbol_date ON stock_data(symbol, date);
             CREATE INDEX IF NOT EXISTS idx_indicators_symbol_date ON indicators(symbol, date);
             CREATE INDEX IF NOT EXISTS idx_signals_symbol_date ON signals(symbol, date);
+            CREATE INDEX IF NOT EXISTS idx_news_sentiment_symbol ON news_sentiment(symbol, fetched_at);
         """)
     logger.info("Database initialized at %s", DB_PATH)
 
@@ -257,6 +300,117 @@ def get_backtest_result(symbol: str) -> Optional[dict]:
     if row:
         return dict(row)
     return None
+
+
+# ─── Fundamentals Helpers ────────────────────────────────────────────────────
+
+def save_fundamentals(symbol: str, data: dict):
+    """Save fundamental data for a stock (upsert)."""
+    cols = [
+        "trailingPE", "forwardPE", "priceToBook", "returnOnEquity", "returnOnAssets",
+        "marketCap", "enterpriseValue", "debtToEquity", "currentRatio",
+        "revenueGrowth", "earningsGrowth", "profitMargins", "operatingMargins",
+        "dividendYield", "bookValue", "earningsQuarterlyGrowth", "pegRatio",
+        "trailingEps", "forwardEps", "sector", "industry", "beta",
+        "fiftyTwoWeekHigh", "fiftyTwoWeekLow",
+    ]
+    values = [symbol] + [data.get(c) for c in cols]
+    placeholders = ", ".join(["?"] * (len(cols) + 1))
+    col_names = "symbol, " + ", ".join(cols)
+    with get_db() as conn:
+        conn.execute(
+            f"INSERT OR REPLACE INTO fundamentals ({col_names}) VALUES ({placeholders})",
+            values,
+        )
+
+
+def get_fundamentals(symbol: str) -> Optional[dict]:
+    """Get fundamentals for a stock."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT * FROM fundamentals WHERE symbol = ?", (symbol,)
+        ).fetchone()
+    if row:
+        return dict(row)
+    return None
+
+
+# ─── Macro Data Helpers ──────────────────────────────────────────────────────
+
+def save_macro_data(data: dict):
+    """Save macro indicator data (upsert)."""
+    with get_db() as conn:
+        for key, vals in data.items():
+            conn.execute(
+                """INSERT OR REPLACE INTO macro_data
+                   (indicator, name, symbol, price, change, change_pct, weekly_change_pct, high, low)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (key, vals.get("name"), vals.get("symbol"), vals.get("price"),
+                 vals.get("change"), vals.get("change_pct"), vals.get("weekly_change_pct"),
+                 vals.get("high"), vals.get("low")),
+            )
+
+
+def get_macro_data() -> list[dict]:
+    """Get all macro indicators."""
+    with get_db() as conn:
+        rows = conn.execute("SELECT * FROM macro_data ORDER BY indicator").fetchall()
+    return [dict(r) for r in rows]
+
+
+# ─── News Sentiment Helpers ──────────────────────────────────────────────────
+
+def save_news_sentiment(symbol: str, headline: str, source: str, url: str,
+                        score: float, reasoning: str):
+    """Save a scored news headline."""
+    with get_db() as conn:
+        conn.execute(
+            """INSERT OR REPLACE INTO news_sentiment
+               (symbol, headline, source, url, sentiment_score, reasoning)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (symbol, headline, source, url, score, reasoning),
+        )
+
+
+def get_latest_sentiment(symbol: str, hours: int = 24) -> list[dict]:
+    """Get recent news sentiment for a stock within the last N hours."""
+    query = """
+        SELECT headline, source, url, sentiment_score, reasoning, fetched_at
+        FROM news_sentiment
+        WHERE symbol = ? AND fetched_at >= datetime('now', ?)
+        ORDER BY fetched_at DESC
+    """
+    with get_db() as conn:
+        rows = conn.execute(query, (symbol, f"-{hours} hours")).fetchall()
+    return [dict(r) for r in rows]
+
+
+def get_aggregate_sentiment(symbol: str, hours: int = 24) -> Optional[float]:
+    """Get average sentiment score for a stock over last N hours. Returns None if no data."""
+    query = """
+        SELECT AVG(sentiment_score) as avg_score, COUNT(*) as cnt
+        FROM news_sentiment
+        WHERE symbol = ? AND fetched_at >= datetime('now', ?)
+    """
+    with get_db() as conn:
+        row = conn.execute(query, (symbol, f"-{hours} hours")).fetchone()
+    if row and row["cnt"] > 0:
+        return round(row["avg_score"], 4)
+    return None
+
+
+def get_market_news_sentiment(hours: int = 24) -> list[dict]:
+    """Get all recent news with sentiment, across all stocks."""
+    query = """
+        SELECT symbol, headline, source, url, sentiment_score, reasoning, fetched_at
+        FROM news_sentiment
+        WHERE fetched_at >= datetime('now', ?)
+        ORDER BY fetched_at DESC
+        LIMIT 50
+    """
+    with get_db() as conn:
+        rows = conn.execute(query, (f"-{hours} hours",)).fetchall()
+    return [dict(r) for r in rows]
 
 
 # Initialize DB on import

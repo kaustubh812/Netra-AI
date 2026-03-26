@@ -1,19 +1,19 @@
 {
   "symbol": "EICHERMOT.NS",
-  "accuracy": 0.4963768115942029,
-  "precision": 0.5185185185185185,
-  "recall": 0.05017921146953405,
-  "f1_score": 0.0915032679738562,
+  "accuracy": 0.46823956442831216,
+  "precision": 0.3617021276595745,
+  "recall": 0.060714285714285714,
+  "f1_score": 0.10397553516819572,
   "confusion_matrix": [
     [
-      260,
-      13
+      241,
+      30
     ],
     [
-      265,
-      14
+      263,
+      17
     ]
   ],
   "train_samples": 1719,
-  "test_samples": 552
+  "test_samples": 551
 }

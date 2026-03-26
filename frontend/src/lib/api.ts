@@ -123,6 +123,78 @@ export interface StockDetail {
   }>;
 }
 
+export interface NewsItem {
+  headline: string;
+  source: string;
+  url: string;
+  sentiment_score: number;
+  reasoning: string;
+  fetched_at: string;
+}
+
+export interface StockNews {
+  symbol: string;
+  name: string;
+  news: NewsItem[];
+  count: number;
+  aggregate_sentiment: number | null;
+  sentiment_label: string;
+}
+
+export interface StockFundamentals {
+  symbol: string;
+  name: string;
+  fundamentals: Record<string, number | string | null> | null;
+  score: number;
+  label: string;
+}
+
+export interface MacroIndicator {
+  name: string;
+  symbol: string;
+  price: number;
+  change: number;
+  change_pct: number;
+  weekly_change_pct: number;
+  high: number;
+  low: number;
+}
+
+export interface MacroOverview {
+  indicators: Record<string, MacroIndicator>;
+  score: number;
+  label: string;
+  count: number;
+}
+
+export interface RegimeInfo {
+  regime: string;
+  confidence: number;
+  metrics: Record<string, number>;
+}
+
+export interface SectorScore {
+  avg_return: number;
+  stocks_up: number;
+  stocks_down: number;
+  total_stocks: number;
+  breadth: number;
+  rank: number;
+  momentum_score: number;
+}
+
+export interface SectorsOverview {
+  sectors: Record<string, SectorScore>;
+  count: number;
+}
+
+export interface MarketNews {
+  news: (NewsItem & { symbol: string })[];
+  count: number;
+  aggregate_sentiment: number | null;
+  sentiment_label: string;
+}
+
 // API functions
 export const api = {
   getStocks: () => fetchApi<{ stocks: StockInfo[]; count: number; market_open?: boolean }>("/api/stocks"),
@@ -133,6 +205,16 @@ export const api = {
   getBacktest: (symbol: string) => fetchApi<BacktestResult>(`/api/backtest/${symbol}`),
   getMarketOverview: () => fetchApi<MarketOverview>("/api/market-overview"),
   getTrainingMetrics: () => fetchApi<{ metrics: Record<string, unknown>; count: number }>("/api/training-metrics"),
+  getStockFundamentals: (symbol: string) => fetchApi<StockFundamentals>(`/api/fundamentals/${symbol}`),
+  getMacro: () => fetchApi<MacroOverview>("/api/macro"),
+  refreshFundamentals: () => postApi<{ status: string }>("/api/fundamentals/refresh"),
+  getStockNews: (symbol: string) => fetchApi<StockNews>(`/api/news/${symbol}`),
+  getMarketNews: () => fetchApi<MarketNews>("/api/news/market/overview"),
+  refreshNews: () => postApi<{ status: string }>("/api/news/refresh"),
   retrain: () => postApi<{ status: string }>("/api/retrain"),
+  trainMetaModel: () => postApi<{ status: string }>("/api/meta-model/train"),
+  getMetaModelMetrics: () => fetchApi<{ metrics: Record<string, unknown> | null; available: boolean }>("/api/meta-model/metrics"),
   refreshData: () => postApi<{ status: string }>("/api/refresh-data"),
+  getRegime: () => fetchApi<RegimeInfo>("/api/regime"),
+  getSectors: () => fetchApi<SectorsOverview>("/api/sectors"),
 };

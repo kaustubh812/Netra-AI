@@ -12,7 +12,8 @@ import pandas as pd
 
 from config import (
     BUY_THRESHOLD, SELL_THRESHOLD,
-    WEIGHT_XGBOOST, WEIGHT_SUPERTREND, WEIGHT_RSI, WEIGHT_MACD, WEIGHT_VOLUME,
+    WEIGHT_XGBOOST, WEIGHT_LSTM, WEIGHT_SUPERTREND, WEIGHT_RSI, WEIGHT_MACD, WEIGHT_VOLUME,
+    WEIGHT_SENTIMENT, WEIGHT_FUNDAMENTAL, WEIGHT_MACRO,
     RSI_OVERBOUGHT, RSI_OVERSOLD,
     STOP_LOSS_ATR_MULTIPLIER, TARGET_ATR_MULTIPLIER,
     NIFTY_50_STOCKS,
@@ -20,6 +21,12 @@ from config import (
 from model import predict, load_model, FEATURE_COLS
 from data_fetcher import get_stock_df
 from indicators import calculate_all_indicators
+from news_sentiment import get_stock_sentiment_score
+from fundamentals import score_fundamentals
+from macro_signals import score_macro_environment
+from regime_detector import detect_regime, get_regime_weight_adjustments
+from sector_rotation import get_sector_adjustment, get_cached_sector_scores
+from lstm_model import predict_lstm
 import db
 
 logger = logging.getLogger(__name__)
@@ -92,26 +99,121 @@ def generate_signal(symbol: str) -> Optional[dict]:
     # Volume above 20-day average confirms the signal
     volume_score = min(volume_ratio / 1.5, 1.0) if volume_ratio > 1.0 else 0.3
 
-    # ── Composite Score ──────────────────────────────────────────────────
-    composite = (
-        WEIGHT_XGBOOST * xgb_score +
-        WEIGHT_SUPERTREND * supertrend_score +
-        WEIGHT_RSI * rsi_score +
-        WEIGHT_MACD * macd_score +
-        WEIGHT_VOLUME * volume_score
-    )
+    # ── News Sentiment Component ───────────────────────────────────────
+    sentiment_score = get_stock_sentiment_score(symbol)  # 0-1 scale, 0.5 = neutral
+
+    # ── Fundamental Component ──────────────────────────────────────────
+    fundamental_score = score_fundamentals(symbol)  # 0-1 scale, 0.5 = neutral
+
+    # ── Macro Environment Component ────────────────────────────────────
+    macro_score = score_macro_environment()  # 0-1 scale, 0.5 = neutral
+
+    # ── LSTM Deep Learning Component ─────────────────────────────────────
+    lstm_prob = predict_lstm(symbol, indicators_df)
+    lstm_score = lstm_prob if lstm_prob is not None else xgb_score  # fallback to XGBoost prob
+
+    # ── Regime Detection ─────────────────────────────────────────────────
+    regime_info = detect_regime(indicators_df)
+    regime = regime_info["regime"]
+    adjustments = get_regime_weight_adjustments(regime)
+
+    # ── Sector Rotation ──────────────────────────────────────────────────
+    sector_scores = get_cached_sector_scores()
+    sector_adj = get_sector_adjustment(symbol, sector_scores)
+
+    # ── Regime-Adjusted Composite Score ──────────────────────────────────
+    raw_weights = {
+        "xgboost": WEIGHT_XGBOOST,
+        "lstm": WEIGHT_LSTM,
+        "supertrend": WEIGHT_SUPERTREND,
+        "rsi": WEIGHT_RSI,
+        "macd": WEIGHT_MACD,
+        "volume": WEIGHT_VOLUME,
+        "sentiment": WEIGHT_SENTIMENT,
+        "fundamental": WEIGHT_FUNDAMENTAL,
+        "macro": WEIGHT_MACRO,
+    }
+    scores = {
+        "xgboost": xgb_score,
+        "lstm": lstm_score,
+        "supertrend": supertrend_score,
+        "rsi": rsi_score,
+        "macd": macd_score,
+        "volume": volume_score,
+        "sentiment": sentiment_score,
+        "fundamental": fundamental_score,
+        "macro": macro_score,
+    }
+
+    # Apply regime adjustments and renormalize weights
+    adjusted_weights = {k: raw_weights[k] * adjustments.get(k, 1.0) for k in raw_weights}
+    total_w = sum(adjusted_weights.values())
+    adjusted_weights = {k: v / total_w for k, v in adjusted_weights.items()}
+
+    composite = sum(adjusted_weights[k] * scores[k] for k in scores)
+
+    # Apply sector rotation adjustment (subtle: ±5-15%)
+    composite = composite * sector_adj
+    composite = max(0.0, min(1.0, composite))
+
+    # ── Dynamic Confidence Thresholds ────────────────────────────────────
+    # Adjust thresholds based on regime
+    if regime == "volatile":
+        buy_thresh = BUY_THRESHOLD + 0.03   # More conservative in volatile markets
+        sell_thresh = SELL_THRESHOLD - 0.03
+    elif regime in ("trending_up", "trending_down"):
+        buy_thresh = BUY_THRESHOLD - 0.02   # Slightly easier to trigger in trends
+        sell_thresh = SELL_THRESHOLD + 0.02
+    else:
+        buy_thresh = BUY_THRESHOLD
+        sell_thresh = SELL_THRESHOLD
 
     # ── Generate Signal ──────────────────────────────────────────────────
-    if composite > BUY_THRESHOLD:
+    if composite > buy_thresh:
         signal = "BUY"
-    elif composite < SELL_THRESHOLD:
+    elif composite < sell_thresh:
         signal = "SELL"
     else:
         signal = "HOLD"
 
-    # Confidence: distance from 0.5, mapped to percentage
-    confidence = abs(composite - 0.5) * 200  # 0-100%
-    confidence = min(confidence, 100.0)
+    # ── Signal Strength Calculation ─────────────────────────────────────
+    # Measures how strong/reliable the signal is (0-100%)
+    # BUY/SELL: starts at 55% (crossed threshold) + bonuses from multiple factors
+    # HOLD: reflects certainty of neutrality (higher when deep in HOLD zone)
+    bullish_count = sum(1 for v in scores.values() if v > 0.55)
+    bearish_count = sum(1 for v in scores.values() if v < 0.45)
+
+    if signal in ("BUY", "SELL"):
+        # How far past the threshold (normalized 0-1)
+        if signal == "BUY":
+            overshoot = (composite - buy_thresh) / max(1.0 - buy_thresh, 0.01)
+            agree_count = bullish_count
+            model_agrees = xgb_prob > 0.6
+        else:
+            overshoot = (sell_thresh - composite) / max(sell_thresh, 0.01)
+            agree_count = bearish_count
+            model_agrees = xgb_prob < 0.4
+        overshoot = max(0.0, min(overshoot, 1.0))
+
+        base = 55.0                                    # Crossed threshold → at least 55%
+        strength_bonus = overshoot * 20.0              # Up to +20% for strong overshoot
+        agreement_bonus = max(0, agree_count - 4) * 3  # +3% per agreeing component beyond 4
+        model_bonus = 5.0 if model_agrees else 0.0     # +5% if ML model strongly agrees
+        # Regime alignment
+        regime_aligned = (regime == "trending_up" and signal == "BUY") or \
+                         (regime == "trending_down" and signal == "SELL")
+        regime_bonus = 5.0 if regime_aligned else (-3.0 if regime == "volatile" else 0.0)
+
+        confidence = base + strength_bonus + agreement_bonus + model_bonus + regime_bonus
+        confidence = min(max(confidence, 45.0), 95.0)
+    else:
+        # HOLD: confidence = how deep in HOLD territory (far from both thresholds)
+        mid = (buy_thresh + sell_thresh) / 2.0
+        half_range = (buy_thresh - sell_thresh) / 2.0
+        dist_from_mid = abs(composite - mid)
+        nearness = dist_from_mid / max(half_range, 0.01)  # 0 = center, 1 = at threshold
+        confidence = (1.0 - min(nearness, 1.0)) * 45.0 + 20.0  # 20-65% range
+        confidence = min(max(confidence, 15.0), 65.0)
 
     # ── Entry, Stop Loss, Target ─────────────────────────────────────────
     entry_price = close
@@ -144,10 +246,14 @@ def generate_signal(symbol: str) -> Optional[dict]:
         "composite_score": round(composite, 4),
         "components": {
             "xgboost": round(xgb_score, 4),
+            "lstm": round(lstm_score, 4),
             "supertrend": round(supertrend_score, 4),
             "rsi": round(rsi_score, 4),
             "macd": round(macd_score, 4),
             "volume": round(volume_score, 4),
+            "sentiment": round(sentiment_score, 4),
+            "fundamental": round(fundamental_score, 4),
+            "macro": round(macro_score, 4),
         },
         "indicators": {
             "rsi": round(rsi, 2),
@@ -168,6 +274,9 @@ def generate_signal(symbol: str) -> Optional[dict]:
             "stoch_d": round(float(latest.get("stoch_d", 0)), 2),
         },
         "caution": caution,
+        "regime": regime,
+        "regime_confidence": regime_info.get("confidence", 0),
+        "sector_adjustment": sector_adj,
     }
 
     # Save to DB

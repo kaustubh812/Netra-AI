@@ -1,19 +1,19 @@
 {
   "symbol": "RELIANCE.NS",
-  "accuracy": 0.5036231884057971,
-  "precision": 0.5353535353535354,
-  "recall": 0.18861209964412812,
-  "f1_score": 0.2789473684210526,
+  "accuracy": 0.5181818181818182,
+  "precision": 0.5784313725490197,
+  "recall": 0.2099644128113879,
+  "f1_score": 0.30809399477806787,
   "confusion_matrix": [
     [
-      225,
-      46
+      226,
+      43
     ],
     [
-      228,
-      53
+      222,
+      59
     ]
   ],
   "train_samples": 1719,
-  "test_samples": 552
+  "test_samples": 550
 }

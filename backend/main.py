@@ -188,6 +188,14 @@ def get_stock_detail(symbol: str):
             for col in indicators.columns if col not in ("id", "symbol", "date")
         }
 
+    # News sentiment
+    from news_sentiment import get_stock_news
+    result["news"] = get_stock_news(symbol)
+
+    # Fundamentals
+    from fundamentals import get_stock_fundamentals
+    result["fundamentals"] = get_stock_fundamentals(symbol)
+
     return result
 
 
@@ -345,18 +353,126 @@ def get_market_overview():
     return overview
 
 
+@app.get("/api/fundamentals/{symbol}")
+def get_fundamentals_endpoint(symbol: str):
+    """Get fundamental analysis for a stock."""
+    from fundamentals import get_stock_fundamentals
+
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+
+    return get_stock_fundamentals(symbol)
+
+
+@app.get("/api/regime")
+def get_regime_endpoint():
+    """Get current market regime detection."""
+    from regime_detector import detect_nifty_regime
+    return detect_nifty_regime()
+
+
+@app.get("/api/sectors")
+def get_sectors_endpoint():
+    """Get sector rotation momentum scores."""
+    from sector_rotation import get_cached_sector_scores
+    scores = get_cached_sector_scores()
+    return {"sectors": scores, "count": len(scores)}
+
+
+@app.get("/api/macro")
+def get_macro_endpoint():
+    """Get macro environment indicators and score."""
+    from macro_signals import get_macro_overview
+    return get_macro_overview()
+
+
+@app.post("/api/fundamentals/refresh")
+async def refresh_fundamentals(background_tasks: BackgroundTasks):
+    """Trigger fundamentals refresh in background."""
+    from fundamentals import fetch_all_fundamentals
+
+    def _fetch():
+        logger.info("Manual fundamentals refresh triggered")
+        fetch_all_fundamentals()
+        logger.info("Manual fundamentals refresh complete")
+
+    background_tasks.add_task(_fetch)
+    return {"status": "Fundamentals refresh started"}
+
+
+@app.get("/api/news/market/overview")
+def get_market_news_endpoint():
+    """Get overall market news sentiment."""
+    from news_sentiment import get_market_news
+    return get_market_news()
+
+
+@app.get("/api/news/{symbol}")
+def get_stock_news_endpoint(symbol: str):
+    """Get recent news + sentiment for a specific stock."""
+    from news_sentiment import get_stock_news
+
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+
+    return get_stock_news(symbol)
+
+
+@app.post("/api/news/refresh")
+async def refresh_news(background_tasks: BackgroundTasks):
+    """Trigger news sentiment fetch in the background."""
+    from news_sentiment import fetch_and_score_news
+
+    def _fetch():
+        logger.info("Manual news refresh triggered")
+        fetch_and_score_news()
+        logger.info("Manual news refresh complete")
+
+    background_tasks.add_task(_fetch)
+    return {"status": "News sentiment refresh started"}
+
+
 @app.post("/api/retrain")
 async def retrain_models(background_tasks: BackgroundTasks):
-    """Trigger model retraining in the background."""
+    """Trigger model retraining in the background (XGBoost ensemble + LSTM)."""
     from model import train_all_models
+    from lstm_model import train_all_lstm, HAS_TORCH
 
     def _retrain():
         logger.info("Manual retrain triggered")
         train_all_models(optimize=False)
+        if HAS_TORCH:
+            logger.info("Training LSTM models...")
+            train_all_lstm()
         logger.info("Manual retrain complete")
 
     background_tasks.add_task(_retrain)
-    return {"status": "Retraining started in background"}
+    return {"status": "Retraining started in background (ensemble + LSTM)"}
+
+
+@app.post("/api/meta-model/train")
+async def train_meta_model_endpoint(background_tasks: BackgroundTasks):
+    """Train the meta-model on historical signal data."""
+    from meta_model import train_meta_model
+
+    def _train():
+        logger.info("Meta-model training triggered")
+        result = train_meta_model()
+        if result:
+            logger.info("Meta-model training complete: accuracy=%.4f", result["accuracy"])
+        else:
+            logger.warning("Meta-model training failed (insufficient data)")
+
+    background_tasks.add_task(_train)
+    return {"status": "Meta-model training started"}
+
+
+@app.get("/api/meta-model/metrics")
+def get_meta_model_metrics():
+    """Get meta-model performance metrics."""
+    from meta_model import get_meta_metrics
+    metrics = get_meta_metrics()
+    return {"metrics": metrics, "available": metrics is not None}
 
 
 @app.post("/api/refresh-data")

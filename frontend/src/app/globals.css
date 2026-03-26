@@ -2,15 +2,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0f;
+  --background: #07070d;
   --foreground: #e0e0e0;
-  --surface: #12121a;
-  --surface-2: #1a1a25;
-  --border: #2a2a3a;
+  --surface: #0f0f18;
+  --surface-2: #161625;
+  --border: #1e1e30;
   --green: #00c853;
   --red: #ff1744;
   --amber: #ffab00;
   --cyan: #00e5ff;
+  --purple: #a78bfa;
   --green-dim: rgba(0, 200, 83, 0.1);
   --red-dim: rgba(255, 23, 68, 0.1);
   --amber-dim: rgba(255, 171, 0, 0.1);
@@ -26,6 +27,7 @@
   --color-nred: var(--red);
   --color-amber: var(--amber);
   --color-cyan: var(--cyan);
+  --color-purple: var(--purple);
   --color-green-dim: var(--green-dim);
   --color-red-dim: var(--red-dim);
   --color-amber-dim: var(--amber-dim);
@@ -39,19 +41,187 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+/* Subtle radial gradient background overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 229, 255, 0.03), transparent),
+              radial-gradient(ellipse 60% 40% at 80% 50%, rgba(167, 139, 250, 0.02), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
 
-/* Signal glow effects */
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.3); }
+
+/* ─── Glass Card ─── */
+.glass-card {
+  background: rgba(15, 15, 24, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.glass-card-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.glass-card-hover:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Gradient Border (top accent) ─── */
+.gradient-border-green {
+  position: relative;
+}
+.gradient-border-green::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 200, 83, 0.6), transparent);
+  border-radius: 1px 1px 0 0;
+}
+
+.gradient-border-red {
+  position: relative;
+}
+.gradient-border-red::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 23, 68, 0.6), transparent);
+  border-radius: 1px 1px 0 0;
+}
+
+.gradient-border-cyan {
+  position: relative;
+}
+.gradient-border-cyan::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.5), transparent);
+  border-radius: 1px 1px 0 0;
+}
+
+/* ─── Signal Glow Effects ─── */
 .glow-green {
-  box-shadow: 0 0 8px rgba(0, 200, 83, 0.4), 0 0 20px rgba(0, 200, 83, 0.1);
+  box-shadow: 0 0 12px rgba(0, 200, 83, 0.3), 0 0 24px rgba(0, 200, 83, 0.08);
 }
 .glow-red {
-  box-shadow: 0 0 8px rgba(255, 23, 68, 0.4), 0 0 20px rgba(255, 23, 68, 0.1);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.3), 0 0 24px rgba(255, 23, 68, 0.08);
 }
 .glow-amber {
-  box-shadow: 0 0 8px rgba(255, 171, 0, 0.4), 0 0 20px rgba(255, 171, 0, 0.1);
+  box-shadow: 0 0 12px rgba(255, 171, 0, 0.3), 0 0 24px rgba(255, 171, 0, 0.08);
+}
+
+/* Card-level directional glow */
+.card-glow-green {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 200, 83, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+.card-glow-red {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 23, 68, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ─── Shimmer Loading ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ─── Fade In Animations ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+.animate-fade-in-d1 { animation-delay: 0.05s; }
+.animate-fade-in-d2 { animation-delay: 0.1s; }
+.animate-fade-in-d3 { animation-delay: 0.15s; }
+.animate-fade-in-d4 { animation-delay: 0.2s; }
+.animate-fade-in-d5 { animation-delay: 0.25s; }
+.animate-fade-in-d6 { animation-delay: 0.3s; }
+
+/* ─── Pulse Ring (LIVE indicator) ─── */
+@keyframes pulseRing {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.pulse-ring-green {
+  position: relative;
+}
+.pulse-ring-green::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(0, 200, 83, 0.6);
+  animation: pulseRing 1.5s ease-out infinite;
+}
+
+/* ─── Gradient Text ─── */
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #00e5ff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Section Divider ─── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  margin: 1.5rem 0;
+}
+
+/* ─── Confidence Bar ─── */
+.confidence-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.confidence-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.7s ease;
+}
+
+/* ─── Section Header Accent ─── */
+.section-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-header::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--cyan);
+  flex-shrink: 0;
 }

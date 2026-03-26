@@ -1,19 +1,19 @@
 {
   "symbol": "COALINDIA.NS",
-  "accuracy": 0.5072463768115942,
-  "precision": 0.5213032581453634,
-  "recall": 0.7197231833910035,
-  "f1_score": 0.6046511627906976,
+  "accuracy": 0.5317604355716878,
+  "precision": 0.5392156862745098,
+  "recall": 0.7586206896551724,
+  "f1_score": 0.6303724928366762,
   "confusion_matrix": [
     [
-      72,
-      191
+      73,
+      188
     ],
     [
-      81,
-      208
+      70,
+      220
     ]
   ],
   "train_samples": 1719,
-  "test_samples": 552
+  "test_samples": 551
 }

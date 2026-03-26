@@ -1,19 +1,19 @@
 {
   "symbol": "BHARTIARTL.NS",
-  "accuracy": 0.47282608695652173,
-  "precision": 0.5,
-  "recall": 0.11683848797250859,
-  "f1_score": 0.1894150417827298,
+  "accuracy": 0.49727767695099817,
+  "precision": 0.5882352941176471,
+  "recall": 0.17123287671232876,
+  "f1_score": 0.26525198938992045,
   "confusion_matrix": [
     [
-      227,
-      34
+      224,
+      35
     ],
     [
-      257,
-      34
+      242,
+      50
     ]
   ],
   "train_samples": 1719,
-  "test_samples": 552
+  "test_samples": 551
 }
