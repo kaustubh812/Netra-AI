@@ -203,26 +203,47 @@ def get_stock_detail(symbol: str):
 def get_stock_chart(symbol: str, period: str = "1Y"):
     """OHLCV candlestick data with signal markers for charting."""
     import db
+    from data_fetcher import fetch_stock_history
 
     if not symbol.endswith(".NS") and not symbol.startswith("^"):
         symbol = symbol + ".NS"
 
-    price_df = db.get_stock_data(symbol)
-    if price_df.empty:
-        raise HTTPException(status_code=404, detail=f"No data for {symbol}")
+    # Intraday periods fetched live from yfinance (not stored in DB)
+    intraday_map = {
+        "1D": ("1d", "1m"),
+        "1W": ("5d", "5m"),
+    }
+    # Daily periods from DB
+    daily_map = {"1M": 22, "3M": 66, "6M": 132, "1Y": 252, "5Y": 1260}
 
-    # Filter by period
-    period_map = {"1M": 22, "3M": 66, "6M": 132, "1Y": 252, "5Y": 1260}
-    days = period_map.get(period, 252)
-    price_df = price_df.tail(days)
+    is_intraday = period in intraday_map
 
-    # Get signals for overlay
+    if is_intraday:
+        yf_period, yf_interval = intraday_map[period]
+        price_df = fetch_stock_history(symbol, period=yf_period, interval=yf_interval)
+        if price_df.empty:
+            raise HTTPException(status_code=404, detail=f"No intraday data for {symbol}")
+    else:
+        price_df = db.get_stock_data(symbol)
+        if price_df.empty:
+            raise HTTPException(status_code=404, detail=f"No data for {symbol}")
+        days = daily_map.get(period, 252)
+        price_df = price_df.tail(days)
+
+    # Get signals for overlay (daily signals only)
+    days = daily_map.get(period, 22)
     signals_df = db.get_signal_history(symbol, limit=days)
 
     candles = []
     for _, row in price_df.iterrows():
+        if is_intraday:
+            # Unix timestamp for intraday (lightweight-charts needs seconds)
+            ts = pd.Timestamp(row["date"])
+            time_val = int(ts.timestamp())
+        else:
+            time_val = str(row["date"])[:10]
         candles.append({
-            "time": str(row["date"])[:10],
+            "time": time_val,
             "open": round(float(row["open"]), 2),
             "high": round(float(row["high"]), 2),
             "low": round(float(row["low"]), 2),
@@ -230,25 +251,28 @@ def get_stock_chart(symbol: str, period: str = "1Y"):
             "volume": int(row["volume"]) if pd.notna(row["volume"]) else 0,
         })
 
+    # Only show the LATEST signal as a marker on the chart
     markers = []
     if not signals_df.empty:
-        for _, sig in signals_df.iterrows():
-            if sig["signal"] == "BUY":
-                markers.append({
-                    "time": str(sig["date"])[:10],
-                    "position": "belowBar",
-                    "color": "#00c853",
-                    "shape": "arrowUp",
-                    "text": f"BUY ({sig['confidence']:.0f}%)",
-                })
-            elif sig["signal"] == "SELL":
-                markers.append({
-                    "time": str(sig["date"])[:10],
-                    "position": "aboveBar",
-                    "color": "#ff1744",
-                    "shape": "arrowDown",
-                    "text": f"SELL ({sig['confidence']:.0f}%)",
-                })
+        # signals_df is already sorted by date DESC, so first row is the latest
+        sig = signals_df.iloc[0]
+        date_str = str(sig["date"])[:10]
+        if sig["signal"] == "BUY":
+            markers.append({
+                "time": date_str,
+                "position": "belowBar",
+                "color": "#00c853",
+                "shape": "arrowUp",
+                "text": f"BUY ({sig['confidence']:.0f}%)",
+            })
+        elif sig["signal"] == "SELL":
+            markers.append({
+                "time": date_str,
+                "position": "aboveBar",
+                "color": "#ff1744",
+                "shape": "arrowDown",
+                "text": f"SELL ({sig['confidence']:.0f}%)",
+            })
 
     return {"symbol": symbol, "candles": candles, "markers": markers}
 

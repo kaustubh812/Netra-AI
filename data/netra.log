@@ -1255,3 +1255,144 @@ training data did not have the following fields: rsi_5, price_sma50_ratio, fib_p
 2026-03-26 09:19:39,999 [INFO] live_prices: Live prices updated for 52 symbols
 2026-03-26 09:19:40,013 [INFO] live_prices: Live prices updated for 52 symbols
 2026-03-26 09:19:55,572 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-26 18:49:52,936 [WARNING] apscheduler.executors.default: Run time of job "Fetch market data after close (trigger: cron[day_of_week='mon-fri', hour='15', minute='45'], next run at: 2026-03-27 15:45:00 IST)" was missed by 3:04:52.936174
+2026-03-26 18:49:52,956 [WARNING] apscheduler.executors.default: Run time of job "Generate trading signals (trigger: cron[day_of_week='mon-fri', hour='15', minute='50'], next run at: 2026-03-27 15:50:00 IST)" was missed by 2:59:52.955567
+2026-03-26 18:49:52,956 [WARNING] apscheduler.executors.default: Run time of job "Fetch and score news sentiment (trigger: cron[day_of_week='mon-fri', hour='8-15', minute='0,30'], next run at: 2026-03-27 08:00:00 IST)" was missed by 3:19:52.923929
+2026-03-26 19:11:20,198 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-26 19:11:21,243 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-03-26 19:11:25,175 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:11:25,195 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:11:27,684 [INFO] sector_rotation: Recomputed sector momentum for 17 sectors
+2026-03-26 19:11:27,822 [INFO] option_chain: Sentiment from VIX: 24.64, estimated PCR=1.2213
+2026-03-26 19:12:01,357 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:12:01,389 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:13:22,811 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-26 19:13:22,852 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-26 19:13:22,852 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-26 19:13:22,852 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-26 19:13:22,852 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-26 19:13:22,852 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-26 19:13:22,852 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-26 19:13:22,852 [INFO] scheduler: Scheduler configured with 6 jobs
+2026-03-26 19:13:22,855 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-26 19:13:22,856 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-26 19:13:22,856 [INFO] apscheduler.scheduler: Added job "Fetch and score news sentiment" to job store "default"
+2026-03-26 19:13:22,856 [INFO] apscheduler.scheduler: Added job "Pre-market news fetch" to job store "default"
+2026-03-26 19:13:22,856 [INFO] apscheduler.scheduler: Added job "Weekly fundamentals refresh" to job store "default"
+2026-03-26 19:13:22,856 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-26 19:13:22,856 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-26 19:13:22,858 [INFO] main: Netra backend started — scheduler active
+2026-03-26 19:13:46,577 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:13:46,623 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:17:03,658 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-26 19:36:12,190 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-26 19:36:12,819 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-03-26 19:36:16,042 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:36:16,060 [INFO] live_prices: Live prices updated for 52 symbols
+2026-03-26 19:36:18,287 [INFO] option_chain: Sentiment from VIX: 24.64, estimated PCR=1.2213
+2026-03-27 08:21:50,546 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-27 08:21:50,577 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:21:50,577 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:21:50,577 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:21:50,580 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:21:50,580 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:21:50,580 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:21:50,582 [INFO] scheduler: Scheduler configured with 6 jobs
+2026-03-27 08:21:50,582 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-27 08:21:50,582 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-27 08:21:50,582 [INFO] apscheduler.scheduler: Added job "Fetch and score news sentiment" to job store "default"
+2026-03-27 08:21:50,582 [INFO] apscheduler.scheduler: Added job "Pre-market news fetch" to job store "default"
+2026-03-27 08:21:50,585 [INFO] apscheduler.scheduler: Added job "Weekly fundamentals refresh" to job store "default"
+2026-03-27 08:21:50,585 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-27 08:21:50,585 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-27 08:21:50,588 [INFO] main: Netra backend started — scheduler active
+2026-03-27 08:21:52,405 [INFO] data_fetcher: Fetching 1d data for TCS.NS (interval=1m)
+2026-03-27 08:21:54,864 [INFO] data_fetcher: Fetched 375 rows for TCS.NS
+2026-03-27 08:22:02,939 [INFO] data_fetcher: Fetching 5d data for TCS.NS (interval=5m)
+2026-03-27 08:22:03,514 [INFO] data_fetcher: Fetched 375 rows for TCS.NS
+2026-03-27 08:28:37,127 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-03-27 08:28:44,309 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-03-27 08:28:57,374 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:28:58,091 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:28:58,269 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:28:59,201 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:29:00,672 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:29:01,097 [INFO] option_chain: Sentiment from VIX: 24.64, estimated PCR=1.2213
+2026-03-27 08:29:01,817 [INFO] option_chain: Sentiment from VIX: 24.64, estimated PCR=1.2213
+2026-03-27 08:29:06,228 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:29:12,398 [INFO] sector_rotation: Recomputed sector momentum for 17 sectors
+2026-03-27 08:29:12,663 [INFO] sector_rotation: Recomputed sector momentum for 17 sectors
+2026-03-27 08:29:42,263 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:29:42,472 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:30:00,012 [INFO] apscheduler.executors.default: Running job "Fetch and score news sentiment (trigger: cron[day_of_week='mon-fri', hour='8-15', minute='0,30'], next run at: 2026-03-27 08:30:00 IST)" (scheduled at 2026-03-27 08:30:00+05:30)
+2026-03-27 08:30:00,018 [INFO] scheduler: Scheduler: Fetching news sentiment...
+2026-03-27 08:30:00,020 [INFO] apscheduler.executors.default: Running job "Pre-market news fetch (trigger: cron[day_of_week='mon-fri', hour='8', minute='30'], next run at: 2026-03-27 08:30:00 IST)" (scheduled at 2026-03-27 08:30:00+05:30)
+2026-03-27 08:30:00,022 [INFO] scheduler: Scheduler: Fetching news sentiment...
+2026-03-27 08:30:02,824 [INFO] news_sentiment: Fetched 82 total headlines from 4 feeds
+2026-03-27 08:30:02,850 [INFO] news_sentiment: Matched headlines to 6 stocks
+2026-03-27 08:30:03,226 [INFO] news_sentiment: Fetched 82 total headlines from 4 feeds
+2026-03-27 08:30:03,240 [INFO] news_sentiment: Matched headlines to 6 stocks
+2026-03-27 08:30:08,674 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:09,065 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:09,724 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:11,428 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:11,857 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:13,130 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:13,689 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:14,508 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:15,601 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:16,018 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:16,615 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:17,135 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:17,828 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:18,030 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:18,958 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:19,551 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:20,412 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:20,413 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:21,742 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:21,742 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:23,072 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:23,074 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:24,293 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:24,293 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:25,304 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:25,306 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:26,761 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:26,763 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:27,784 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:27,784 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:29,217 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:29,220 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:30,446 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:30,448 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:31,376 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:31,377 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:32,642 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:32,642 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:33,559 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:33,728 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:34,540 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:34,786 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:35,544 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:35,784 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:36,392 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:36,683 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:37,145 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:37,525 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:37,903 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:39,047 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:39,757 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:40,172 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:40,889 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:41,605 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:42,226 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:42,467 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:43,656 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:43,663 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:44,580 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:44,582 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:45,387 [INFO] news_sentiment: News sentiment scored: 31 headlines across 6 stocks
+2026-03-27 08:30:45,387 [INFO] scheduler: Scheduler: News sentiment done — scored 31 headlines
+2026-03-27 08:30:45,387 [INFO] apscheduler.executors.default: Job "Fetch and score news sentiment (trigger: cron[day_of_week='mon-fri', hour='8-15', minute='0,30'], next run at: 2026-03-27 09:00:00 IST)" executed successfully
+2026-03-27 08:30:45,745 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"

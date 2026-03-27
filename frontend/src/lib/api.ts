@@ -47,7 +47,7 @@ export interface Signal {
 }
 
 export interface Candle {
-  time: string;
+  time: string | number;
   open: number;
   high: number;
   low: number;
@@ -56,7 +56,7 @@ export interface Candle {
 }
 
 export interface ChartMarker {
-  time: string;
+  time: string | number;
   position: string;
   color: string;
   shape: string;

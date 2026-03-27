@@ -34,6 +34,9 @@ NIFTY_50_STOCKS = [
     "DIVISLAB.NS", "BPCL.NS", "COALINDIA.NS", "BRITANNIA.NS",
     "APOLLOHOSP.NS", "TATACONSUM.NS", "SBILIFE.NS", "HDFCLIFE.NS",
     "BAJAJ-AUTO.NS", "HEROMOTOCO.NS", "SHRIRAMFIN.NS", "LTIM.NS",
+    # Bank NIFTY additions (not already in NIFTY 50)
+    "BANKBARODA.NS", "PNB.NS", "CANBK.NS", "AUBANK.NS",
+    "FEDERALBNK.NS", "IDFCFIRSTB.NS",
 ]
 
 INDEX_SYMBOLS = ["^NSEI", "^NSEBANK"]
@@ -170,4 +173,10 @@ STOCK_NAME_MAP = {
     "HEROMOTOCO.NS": ["hero motocorp", "hero moto"],
     "SHRIRAMFIN.NS": ["shriram finance", "shriram"],
     "LTIM.NS": ["lt mindtree", "ltimindtree", "mindtree"],
+    "BANKBARODA.NS": ["bank of baroda", "bob"],
+    "PNB.NS": ["pnb", "punjab national bank"],
+    "CANBK.NS": ["canara bank"],
+    "AUBANK.NS": ["au bank", "au small finance"],
+    "FEDERALBNK.NS": ["federal bank"],
+    "IDFCFIRSTB.NS": ["idfc first bank", "idfc first"],
 }

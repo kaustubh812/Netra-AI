@@ -16,17 +16,21 @@ import { api, ChartData } from "@/lib/api";
 
 interface ChartProps {
   symbol: string;
+  entryPrice?: number;
+  stopLoss?: number;
+  targetPrice?: number;
+  signal?: string;
 }
 
-const PERIODS = ["1M", "3M", "6M", "1Y", "5Y"] as const;
+const PERIODS = ["1D", "1W", "1M", "3M", "6M", "1Y", "5Y"] as const;
 
 const PERIOD_ACTIVE = "bg-cyan/15 text-cyan border border-cyan/30 shadow-[0_0_8px_rgba(0,229,255,0.15)]";
 const PERIOD_INACTIVE = "bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground hover:bg-white/[0.06]";
 
-export function StockChart({ symbol }: ChartProps) {
+export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }: ChartProps) {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<IChartApi | null>(null);
-  const [period, setPeriod] = useState<string>("1Y");
+  const [period, setPeriod] = useState<string>("6M");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,7 +59,9 @@ export function StockChart({ symbol }: ChartProps) {
       },
       timeScale: {
         borderColor: "rgba(255,255,255,0.06)",
-        timeVisible: false,
+        timeVisible: period === "1D" || period === "1W",
+        secondsVisible: false,
+        rightOffset: 5,
       },
       rightPriceScale: {
         borderColor: "rgba(255,255,255,0.06)",
@@ -88,7 +94,7 @@ export function StockChart({ symbol }: ChartProps) {
     api.getChart(symbol, period)
       .then((data: ChartData) => {
         const candles: CandlestickData<Time>[] = data.candles.map((c) => ({
-          time: c.time as Time,
+          time: (typeof c.time === "number" ? c.time : c.time) as Time,
           open: c.open,
           high: c.high,
           low: c.low,
@@ -96,7 +102,7 @@ export function StockChart({ symbol }: ChartProps) {
         }));
 
         const volumes: HistogramData<Time>[] = data.candles.map((c) => ({
-          time: c.time as Time,
+          time: (typeof c.time === "number" ? c.time : c.time) as Time,
           value: c.volume,
           color: c.close >= c.open ? "#00c85320" : "#ff174420",
         }));
@@ -104,9 +110,41 @@ export function StockChart({ symbol }: ChartProps) {
         candleSeries.setData(candles);
         volumeSeries.setData(volumes);
 
+        // Add entry/stop-loss/target price lines
+        if (entryPrice) {
+          candleSeries.createPriceLine({
+            price: entryPrice,
+            color: "#00e5ff",
+            lineWidth: 1,
+            lineStyle: 2,
+            axisLabelVisible: true,
+            title: "Entry",
+          });
+        }
+        if (stopLoss) {
+          candleSeries.createPriceLine({
+            price: stopLoss,
+            color: "#ff1744",
+            lineWidth: 1,
+            lineStyle: 2,
+            axisLabelVisible: true,
+            title: "Stop Loss",
+          });
+        }
+        if (targetPrice) {
+          candleSeries.createPriceLine({
+            price: targetPrice,
+            color: "#00c853",
+            lineWidth: 1,
+            lineStyle: 2,
+            axisLabelVisible: true,
+            title: "Target",
+          });
+        }
+
         if (data.markers.length) {
           const markers: SeriesMarker<Time>[] = data.markers.map((m) => ({
-            time: m.time as Time,
+            time: (typeof m.time === "number" ? m.time : m.time) as Time,
             position: m.position as "belowBar" | "aboveBar",
             color: m.color,
             shape: m.shape as "arrowUp" | "arrowDown",
@@ -132,7 +170,7 @@ export function StockChart({ symbol }: ChartProps) {
       chart.remove();
       chartInstance.current = null;
     };
-  }, [symbol, period]);
+  }, [symbol, period, entryPrice, stopLoss, targetPrice, signal]);
 
   return (
     <div className="glass-card rounded-xl p-4 animate-fade-in">
