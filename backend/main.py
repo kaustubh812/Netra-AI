@@ -515,6 +515,107 @@ async def refresh_data(background_tasks: BackgroundTasks):
     return {"status": "Data refresh started in background"}
 
 
+# ─── Intraday Endpoints ─────────────────────────────────────────────────────
+
+@app.get("/api/intraday/signals/latest")
+def get_latest_intraday_signals_endpoint():
+    """Latest intraday signals for all stocks, sorted by confidence."""
+    import db
+    import json as _json
+
+    signals_df = db.get_latest_intraday_signals()
+    if signals_df.empty:
+        return {"signals": [], "count": 0}
+
+    signals = []
+    for _, row in signals_df.iterrows():
+        components = {}
+        if row.get("components"):
+            try:
+                components = _json.loads(row["components"])
+            except Exception:
+                pass
+        signals.append({
+            "symbol": row["symbol"],
+            "name": row["symbol"].replace(".NS", ""),
+            "datetime": str(row["datetime"]),
+            "signal": row["signal"],
+            "confidence": float(row["confidence"]),
+            "composite_score": float(row["composite_score"]),
+            "entry_price": float(row["entry_price"]),
+            "stop_loss": float(row["stop_loss"]),
+            "target_price": float(row["target_price"]),
+            "components": components,
+            "regime": row.get("regime", ""),
+        })
+
+    return {"signals": signals, "count": len(signals)}
+
+
+@app.get("/api/intraday/signal/{symbol}")
+def get_intraday_signal_endpoint(symbol: str):
+    """Get the latest intraday signal for a single stock."""
+    import db
+    import json as _json
+
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+
+    sig = db.get_intraday_signal(symbol)
+    if sig is None:
+        raise HTTPException(status_code=404, detail=f"No intraday signal for {symbol}")
+
+    components = {}
+    if sig.get("components"):
+        try:
+            components = _json.loads(sig["components"])
+        except Exception:
+            pass
+
+    return {
+        "symbol": sig["symbol"],
+        "name": sig["symbol"].replace(".NS", ""),
+        "datetime": str(sig["datetime"]),
+        "signal": sig["signal"],
+        "confidence": float(sig["confidence"]),
+        "composite_score": float(sig["composite_score"]),
+        "entry_price": float(sig["entry_price"]),
+        "stop_loss": float(sig["stop_loss"]),
+        "target_price": float(sig["target_price"]),
+        "components": components,
+        "regime": sig.get("regime", ""),
+    }
+
+
+@app.post("/api/intraday/seed")
+async def seed_intraday_endpoint(background_tasks: BackgroundTasks):
+    """Trigger 60-day intraday data seeding in background."""
+    from data_fetcher import seed_intraday_data
+
+    def _seed():
+        logger.info("Intraday seed triggered")
+        results = seed_intraday_data()
+        total = sum(v for v in results.values() if v > 0)
+        logger.info("Intraday seed complete — %d total rows", total)
+
+    background_tasks.add_task(_seed)
+    return {"status": "Intraday data seeding started in background"}
+
+
+@app.post("/api/intraday/generate")
+async def generate_intraday_endpoint(background_tasks: BackgroundTasks):
+    """Trigger intraday signal generation."""
+    from intraday_signals import generate_all_intraday_signals
+
+    def _generate():
+        logger.info("Manual intraday signal generation triggered")
+        signals = generate_all_intraday_signals()
+        logger.info("Manual intraday signal generation complete — %d signals", len(signals))
+
+    background_tasks.add_task(_generate)
+    return {"status": "Intraday signal generation started in background"}
+
+
 @app.get("/api/training-metrics")
 def get_training_metrics():
     """Get the latest training metrics for all models."""

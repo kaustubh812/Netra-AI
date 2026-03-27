@@ -48,6 +48,31 @@ def _fetch_fundamentals_job():
     logger.info("Scheduler: Fundamentals refresh done")
 
 
+def _fetch_intraday_job():
+    """Job: Fetch latest 5m intraday candles."""
+    from data_fetcher import fetch_latest_intraday_all
+    logger.info("Scheduler: Fetching intraday 5m data...")
+    results = fetch_latest_intraday_all()
+    logger.info("Scheduler: Intraday fetch complete — %s symbols", len(results))
+
+
+def _generate_intraday_signals_job():
+    """Job: Generate intraday signals from 5m candles."""
+    from intraday_signals import generate_all_intraday_signals
+    logger.info("Scheduler: Generating intraday signals...")
+    signals = generate_all_intraday_signals()
+    logger.info("Scheduler: Generated %d intraday signals", len(signals))
+
+
+def _cleanup_intraday_job():
+    """Job: Remove intraday data older than 30 days."""
+    from db import cleanup_old_intraday_data
+    from config import INTRADAY_DATA_RETENTION_DAYS
+    logger.info("Scheduler: Cleaning up old intraday data...")
+    cleanup_old_intraday_data(INTRADAY_DATA_RETENTION_DAYS)
+    logger.info("Scheduler: Intraday cleanup done")
+
+
 def _retrain_models_job():
     """Job: Retrain all models (weekly)."""
     from model import train_all_models
@@ -119,5 +144,34 @@ def create_scheduler() -> BackgroundScheduler:
         replace_existing=True,
     )
 
-    logger.info("Scheduler configured with 6 jobs")
+    # ─── Intraday Jobs ──────────────────────────────────────────────────────
+
+    # Fetch 5m intraday candles every 5 min during market hours
+    scheduler.add_job(
+        _fetch_intraday_job,
+        CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*/5", timezone=IST),
+        id="fetch_intraday",
+        name="Fetch 5m intraday candles",
+        replace_existing=True,
+    )
+
+    # Generate intraday signals offset by 1 min (at :01, :06, :11, etc.)
+    scheduler.add_job(
+        _generate_intraday_signals_job,
+        CronTrigger(day_of_week="mon-fri", hour="9-15", minute="1,6,11,16,21,26,31,36,41,46,51,56", timezone=IST),
+        id="generate_intraday_signals",
+        name="Generate intraday signals",
+        replace_existing=True,
+    )
+
+    # Cleanup old intraday data every Sunday at 5 AM
+    scheduler.add_job(
+        _cleanup_intraday_job,
+        CronTrigger(day_of_week="sun", hour=5, minute=0, timezone=IST),
+        id="cleanup_intraday",
+        name="Cleanup old intraday data",
+        replace_existing=True,
+    )
+
+    logger.info("Scheduler configured with 9 jobs")
     return scheduler

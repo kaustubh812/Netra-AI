@@ -144,10 +144,40 @@ def init_db():
                 UNIQUE(symbol, headline)
             );
 
+            CREATE TABLE IF NOT EXISTS intraday_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                datetime TEXT NOT NULL,
+                open REAL,
+                high REAL,
+                low REAL,
+                close REAL,
+                volume INTEGER,
+                UNIQUE(symbol, datetime)
+            );
+
+            CREATE TABLE IF NOT EXISTS intraday_signals (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                datetime TEXT NOT NULL,
+                signal TEXT NOT NULL,
+                confidence REAL,
+                composite_score REAL,
+                entry_price REAL,
+                stop_loss REAL,
+                target_price REAL,
+                components TEXT,
+                regime TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(symbol, datetime)
+            );
+
             CREATE INDEX IF NOT EXISTS idx_stock_data_symbol_date ON stock_data(symbol, date);
             CREATE INDEX IF NOT EXISTS idx_indicators_symbol_date ON indicators(symbol, date);
             CREATE INDEX IF NOT EXISTS idx_signals_symbol_date ON signals(symbol, date);
             CREATE INDEX IF NOT EXISTS idx_news_sentiment_symbol ON news_sentiment(symbol, fetched_at);
+            CREATE INDEX IF NOT EXISTS idx_intraday_data_symbol_dt ON intraday_data(symbol, datetime);
+            CREATE INDEX IF NOT EXISTS idx_intraday_signals_symbol_dt ON intraday_signals(symbol, datetime);
         """)
     logger.info("Database initialized at %s", DB_PATH)
 
@@ -411,6 +441,98 @@ def get_market_news_sentiment(hours: int = 24) -> list[dict]:
     with get_db() as conn:
         rows = conn.execute(query, (f"-{hours} hours",)).fetchall()
     return [dict(r) for r in rows]
+
+
+# ─── Intraday Data Helpers ──────────────────────────────────────────────────
+
+def save_intraday_data(df: pd.DataFrame, symbol: str):
+    """Save 5-minute OHLCV data to intraday_data table (upsert)."""
+    if df.empty:
+        return
+    with get_db() as conn:
+        for _, row in df.iterrows():
+            conn.execute(
+                """INSERT OR REPLACE INTO intraday_data (symbol, datetime, open, high, low, close, volume)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (symbol, str(row["datetime"]), row["open"], row["high"], row["low"], row["close"], row["volume"])
+            )
+    logger.info("Saved %d intraday rows for %s", len(df), symbol)
+
+
+def get_intraday_data(symbol: str, limit: int = 500) -> pd.DataFrame:
+    """Load intraday 5m candles for a symbol from DB, most recent first."""
+    query = "SELECT datetime, open, high, low, close, volume FROM intraday_data WHERE symbol = ? ORDER BY datetime DESC LIMIT ?"
+    with get_db() as conn:
+        df = pd.read_sql_query(query, conn, params=[symbol, limit])
+    if not df.empty:
+        df = df.iloc[::-1].reset_index(drop=True)  # chronological order
+        df["datetime"] = pd.to_datetime(df["datetime"])
+    return df
+
+
+def get_latest_intraday_datetime(symbol: str) -> Optional[str]:
+    """Get the most recent datetime we have intraday data for a symbol."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT MAX(datetime) as max_dt FROM intraday_data WHERE symbol = ?", (symbol,)
+        ).fetchone()
+    if row and row["max_dt"]:
+        return row["max_dt"]
+    return None
+
+
+def save_intraday_signal(symbol: str, dt: str, signal: str, confidence: float,
+                         composite: float, entry: float, sl: float, target: float,
+                         components: str, regime: str):
+    """Save a generated intraday signal."""
+    with get_db() as conn:
+        conn.execute(
+            """INSERT OR REPLACE INTO intraday_signals
+               (symbol, datetime, signal, confidence, composite_score, entry_price,
+                stop_loss, target_price, components, regime)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (symbol, dt, signal, confidence, composite, entry, sl, target, components, regime),
+        )
+
+
+def get_latest_intraday_signals() -> pd.DataFrame:
+    """Get the most recent intraday signal for each stock."""
+    query = """
+        SELECT s.* FROM intraday_signals s
+        INNER JOIN (
+            SELECT symbol, MAX(datetime) as max_dt FROM intraday_signals GROUP BY symbol
+        ) latest ON s.symbol = latest.symbol AND s.datetime = latest.max_dt
+        ORDER BY s.confidence DESC
+    """
+    with get_db() as conn:
+        return pd.read_sql_query(query, conn)
+
+
+def get_intraday_signal(symbol: str) -> Optional[dict]:
+    """Get the latest intraday signal for a single stock."""
+    query = """
+        SELECT * FROM intraday_signals WHERE symbol = ?
+        ORDER BY datetime DESC LIMIT 1
+    """
+    with get_db() as conn:
+        row = conn.execute(query, (symbol,)).fetchone()
+    if row:
+        return dict(row)
+    return None
+
+
+def cleanup_old_intraday_data(days: int = 30):
+    """Remove intraday data older than N days."""
+    with get_db() as conn:
+        conn.execute(
+            "DELETE FROM intraday_data WHERE datetime < datetime('now', ?)",
+            (f"-{days} days",),
+        )
+        conn.execute(
+            "DELETE FROM intraday_signals WHERE datetime < datetime('now', ?)",
+            (f"-{days} days",),
+        )
+    logger.info("Cleaned up intraday data older than %d days", days)
 
 
 # Initialize DB on import

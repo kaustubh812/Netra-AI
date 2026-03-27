@@ -14,6 +14,7 @@ import pytz
 from config import (
     ALL_SYMBOLS, NIFTY_50_STOCKS, INDEX_SYMBOLS,
     HISTORY_PERIOD, INTRADAY_PERIOD, INTRADAY_INTERVAL, TIMEZONE,
+    INTRADAY_CANDLE_INTERVAL, INTRADAY_SEED_PERIOD,
 )
 import db
 
@@ -141,6 +142,84 @@ def fetch_all_stocks(incremental: bool = True):
 def fetch_intraday(symbol: str) -> pd.DataFrame:
     """Fetch 1-minute intraday candles (last 60 days from yfinance)."""
     return fetch_stock_history(symbol, period=INTRADAY_PERIOD, interval=INTRADAY_INTERVAL)
+
+
+# ─── 5-Minute Intraday Data (for Intraday Signal Engine) ────────────────────
+
+def fetch_intraday_5m(symbol: str, period: str = INTRADAY_SEED_PERIOD) -> pd.DataFrame:
+    """
+    Fetch 5-minute candles from yfinance.
+    Returns DataFrame with columns: datetime, open, high, low, close, volume.
+    """
+    try:
+        logger.info("Fetching 5m data for %s (period=%s)", symbol, period)
+        ticker = yf.Ticker(symbol)
+        df = ticker.history(period=period, interval=INTRADAY_CANDLE_INTERVAL, auto_adjust=True)
+
+        if df.empty:
+            logger.warning("No 5m data returned for %s", symbol)
+            return pd.DataFrame()
+
+        df = df.reset_index()
+        df.columns = [c.lower().replace(" ", "_") for c in df.columns]
+
+        # yfinance returns 'Datetime' index for intraday
+        if "datetime" in df.columns:
+            pass  # already named correctly
+        elif "date" in df.columns:
+            df = df.rename(columns={"date": "datetime"})
+
+        keep_cols = ["datetime", "open", "high", "low", "close", "volume"]
+        df = df[[c for c in keep_cols if c in df.columns]]
+        df = df.dropna(subset=["open", "high", "low", "close"])
+
+        # Ensure datetime is tz-aware IST string for storage
+        df["datetime"] = pd.to_datetime(df["datetime"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+
+        logger.info("Fetched %d 5m rows for %s", len(df), symbol)
+        return df
+
+    except Exception as e:
+        logger.error("Error fetching 5m data for %s: %s", symbol, e)
+        return pd.DataFrame()
+
+
+def fetch_and_store_intraday(symbol: str, period: str = INTRADAY_SEED_PERIOD) -> pd.DataFrame:
+    """Fetch 5m candles and store in the intraday_data table."""
+    df = fetch_intraday_5m(symbol, period=period)
+    if not df.empty:
+        db.save_intraday_data(df, symbol)
+    return df
+
+
+def seed_intraday_data():
+    """One-time seed: fetch 60 days of 5m candles for all NIFTY 50 stocks."""
+    logger.info("Seeding intraday data for %d stocks...", len(NIFTY_50_STOCKS))
+    results = {}
+    for symbol in NIFTY_50_STOCKS:
+        try:
+            df = fetch_and_store_intraday(symbol, period=INTRADAY_SEED_PERIOD)
+            results[symbol] = len(df) if not df.empty else 0
+        except Exception as e:
+            logger.error("Failed to seed intraday for %s: %s", symbol, e)
+            results[symbol] = -1
+    total = sum(v for v in results.values() if v > 0)
+    logger.info("Intraday seed complete — %d total rows stored", total)
+    return results
+
+
+def fetch_latest_intraday_all():
+    """Incremental fetch: get last 1 day of 5m candles for all stocks."""
+    logger.info("Fetching latest intraday data for all stocks...")
+    results = {}
+    for symbol in NIFTY_50_STOCKS:
+        try:
+            df = fetch_and_store_intraday(symbol, period="1d")
+            results[symbol] = len(df) if not df.empty else 0
+        except Exception as e:
+            logger.error("Failed to fetch intraday for %s: %s", symbol, e)
+            results[symbol] = -1
+    return results
 
 
 def get_stock_df(symbol: str) -> pd.DataFrame:

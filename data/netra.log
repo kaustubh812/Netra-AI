@@ -1396,3 +1396,785 @@ training data did not have the following fields: rsi_5, price_sma50_ratio, fib_p
 2026-03-27 08:30:45,387 [INFO] scheduler: Scheduler: News sentiment done — scored 31 headlines
 2026-03-27 08:30:45,387 [INFO] apscheduler.executors.default: Job "Fetch and score news sentiment (trigger: cron[day_of_week='mon-fri', hour='8-15', minute='0,30'], next run at: 2026-03-27 09:00:00 IST)" executed successfully
 2026-03-27 08:30:45,745 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:46,493 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 08:30:47,340 [INFO] news_sentiment: News sentiment scored: 31 headlines across 6 stocks
+2026-03-27 08:30:47,343 [INFO] scheduler: Scheduler: News sentiment done — scored 31 headlines
+2026-03-27 08:30:47,343 [INFO] apscheduler.executors.default: Job "Pre-market news fetch (trigger: cron[day_of_week='mon-fri', hour='8', minute='30'], next run at: 2026-03-30 08:30:00 IST)" executed successfully
+2026-03-27 08:41:11,390 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:41:11,885 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-03-27 08:41:18,046 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:41:18,061 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:41:20,206 [INFO] option_chain: Sentiment from VIX: 24.64, estimated PCR=1.2213
+2026-03-27 08:44:23,414 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:48:06,050 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:48:09,903 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:48:28,595 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:48:28,614 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:48:28,665 [INFO] live_prices: Live prices updated for 58 symbols
+2026-03-27 08:48:31,549 [INFO] option_chain: Sentiment from VIX: 24.64, estimated PCR=1.2213
+2026-03-27 08:48:31,563 [INFO] option_chain: Sentiment from VIX: 24.64, estimated PCR=1.2213
+2026-03-27 08:51:23,005 [INFO] main: Manual data refresh triggered
+2026-03-27 08:51:23,026 [INFO] data_fetcher: Incremental fetch for RELIANCE.NS from 2026-03-26
+2026-03-27 08:51:23,440 [INFO] db: Saved 1 rows of stock data for RELIANCE.NS
+2026-03-27 08:51:23,440 [INFO] data_fetcher: Saved 1 new rows for RELIANCE.NS
+2026-03-27 08:51:23,449 [INFO] data_fetcher: Incremental fetch for TCS.NS from 2026-03-26
+2026-03-27 08:51:23,626 [INFO] db: Saved 1 rows of stock data for TCS.NS
+2026-03-27 08:51:23,626 [INFO] data_fetcher: Saved 1 new rows for TCS.NS
+2026-03-27 08:51:23,637 [INFO] data_fetcher: Incremental fetch for HDFCBANK.NS from 2026-03-26
+2026-03-27 08:51:23,815 [INFO] db: Saved 1 rows of stock data for HDFCBANK.NS
+2026-03-27 08:51:23,815 [INFO] data_fetcher: Saved 1 new rows for HDFCBANK.NS
+2026-03-27 08:51:23,825 [INFO] data_fetcher: Incremental fetch for INFY.NS from 2026-03-26
+2026-03-27 08:51:24,114 [INFO] db: Saved 1 rows of stock data for INFY.NS
+2026-03-27 08:51:24,116 [INFO] data_fetcher: Saved 1 new rows for INFY.NS
+2026-03-27 08:51:24,124 [INFO] data_fetcher: Incremental fetch for ICICIBANK.NS from 2026-03-26
+2026-03-27 08:51:24,393 [INFO] db: Saved 1 rows of stock data for ICICIBANK.NS
+2026-03-27 08:51:24,393 [INFO] data_fetcher: Saved 1 new rows for ICICIBANK.NS
+2026-03-27 08:51:24,399 [INFO] data_fetcher: Incremental fetch for SBIN.NS from 2026-03-26
+2026-03-27 08:51:24,706 [INFO] db: Saved 1 rows of stock data for SBIN.NS
+2026-03-27 08:51:24,706 [INFO] data_fetcher: Saved 1 new rows for SBIN.NS
+2026-03-27 08:51:24,714 [INFO] data_fetcher: Incremental fetch for BHARTIARTL.NS from 2026-03-26
+2026-03-27 08:51:24,980 [INFO] db: Saved 1 rows of stock data for BHARTIARTL.NS
+2026-03-27 08:51:24,980 [INFO] data_fetcher: Saved 1 new rows for BHARTIARTL.NS
+2026-03-27 08:51:24,986 [INFO] data_fetcher: Incremental fetch for ITC.NS from 2026-03-26
+2026-03-27 08:51:25,283 [INFO] db: Saved 1 rows of stock data for ITC.NS
+2026-03-27 08:51:25,283 [INFO] data_fetcher: Saved 1 new rows for ITC.NS
+2026-03-27 08:51:25,295 [INFO] data_fetcher: Incremental fetch for KOTAKBANK.NS from 2026-03-26
+2026-03-27 08:51:25,564 [INFO] db: Saved 1 rows of stock data for KOTAKBANK.NS
+2026-03-27 08:51:25,564 [INFO] data_fetcher: Saved 1 new rows for KOTAKBANK.NS
+2026-03-27 08:51:25,572 [INFO] data_fetcher: Incremental fetch for LT.NS from 2026-03-26
+2026-03-27 08:51:25,831 [INFO] db: Saved 1 rows of stock data for LT.NS
+2026-03-27 08:51:25,831 [INFO] data_fetcher: Saved 1 new rows for LT.NS
+2026-03-27 08:51:25,839 [INFO] data_fetcher: Incremental fetch for HINDUNILVR.NS from 2026-03-26
+2026-03-27 08:51:26,106 [INFO] db: Saved 1 rows of stock data for HINDUNILVR.NS
+2026-03-27 08:51:26,106 [INFO] data_fetcher: Saved 1 new rows for HINDUNILVR.NS
+2026-03-27 08:51:26,115 [INFO] data_fetcher: Incremental fetch for AXISBANK.NS from 2026-03-26
+2026-03-27 08:51:26,495 [INFO] db: Saved 1 rows of stock data for AXISBANK.NS
+2026-03-27 08:51:26,497 [INFO] data_fetcher: Saved 1 new rows for AXISBANK.NS
+2026-03-27 08:51:26,501 [INFO] data_fetcher: Incremental fetch for BAJFINANCE.NS from 2026-03-26
+2026-03-27 08:51:26,657 [INFO] db: Saved 1 rows of stock data for BAJFINANCE.NS
+2026-03-27 08:51:26,657 [INFO] data_fetcher: Saved 1 new rows for BAJFINANCE.NS
+2026-03-27 08:51:26,666 [INFO] data_fetcher: Incremental fetch for MARUTI.NS from 2026-03-26
+2026-03-27 08:51:26,822 [INFO] db: Saved 1 rows of stock data for MARUTI.NS
+2026-03-27 08:51:26,822 [INFO] data_fetcher: Saved 1 new rows for MARUTI.NS
+2026-03-27 08:51:26,829 [INFO] data_fetcher: Incremental fetch for TRENT.NS from 2026-03-26
+2026-03-27 08:51:27,006 [INFO] db: Saved 1 rows of stock data for TRENT.NS
+2026-03-27 08:51:27,006 [INFO] data_fetcher: Saved 1 new rows for TRENT.NS
+2026-03-27 08:51:27,013 [INFO] data_fetcher: Incremental fetch for SUNPHARMA.NS from 2026-03-26
+2026-03-27 08:51:27,192 [INFO] db: Saved 1 rows of stock data for SUNPHARMA.NS
+2026-03-27 08:51:27,192 [INFO] data_fetcher: Saved 1 new rows for SUNPHARMA.NS
+2026-03-27 08:51:27,200 [INFO] data_fetcher: Incremental fetch for TITAN.NS from 2026-03-26
+2026-03-27 08:51:27,379 [INFO] db: Saved 1 rows of stock data for TITAN.NS
+2026-03-27 08:51:27,379 [INFO] data_fetcher: Saved 1 new rows for TITAN.NS
+2026-03-27 08:51:27,387 [INFO] data_fetcher: Incremental fetch for ONGC.NS from 2026-03-26
+2026-03-27 08:51:27,555 [INFO] db: Saved 1 rows of stock data for ONGC.NS
+2026-03-27 08:51:27,555 [INFO] data_fetcher: Saved 1 new rows for ONGC.NS
+2026-03-27 08:51:27,563 [INFO] data_fetcher: Incremental fetch for NTPC.NS from 2026-03-26
+2026-03-27 08:51:27,729 [INFO] db: Saved 1 rows of stock data for NTPC.NS
+2026-03-27 08:51:27,729 [INFO] data_fetcher: Saved 1 new rows for NTPC.NS
+2026-03-27 08:51:27,737 [INFO] data_fetcher: Incremental fetch for ADANIENT.NS from 2026-03-26
+2026-03-27 08:51:27,906 [INFO] db: Saved 1 rows of stock data for ADANIENT.NS
+2026-03-27 08:51:27,906 [INFO] data_fetcher: Saved 1 new rows for ADANIENT.NS
+2026-03-27 08:51:27,910 [INFO] data_fetcher: Incremental fetch for ADANIPORTS.NS from 2026-03-26
+2026-03-27 08:51:28,067 [INFO] db: Saved 1 rows of stock data for ADANIPORTS.NS
+2026-03-27 08:51:28,067 [INFO] data_fetcher: Saved 1 new rows for ADANIPORTS.NS
+2026-03-27 08:51:28,074 [INFO] data_fetcher: Incremental fetch for POWERGRID.NS from 2026-03-26
+2026-03-27 08:51:28,224 [INFO] db: Saved 1 rows of stock data for POWERGRID.NS
+2026-03-27 08:51:28,224 [INFO] data_fetcher: Saved 1 new rows for POWERGRID.NS
+2026-03-27 08:51:28,232 [INFO] data_fetcher: Incremental fetch for M&M.NS from 2026-03-26
+2026-03-27 08:51:28,402 [INFO] db: Saved 1 rows of stock data for M&M.NS
+2026-03-27 08:51:28,402 [INFO] data_fetcher: Saved 1 new rows for M&M.NS
+2026-03-27 08:51:28,410 [INFO] data_fetcher: Incremental fetch for ASIANPAINT.NS from 2026-03-26
+2026-03-27 08:51:28,587 [INFO] db: Saved 1 rows of stock data for ASIANPAINT.NS
+2026-03-27 08:51:28,587 [INFO] data_fetcher: Saved 1 new rows for ASIANPAINT.NS
+2026-03-27 08:51:28,597 [INFO] data_fetcher: Incremental fetch for NESTLEIND.NS from 2026-03-26
+2026-03-27 08:51:28,856 [INFO] db: Saved 1 rows of stock data for NESTLEIND.NS
+2026-03-27 08:51:28,856 [INFO] data_fetcher: Saved 1 new rows for NESTLEIND.NS
+2026-03-27 08:51:28,866 [INFO] data_fetcher: Incremental fetch for ULTRACEMCO.NS from 2026-03-26
+2026-03-27 08:51:29,023 [INFO] db: Saved 1 rows of stock data for ULTRACEMCO.NS
+2026-03-27 08:51:29,024 [INFO] data_fetcher: Saved 1 new rows for ULTRACEMCO.NS
+2026-03-27 08:51:29,029 [INFO] data_fetcher: Incremental fetch for JSWSTEEL.NS from 2026-03-26
+2026-03-27 08:51:29,190 [INFO] db: Saved 1 rows of stock data for JSWSTEEL.NS
+2026-03-27 08:51:29,191 [INFO] data_fetcher: Saved 1 new rows for JSWSTEEL.NS
+2026-03-27 08:51:29,197 [INFO] data_fetcher: Incremental fetch for TATASTEEL.NS from 2026-03-26
+2026-03-27 08:51:29,363 [INFO] db: Saved 1 rows of stock data for TATASTEEL.NS
+2026-03-27 08:51:29,363 [INFO] data_fetcher: Saved 1 new rows for TATASTEEL.NS
+2026-03-27 08:51:29,371 [INFO] data_fetcher: Incremental fetch for BAJAJFINSV.NS from 2026-03-26
+2026-03-27 08:51:29,525 [INFO] db: Saved 1 rows of stock data for BAJAJFINSV.NS
+2026-03-27 08:51:29,525 [INFO] data_fetcher: Saved 1 new rows for BAJAJFINSV.NS
+2026-03-27 08:51:29,534 [INFO] data_fetcher: Incremental fetch for HCLTECH.NS from 2026-03-26
+2026-03-27 08:51:29,696 [INFO] db: Saved 1 rows of stock data for HCLTECH.NS
+2026-03-27 08:51:29,698 [INFO] data_fetcher: Saved 1 new rows for HCLTECH.NS
+2026-03-27 08:51:29,704 [INFO] data_fetcher: Incremental fetch for WIPRO.NS from 2026-03-26
+2026-03-27 08:51:29,857 [INFO] db: Saved 1 rows of stock data for WIPRO.NS
+2026-03-27 08:51:29,857 [INFO] data_fetcher: Saved 1 new rows for WIPRO.NS
+2026-03-27 08:51:29,864 [INFO] data_fetcher: Incremental fetch for INDUSINDBK.NS from 2026-03-26
+2026-03-27 08:51:30,017 [INFO] db: Saved 1 rows of stock data for INDUSINDBK.NS
+2026-03-27 08:51:30,017 [INFO] data_fetcher: Saved 1 new rows for INDUSINDBK.NS
+2026-03-27 08:51:30,026 [INFO] data_fetcher: Incremental fetch for TECHM.NS from 2026-03-26
+2026-03-27 08:51:30,291 [INFO] db: Saved 1 rows of stock data for TECHM.NS
+2026-03-27 08:51:30,291 [INFO] data_fetcher: Saved 1 new rows for TECHM.NS
+2026-03-27 08:51:30,300 [INFO] data_fetcher: Incremental fetch for HINDALCO.NS from 2026-03-26
+2026-03-27 08:51:30,451 [INFO] db: Saved 1 rows of stock data for HINDALCO.NS
+2026-03-27 08:51:30,451 [INFO] data_fetcher: Saved 1 new rows for HINDALCO.NS
+2026-03-27 08:51:30,457 [INFO] data_fetcher: Incremental fetch for GRASIM.NS from 2026-03-26
+2026-03-27 08:51:30,734 [INFO] db: Saved 1 rows of stock data for GRASIM.NS
+2026-03-27 08:51:30,734 [INFO] data_fetcher: Saved 1 new rows for GRASIM.NS
+2026-03-27 08:51:30,740 [INFO] data_fetcher: Incremental fetch for DRREDDY.NS from 2026-03-26
+2026-03-27 08:51:31,003 [INFO] db: Saved 1 rows of stock data for DRREDDY.NS
+2026-03-27 08:51:31,003 [INFO] data_fetcher: Saved 1 new rows for DRREDDY.NS
+2026-03-27 08:51:31,009 [INFO] data_fetcher: Incremental fetch for CIPLA.NS from 2026-03-26
+2026-03-27 08:51:31,182 [INFO] db: Saved 1 rows of stock data for CIPLA.NS
+2026-03-27 08:51:31,182 [INFO] data_fetcher: Saved 1 new rows for CIPLA.NS
+2026-03-27 08:51:31,191 [INFO] data_fetcher: Incremental fetch for EICHERMOT.NS from 2026-03-26
+2026-03-27 08:51:31,455 [INFO] db: Saved 1 rows of stock data for EICHERMOT.NS
+2026-03-27 08:51:31,455 [INFO] data_fetcher: Saved 1 new rows for EICHERMOT.NS
+2026-03-27 08:51:31,458 [INFO] data_fetcher: Incremental fetch for DIVISLAB.NS from 2026-03-26
+2026-03-27 08:51:31,608 [INFO] db: Saved 1 rows of stock data for DIVISLAB.NS
+2026-03-27 08:51:31,608 [INFO] data_fetcher: Saved 1 new rows for DIVISLAB.NS
+2026-03-27 08:51:31,614 [INFO] data_fetcher: Incremental fetch for BPCL.NS from 2026-03-26
+2026-03-27 08:51:31,790 [INFO] db: Saved 1 rows of stock data for BPCL.NS
+2026-03-27 08:51:31,790 [INFO] data_fetcher: Saved 1 new rows for BPCL.NS
+2026-03-27 08:51:31,799 [INFO] data_fetcher: Incremental fetch for COALINDIA.NS from 2026-03-26
+2026-03-27 08:51:31,981 [INFO] db: Saved 1 rows of stock data for COALINDIA.NS
+2026-03-27 08:51:31,981 [INFO] data_fetcher: Saved 1 new rows for COALINDIA.NS
+2026-03-27 08:51:31,989 [INFO] data_fetcher: Incremental fetch for BRITANNIA.NS from 2026-03-26
+2026-03-27 08:51:32,254 [INFO] db: Saved 1 rows of stock data for BRITANNIA.NS
+2026-03-27 08:51:32,254 [INFO] data_fetcher: Saved 1 new rows for BRITANNIA.NS
+2026-03-27 08:51:32,260 [INFO] data_fetcher: Incremental fetch for APOLLOHOSP.NS from 2026-03-26
+2026-03-27 08:51:32,412 [INFO] db: Saved 1 rows of stock data for APOLLOHOSP.NS
+2026-03-27 08:51:32,412 [INFO] data_fetcher: Saved 1 new rows for APOLLOHOSP.NS
+2026-03-27 08:51:32,412 [INFO] data_fetcher: Incremental fetch for TATACONSUM.NS from 2026-03-26
+2026-03-27 08:51:32,573 [INFO] db: Saved 1 rows of stock data for TATACONSUM.NS
+2026-03-27 08:51:32,573 [INFO] data_fetcher: Saved 1 new rows for TATACONSUM.NS
+2026-03-27 08:51:32,580 [INFO] data_fetcher: Incremental fetch for SBILIFE.NS from 2026-03-26
+2026-03-27 08:51:32,717 [INFO] db: Saved 1 rows of stock data for SBILIFE.NS
+2026-03-27 08:51:32,717 [INFO] data_fetcher: Saved 1 new rows for SBILIFE.NS
+2026-03-27 08:51:32,726 [INFO] data_fetcher: Incremental fetch for HDFCLIFE.NS from 2026-03-26
+2026-03-27 08:51:32,857 [INFO] db: Saved 1 rows of stock data for HDFCLIFE.NS
+2026-03-27 08:51:32,857 [INFO] data_fetcher: Saved 1 new rows for HDFCLIFE.NS
+2026-03-27 08:51:32,862 [INFO] data_fetcher: Incremental fetch for BAJAJ-AUTO.NS from 2026-03-26
+2026-03-27 08:51:33,003 [INFO] db: Saved 1 rows of stock data for BAJAJ-AUTO.NS
+2026-03-27 08:51:33,003 [INFO] data_fetcher: Saved 1 new rows for BAJAJ-AUTO.NS
+2026-03-27 08:51:33,007 [INFO] data_fetcher: Incremental fetch for HEROMOTOCO.NS from 2026-03-26
+2026-03-27 08:51:33,163 [INFO] db: Saved 1 rows of stock data for HEROMOTOCO.NS
+2026-03-27 08:51:33,163 [INFO] data_fetcher: Saved 1 new rows for HEROMOTOCO.NS
+2026-03-27 08:51:33,170 [INFO] data_fetcher: Incremental fetch for SHRIRAMFIN.NS from 2026-03-26
+2026-03-27 08:51:33,328 [INFO] db: Saved 1 rows of stock data for SHRIRAMFIN.NS
+2026-03-27 08:51:33,328 [INFO] data_fetcher: Saved 1 new rows for SHRIRAMFIN.NS
+2026-03-27 08:51:33,337 [INFO] data_fetcher: Incremental fetch for LTIM.NS from 2026-03-26
+2026-03-27 08:51:33,437 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (1d 2026-03-26 -> 2026-03-27)
+2026-03-27 08:51:33,437 [INFO] data_fetcher: No new data for LTIM.NS
+2026-03-27 08:51:33,442 [INFO] data_fetcher: No existing data for BANKBARODA.NS, doing full fetch
+2026-03-27 08:51:33,442 [INFO] data_fetcher: Fetching 10y data for BANKBARODA.NS (interval=1d)
+2026-03-27 08:51:33,761 [INFO] data_fetcher: Fetched 2471 rows for BANKBARODA.NS
+2026-03-27 08:51:33,945 [INFO] db: Saved 2471 rows of stock data for BANKBARODA.NS
+2026-03-27 08:51:33,951 [INFO] data_fetcher: No existing data for PNB.NS, doing full fetch
+2026-03-27 08:51:33,951 [INFO] data_fetcher: Fetching 10y data for PNB.NS (interval=1d)
+2026-03-27 08:51:34,194 [INFO] data_fetcher: Fetched 2471 rows for PNB.NS
+2026-03-27 08:51:34,399 [INFO] db: Saved 2471 rows of stock data for PNB.NS
+2026-03-27 08:51:34,402 [INFO] data_fetcher: No existing data for CANBK.NS, doing full fetch
+2026-03-27 08:51:34,402 [INFO] data_fetcher: Fetching 10y data for CANBK.NS (interval=1d)
+2026-03-27 08:51:34,774 [INFO] data_fetcher: Fetched 2471 rows for CANBK.NS
+2026-03-27 08:51:34,940 [INFO] db: Saved 2471 rows of stock data for CANBK.NS
+2026-03-27 08:51:34,945 [INFO] data_fetcher: No existing data for AUBANK.NS, doing full fetch
+2026-03-27 08:51:34,945 [INFO] data_fetcher: Fetching 10y data for AUBANK.NS (interval=1d)
+2026-03-27 08:51:35,259 [INFO] data_fetcher: Fetched 2153 rows for AUBANK.NS
+2026-03-27 08:51:35,401 [INFO] db: Saved 2153 rows of stock data for AUBANK.NS
+2026-03-27 08:51:35,405 [INFO] data_fetcher: No existing data for FEDERALBNK.NS, doing full fetch
+2026-03-27 08:51:35,405 [INFO] data_fetcher: Fetching 10y data for FEDERALBNK.NS (interval=1d)
+2026-03-27 08:51:35,727 [INFO] data_fetcher: Fetched 2471 rows for FEDERALBNK.NS
+2026-03-27 08:51:35,899 [INFO] db: Saved 2471 rows of stock data for FEDERALBNK.NS
+2026-03-27 08:51:35,904 [INFO] data_fetcher: No existing data for IDFCFIRSTB.NS, doing full fetch
+2026-03-27 08:51:35,905 [INFO] data_fetcher: Fetching 10y data for IDFCFIRSTB.NS (interval=1d)
+2026-03-27 08:51:36,124 [INFO] data_fetcher: Fetched 2471 rows for IDFCFIRSTB.NS
+2026-03-27 08:51:36,290 [INFO] db: Saved 2471 rows of stock data for IDFCFIRSTB.NS
+2026-03-27 08:51:36,295 [INFO] data_fetcher: Incremental fetch for ^NSEI from 2026-03-26
+2026-03-27 08:51:36,423 [INFO] db: Saved 1 rows of stock data for ^NSEI
+2026-03-27 08:51:36,423 [INFO] data_fetcher: Saved 1 new rows for ^NSEI
+2026-03-27 08:51:36,430 [INFO] data_fetcher: Incremental fetch for ^NSEBANK from 2026-03-26
+2026-03-27 08:51:36,559 [INFO] db: Saved 1 rows of stock data for ^NSEBANK
+2026-03-27 08:51:36,559 [INFO] data_fetcher: Saved 1 new rows for ^NSEBANK
+2026-03-27 08:51:37,333 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:43,159 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-03-27 08:51:43,378 [INFO] signals: RELIANCE.NS → HOLD (confidence=47.2%, composite=0.4406)
+2026-03-27 08:51:44,426 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:45,019 [INFO] signals: TCS.NS → BUY (confidence=67.4%, composite=0.7110)
+2026-03-27 08:51:45,892 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:46,326 [INFO] signals: HDFCBANK.NS → HOLD (confidence=35.0%, composite=0.4133)
+2026-03-27 08:51:47,199 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:47,667 [INFO] signals: INFY.NS → HOLD (confidence=59.6%, composite=0.4843)
+2026-03-27 08:51:48,474 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:48,897 [INFO] signals: ICICIBANK.NS → HOLD (confidence=54.5%, composite=0.4582)
+2026-03-27 08:51:49,724 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:50,264 [INFO] signals: SBIN.NS → HOLD (confidence=43.8%, composite=0.4153)
+2026-03-27 08:51:51,208 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:51,650 [INFO] signals: BHARTIARTL.NS → HOLD (confidence=48.1%, composite=0.5489)
+2026-03-27 08:51:52,610 [INFO] indicators: Calculated indicators: 2271 rows with 69 features
+2026-03-27 08:51:53,245 [INFO] signals: ITC.NS → HOLD (confidence=40.8%, composite=0.4300)
+2026-03-27 08:51:54,166 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:54,601 [INFO] signals: KOTAKBANK.NS → HOLD (confidence=35.1%, composite=0.3804)
+2026-03-27 08:51:55,793 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:56,319 [INFO] signals: LT.NS → HOLD (confidence=40.9%, composite=0.4036)
+2026-03-27 08:51:57,337 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:57,938 [INFO] signals: HINDUNILVR.NS → HOLD (confidence=61.6%, composite=0.5138)
+2026-03-27 08:51:58,971 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:51:59,514 [INFO] signals: AXISBANK.NS → HOLD (confidence=45.2%, composite=0.4209)
+2026-03-27 08:52:00,762 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:01,255 [INFO] signals: BAJFINANCE.NS → HOLD (confidence=25.0%, composite=0.3402)
+2026-03-27 08:52:02,862 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:03,381 [INFO] signals: MARUTI.NS → HOLD (confidence=30.0%, composite=0.3598)
+2026-03-27 08:52:04,012 [INFO] indicators: Calculated indicators: 1037 rows with 69 features
+2026-03-27 08:52:04,532 [INFO] signals: TRENT.NS → HOLD (confidence=60.8%, composite=0.5140)
+2026-03-27 08:52:05,864 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:06,407 [INFO] signals: SUNPHARMA.NS → HOLD (confidence=45.3%, composite=0.5658)
+2026-03-27 08:52:07,924 [INFO] indicators: Calculated indicators: 2271 rows with 69 features
+2026-03-27 08:52:08,501 [INFO] signals: TITAN.NS → HOLD (confidence=59.9%, composite=0.4797)
+2026-03-27 08:52:09,833 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:10,584 [INFO] signals: ONGC.NS → HOLD (confidence=33.7%, composite=0.4095)
+2026-03-27 08:52:11,934 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:12,513 [INFO] signals: NTPC.NS → HOLD (confidence=43.5%, composite=0.5716)
+2026-03-27 08:52:13,638 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:14,099 [INFO] signals: ADANIENT.NS → HOLD (confidence=56.1%, composite=0.4644)
+2026-03-27 08:52:15,065 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:15,552 [INFO] signals: ADANIPORTS.NS → HOLD (confidence=25.8%, composite=0.3434)
+2026-03-27 08:52:16,951 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:17,534 [INFO] signals: POWERGRID.NS → HOLD (confidence=37.5%, composite=0.5916)
+2026-03-27 08:52:18,822 [INFO] indicators: Calculated indicators: 2269 rows with 69 features
+2026-03-27 08:52:19,357 [INFO] signals: M&M.NS → HOLD (confidence=55.1%, composite=0.5395)
+2026-03-27 08:52:20,685 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:21,180 [INFO] signals: ASIANPAINT.NS → HOLD (confidence=57.2%, composite=0.5226)
+2026-03-27 08:52:22,149 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:22,572 [INFO] signals: NESTLEIND.NS → HOLD (confidence=60.1%, composite=0.4803)
+2026-03-27 08:52:23,497 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:23,905 [INFO] signals: ULTRACEMCO.NS → HOLD (confidence=58.2%, composite=0.4728)
+2026-03-27 08:52:24,820 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:52:25,247 [INFO] signals: JSWSTEEL.NS → HOLD (confidence=40.9%, composite=0.4035)
+2026-03-27 08:52:26,143 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:26,711 [INFO] signals: TATASTEEL.NS → HOLD (confidence=52.6%, composite=0.4504)
+2026-03-27 08:52:27,604 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:27,985 [INFO] signals: BAJAJFINSV.NS → HOLD (confidence=23.4%, composite=0.3337)
+2026-03-27 08:52:28,799 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:29,199 [INFO] signals: HCLTECH.NS → HOLD (confidence=36.7%, composite=0.5942)
+2026-03-27 08:52:30,165 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:30,650 [INFO] signals: WIPRO.NS → HOLD (confidence=63.4%, composite=0.4955)
+2026-03-27 08:52:31,659 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:32,277 [INFO] signals: INDUSINDBK.NS → HOLD (confidence=42.2%, composite=0.4089)
+2026-03-27 08:52:33,342 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:33,795 [INFO] signals: TECHM.NS → HOLD (confidence=37.3%, composite=0.5922)
+2026-03-27 08:52:34,664 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:35,141 [INFO] signals: HINDALCO.NS → HOLD (confidence=51.8%, composite=0.4473)
+2026-03-27 08:52:36,021 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:36,473 [INFO] signals: GRASIM.NS → HOLD (confidence=51.1%, composite=0.4445)
+2026-03-27 08:52:37,502 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:38,043 [INFO] signals: DRREDDY.NS → HOLD (confidence=51.5%, composite=0.4551)
+2026-03-27 08:52:38,961 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:39,432 [INFO] signals: CIPLA.NS → HOLD (confidence=54.9%, composite=0.4598)
+2026-03-27 08:52:40,320 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:40,718 [INFO] signals: EICHERMOT.NS → SELL (confidence=63.4%, composite=0.3131)
+2026-03-27 08:52:41,528 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:41,935 [INFO] signals: DIVISLAB.NS → HOLD (confidence=57.6%, composite=0.4752)
+2026-03-27 08:52:42,910 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:43,327 [INFO] signals: BPCL.NS → HOLD (confidence=63.1%, composite=0.5076)
+2026-03-27 08:52:44,144 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:44,547 [INFO] signals: COALINDIA.NS → HOLD (confidence=40.7%, composite=0.5810)
+2026-03-27 08:52:45,398 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:52:45,804 [INFO] signals: BRITANNIA.NS → HOLD (confidence=57.8%, composite=0.4711)
+2026-03-27 08:52:46,889 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:47,595 [INFO] signals: APOLLOHOSP.NS → HOLD (confidence=35.5%, composite=0.4016)
+2026-03-27 08:52:48,738 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:49,234 [INFO] signals: TATACONSUM.NS → HOLD (confidence=64.1%, composite=0.5037)
+2026-03-27 08:52:50,159 [INFO] indicators: Calculated indicators: 1895 rows with 69 features
+2026-03-27 08:52:50,663 [INFO] signals: SBILIFE.NS → HOLD (confidence=41.3%, composite=0.4051)
+2026-03-27 08:52:51,549 [INFO] indicators: Calculated indicators: 1863 rows with 69 features
+2026-03-27 08:52:52,056 [INFO] signals: HDFCLIFE.NS → HOLD (confidence=29.8%, composite=0.3593)
+2026-03-27 08:52:53,342 [INFO] indicators: Calculated indicators: 2269 rows with 69 features
+2026-03-27 08:52:53,827 [INFO] signals: BAJAJ-AUTO.NS → HOLD (confidence=41.9%, composite=0.4076)
+2026-03-27 08:52:54,928 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:55,425 [INFO] signals: HEROMOTOCO.NS → HOLD (confidence=50.7%, composite=0.4430)
+2026-03-27 08:52:56,446 [INFO] indicators: Calculated indicators: 2269 rows with 69 features
+2026-03-27 08:52:56,927 [INFO] signals: SHRIRAMFIN.NS → HOLD (confidence=34.8%, composite=0.3793)
+2026-03-27 08:52:57,908 [INFO] indicators: Calculated indicators: 2188 rows with 69 features
+2026-03-27 08:52:58,525 [INFO] signals: LTIM.NS → BUY (confidence=64.9%, composite=0.6660)
+2026-03-27 08:52:59,551 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:52:59,553 [WARNING] model: No trained model found for BANKBARODA.NS at C:\Netra AI\netra\backend\trained_models\BANKBARODA_NS.joblib
+2026-03-27 08:52:59,553 [WARNING] signals: No model prediction for BANKBARODA.NS, using neutral
+2026-03-27 08:52:59,578 [INFO] signals: BANKBARODA.NS → HOLD (confidence=55.6%, composite=0.4625)
+2026-03-27 08:53:00,564 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:53:00,566 [WARNING] model: No trained model found for PNB.NS at C:\Netra AI\netra\backend\trained_models\PNB_NS.joblib
+2026-03-27 08:53:00,566 [WARNING] signals: No model prediction for PNB.NS, using neutral
+2026-03-27 08:53:00,588 [INFO] signals: PNB.NS → HOLD (confidence=52.8%, composite=0.4512)
+2026-03-27 08:53:01,559 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:53:01,561 [WARNING] model: No trained model found for CANBK.NS at C:\Netra AI\netra\backend\trained_models\CANBK_NS.joblib
+2026-03-27 08:53:01,562 [WARNING] signals: No model prediction for CANBK.NS, using neutral
+2026-03-27 08:53:01,589 [INFO] signals: CANBK.NS → HOLD (confidence=53.1%, composite=0.4523)
+2026-03-27 08:53:02,438 [INFO] indicators: Calculated indicators: 1948 rows with 69 features
+2026-03-27 08:53:02,441 [WARNING] model: No trained model found for AUBANK.NS at C:\Netra AI\netra\backend\trained_models\AUBANK_NS.joblib
+2026-03-27 08:53:02,441 [WARNING] signals: No model prediction for AUBANK.NS, using neutral
+2026-03-27 08:53:02,466 [INFO] signals: AUBANK.NS → HOLD (confidence=40.1%, composite=0.4006)
+2026-03-27 08:53:03,614 [INFO] indicators: Calculated indicators: 2270 rows with 69 features
+2026-03-27 08:53:03,616 [WARNING] model: No trained model found for FEDERALBNK.NS at C:\Netra AI\netra\backend\trained_models\FEDERALBNK_NS.joblib
+2026-03-27 08:53:03,616 [WARNING] signals: No model prediction for FEDERALBNK.NS, using neutral
+2026-03-27 08:53:03,651 [INFO] signals: FEDERALBNK.NS → HOLD (confidence=45.4%, composite=0.4218)
+2026-03-27 08:53:04,610 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-03-27 08:53:04,610 [WARNING] model: No trained model found for IDFCFIRSTB.NS at C:\Netra AI\netra\backend\trained_models\IDFCFIRSTB_NS.joblib
+2026-03-27 08:53:04,610 [WARNING] signals: No model prediction for IDFCFIRSTB.NS, using neutral
+2026-03-27 08:53:04,639 [INFO] signals: IDFCFIRSTB.NS → HOLD (confidence=63.1%, composite=0.4923)
+2026-03-27 08:53:04,642 [INFO] main: Manual refresh complete
+2026-03-27 08:55:30,137 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-27 08:55:30,163 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,165 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,165 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,166 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,166 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,166 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,168 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,168 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,169 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:55:30,169 [INFO] scheduler: Scheduler configured with 9 jobs
+2026-03-27 08:55:30,169 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-27 08:55:30,169 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-27 08:55:30,169 [INFO] apscheduler.scheduler: Added job "Fetch and score news sentiment" to job store "default"
+2026-03-27 08:55:30,171 [INFO] apscheduler.scheduler: Added job "Pre-market news fetch" to job store "default"
+2026-03-27 08:55:30,171 [INFO] apscheduler.scheduler: Added job "Weekly fundamentals refresh" to job store "default"
+2026-03-27 08:55:30,171 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-27 08:55:30,171 [INFO] apscheduler.scheduler: Added job "Fetch 5m intraday candles" to job store "default"
+2026-03-27 08:55:30,171 [INFO] apscheduler.scheduler: Added job "Generate intraday signals" to job store "default"
+2026-03-27 08:55:30,172 [INFO] apscheduler.scheduler: Added job "Cleanup old intraday data" to job store "default"
+2026-03-27 08:55:30,172 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-27 08:55:30,174 [INFO] main: Netra backend started — scheduler active
+2026-03-27 08:59:10,177 [INFO] apscheduler.scheduler: Scheduler has been shut down
+2026-03-27 08:59:10,178 [INFO] main: Netra backend shut down
+2026-03-27 08:59:57,461 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-27 08:59:57,475 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,476 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,477 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,477 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,477 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,477 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,479 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,479 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,479 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 08:59:57,479 [INFO] scheduler: Scheduler configured with 9 jobs
+2026-03-27 08:59:57,479 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Fetch and score news sentiment" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Pre-market news fetch" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Weekly fundamentals refresh" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Fetch 5m intraday candles" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Generate intraday signals" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Added job "Cleanup old intraday data" to job store "default"
+2026-03-27 08:59:57,481 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-27 08:59:57,484 [INFO] main: Netra backend started — scheduler active
+2026-03-27 09:00:00,004 [INFO] apscheduler.executors.default: Running job "Fetch 5m intraday candles (trigger: cron[day_of_week='mon-fri', hour='9-15', minute='*/5'], next run at: 2026-03-27 09:00:00 IST)" (scheduled at 2026-03-27 09:00:00+05:30)
+2026-03-27 09:00:00,005 [INFO] apscheduler.executors.default: Running job "Fetch and score news sentiment (trigger: cron[day_of_week='mon-fri', hour='8-15', minute='0,30'], next run at: 2026-03-27 09:00:00 IST)" (scheduled at 2026-03-27 09:00:00+05:30)
+2026-03-27 09:00:01,351 [INFO] scheduler: Scheduler: Fetching intraday 5m data...
+2026-03-27 09:00:01,351 [INFO] data_fetcher: Fetching latest intraday data for all stocks...
+2026-03-27 09:00:01,351 [INFO] data_fetcher: Fetching 5m data for RELIANCE.NS (period=1d)
+2026-03-27 09:00:01,893 [INFO] main: Intraday seed triggered
+2026-03-27 09:00:01,893 [INFO] data_fetcher: Seeding intraday data for 56 stocks...
+2026-03-27 09:00:01,900 [INFO] data_fetcher: Fetching 5m data for RELIANCE.NS (period=60d)
+2026-03-27 09:00:02,682 [INFO] data_fetcher: Fetched 75 5m rows for RELIANCE.NS
+2026-03-27 09:00:02,823 [INFO] db: Saved 75 intraday rows for RELIANCE.NS
+2026-03-27 09:00:02,825 [INFO] data_fetcher: Fetching 5m data for TCS.NS (period=1d)
+2026-03-27 09:00:02,896 [INFO] data_fetcher: Fetched 4348 5m rows for RELIANCE.NS
+2026-03-27 09:00:03,110 [INFO] data_fetcher: Fetched 75 5m rows for TCS.NS
+2026-03-27 09:00:04,130 [INFO] scheduler: Scheduler: Fetching news sentiment...
+2026-03-27 09:00:04,134 [INFO] db: Saved 4348 intraday rows for RELIANCE.NS
+2026-03-27 09:00:04,135 [INFO] data_fetcher: Fetching 5m data for TCS.NS (period=60d)
+2026-03-27 09:00:04,216 [INFO] db: Saved 75 intraday rows for TCS.NS
+2026-03-27 09:00:04,216 [INFO] data_fetcher: Fetching 5m data for HDFCBANK.NS (period=1d)
+2026-03-27 09:00:04,497 [INFO] data_fetcher: Fetched 75 5m rows for HDFCBANK.NS
+2026-03-27 09:00:04,774 [INFO] db: Saved 75 intraday rows for HDFCBANK.NS
+2026-03-27 09:00:04,774 [INFO] data_fetcher: Fetching 5m data for INFY.NS (period=1d)
+2026-03-27 09:00:04,866 [INFO] data_fetcher: Fetched 4349 5m rows for TCS.NS
+2026-03-27 09:00:05,091 [INFO] data_fetcher: Fetched 75 5m rows for INFY.NS
+2026-03-27 09:00:05,278 [INFO] news_sentiment: Fetched 82 total headlines from 4 feeds
+2026-03-27 09:00:05,284 [INFO] news_sentiment: Matched headlines to 7 stocks
+2026-03-27 09:00:05,963 [INFO] db: Saved 4349 intraday rows for TCS.NS
+2026-03-27 09:00:05,964 [INFO] data_fetcher: Fetching 5m data for HDFCBANK.NS (period=60d)
+2026-03-27 09:00:06,100 [INFO] db: Saved 75 intraday rows for INFY.NS
+2026-03-27 09:00:06,102 [INFO] data_fetcher: Fetching 5m data for ICICIBANK.NS (period=1d)
+2026-03-27 09:00:06,316 [INFO] data_fetcher: Fetched 75 5m rows for ICICIBANK.NS
+2026-03-27 09:00:06,408 [INFO] data_fetcher: Fetched 4348 5m rows for HDFCBANK.NS
+2026-03-27 09:00:06,428 [INFO] db: Saved 75 intraday rows for ICICIBANK.NS
+2026-03-27 09:00:06,428 [INFO] data_fetcher: Fetching 5m data for SBIN.NS (period=1d)
+2026-03-27 09:00:06,611 [INFO] data_fetcher: Fetched 75 5m rows for SBIN.NS
+2026-03-27 09:00:07,258 [INFO] db: Saved 4348 intraday rows for HDFCBANK.NS
+2026-03-27 09:00:07,258 [INFO] data_fetcher: Fetching 5m data for INFY.NS (period=60d)
+2026-03-27 09:00:07,328 [INFO] db: Saved 75 intraday rows for SBIN.NS
+2026-03-27 09:00:07,328 [INFO] data_fetcher: Fetching 5m data for BHARTIARTL.NS (period=1d)
+2026-03-27 09:00:07,481 [INFO] data_fetcher: Fetched 75 5m rows for BHARTIARTL.NS
+2026-03-27 09:00:07,510 [INFO] db: Saved 75 intraday rows for BHARTIARTL.NS
+2026-03-27 09:00:07,510 [INFO] data_fetcher: Fetching 5m data for ITC.NS (period=1d)
+2026-03-27 09:00:07,672 [INFO] data_fetcher: Fetched 4349 5m rows for INFY.NS
+2026-03-27 09:00:07,736 [INFO] data_fetcher: Fetched 75 5m rows for ITC.NS
+2026-03-27 09:00:08,119 [INFO] db: Saved 4349 intraday rows for INFY.NS
+2026-03-27 09:00:08,119 [INFO] data_fetcher: Fetching 5m data for ICICIBANK.NS (period=60d)
+2026-03-27 09:00:08,192 [INFO] db: Saved 75 intraday rows for ITC.NS
+2026-03-27 09:00:08,192 [INFO] data_fetcher: Fetching 5m data for KOTAKBANK.NS (period=1d)
+2026-03-27 09:00:08,479 [INFO] data_fetcher: Fetched 4349 5m rows for ICICIBANK.NS
+2026-03-27 09:00:08,514 [INFO] data_fetcher: Fetched 75 5m rows for KOTAKBANK.NS
+2026-03-27 09:00:08,737 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:08,853 [INFO] db: Saved 4349 intraday rows for ICICIBANK.NS
+2026-03-27 09:00:08,853 [INFO] data_fetcher: Fetching 5m data for SBIN.NS (period=60d)
+2026-03-27 09:00:08,963 [INFO] db: Saved 75 intraday rows for KOTAKBANK.NS
+2026-03-27 09:00:08,963 [INFO] data_fetcher: Fetching 5m data for LT.NS (period=1d)
+2026-03-27 09:00:09,092 [INFO] data_fetcher: Fetched 75 5m rows for LT.NS
+2026-03-27 09:00:09,121 [INFO] db: Saved 75 intraday rows for LT.NS
+2026-03-27 09:00:09,122 [INFO] data_fetcher: Fetching 5m data for HINDUNILVR.NS (period=1d)
+2026-03-27 09:00:09,262 [INFO] data_fetcher: Fetched 75 5m rows for HINDUNILVR.NS
+2026-03-27 09:00:09,325 [INFO] db: Saved 75 intraday rows for HINDUNILVR.NS
+2026-03-27 09:00:09,337 [INFO] data_fetcher: Fetching 5m data for AXISBANK.NS (period=1d)
+2026-03-27 09:00:09,378 [INFO] data_fetcher: Fetched 4348 5m rows for SBIN.NS
+2026-03-27 09:00:09,554 [INFO] data_fetcher: Fetched 75 5m rows for AXISBANK.NS
+2026-03-27 09:00:09,788 [INFO] db: Saved 4348 intraday rows for SBIN.NS
+2026-03-27 09:00:09,789 [INFO] data_fetcher: Fetching 5m data for BHARTIARTL.NS (period=60d)
+2026-03-27 09:00:09,815 [INFO] db: Saved 75 intraday rows for AXISBANK.NS
+2026-03-27 09:00:09,816 [INFO] data_fetcher: Fetching 5m data for BAJFINANCE.NS (period=1d)
+2026-03-27 09:00:09,840 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:09,947 [INFO] data_fetcher: Fetched 75 5m rows for BAJFINANCE.NS
+2026-03-27 09:00:09,978 [INFO] db: Saved 75 intraday rows for BAJFINANCE.NS
+2026-03-27 09:00:09,978 [INFO] data_fetcher: Fetching 5m data for MARUTI.NS (period=1d)
+2026-03-27 09:00:10,097 [INFO] data_fetcher: Fetched 4348 5m rows for BHARTIARTL.NS
+2026-03-27 09:00:10,340 [INFO] data_fetcher: Fetched 75 5m rows for MARUTI.NS
+2026-03-27 09:00:10,481 [INFO] db: Saved 4348 intraday rows for BHARTIARTL.NS
+2026-03-27 09:00:10,481 [INFO] data_fetcher: Fetching 5m data for ITC.NS (period=60d)
+2026-03-27 09:00:10,510 [INFO] db: Saved 75 intraday rows for MARUTI.NS
+2026-03-27 09:00:10,510 [INFO] data_fetcher: Fetching 5m data for TRENT.NS (period=1d)
+2026-03-27 09:00:10,650 [INFO] data_fetcher: Fetched 75 5m rows for TRENT.NS
+2026-03-27 09:00:10,677 [INFO] db: Saved 75 intraday rows for TRENT.NS
+2026-03-27 09:00:10,677 [INFO] data_fetcher: Fetching 5m data for SUNPHARMA.NS (period=1d)
+2026-03-27 09:00:10,818 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:11,012 [INFO] data_fetcher: Fetched 4348 5m rows for ITC.NS
+2026-03-27 09:00:11,166 [INFO] data_fetcher: Fetched 75 5m rows for SUNPHARMA.NS
+2026-03-27 09:00:11,548 [INFO] db: Saved 4348 intraday rows for ITC.NS
+2026-03-27 09:00:11,548 [INFO] data_fetcher: Fetching 5m data for KOTAKBANK.NS (period=60d)
+2026-03-27 09:00:11,594 [INFO] db: Saved 75 intraday rows for SUNPHARMA.NS
+2026-03-27 09:00:11,594 [INFO] data_fetcher: Fetching 5m data for TITAN.NS (period=1d)
+2026-03-27 09:00:11,729 [INFO] data_fetcher: Fetched 75 5m rows for TITAN.NS
+2026-03-27 09:00:11,756 [INFO] db: Saved 75 intraday rows for TITAN.NS
+2026-03-27 09:00:11,756 [INFO] data_fetcher: Fetching 5m data for ONGC.NS (period=1d)
+2026-03-27 09:00:11,955 [INFO] data_fetcher: Fetched 75 5m rows for ONGC.NS
+2026-03-27 09:00:12,045 [INFO] data_fetcher: Fetched 4349 5m rows for KOTAKBANK.NS
+2026-03-27 09:00:12,060 [INFO] db: Saved 75 intraday rows for ONGC.NS
+2026-03-27 09:00:12,060 [INFO] data_fetcher: Fetching 5m data for NTPC.NS (period=1d)
+2026-03-27 09:00:12,246 [INFO] data_fetcher: Fetched 75 5m rows for NTPC.NS
+2026-03-27 09:00:12,540 [INFO] db: Saved 4349 intraday rows for KOTAKBANK.NS
+2026-03-27 09:00:12,540 [INFO] data_fetcher: Fetching 5m data for LT.NS (period=60d)
+2026-03-27 09:00:12,594 [INFO] db: Saved 75 intraday rows for NTPC.NS
+2026-03-27 09:00:12,594 [INFO] data_fetcher: Fetching 5m data for ADANIENT.NS (period=1d)
+2026-03-27 09:00:12,835 [INFO] data_fetcher: Fetched 75 5m rows for ADANIENT.NS
+2026-03-27 09:00:12,947 [INFO] db: Saved 75 intraday rows for ADANIENT.NS
+2026-03-27 09:00:12,947 [INFO] data_fetcher: Fetching 5m data for ADANIPORTS.NS (period=1d)
+2026-03-27 09:00:12,947 [INFO] data_fetcher: Fetched 4349 5m rows for LT.NS
+2026-03-27 09:00:12,979 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:13,094 [INFO] data_fetcher: Fetched 75 5m rows for ADANIPORTS.NS
+2026-03-27 09:00:13,375 [INFO] db: Saved 4349 intraday rows for LT.NS
+2026-03-27 09:00:13,376 [INFO] data_fetcher: Fetching 5m data for HINDUNILVR.NS (period=60d)
+2026-03-27 09:00:13,400 [INFO] db: Saved 75 intraday rows for ADANIPORTS.NS
+2026-03-27 09:00:13,400 [INFO] data_fetcher: Fetching 5m data for POWERGRID.NS (period=1d)
+2026-03-27 09:00:13,530 [INFO] data_fetcher: Fetched 75 5m rows for POWERGRID.NS
+2026-03-27 09:00:13,554 [INFO] db: Saved 75 intraday rows for POWERGRID.NS
+2026-03-27 09:00:13,555 [INFO] data_fetcher: Fetching 5m data for M&M.NS (period=1d)
+2026-03-27 09:00:13,728 [INFO] data_fetcher: Fetched 75 5m rows for M&M.NS
+2026-03-27 09:00:13,786 [INFO] data_fetcher: Fetched 4349 5m rows for HINDUNILVR.NS
+2026-03-27 09:00:13,800 [INFO] db: Saved 75 intraday rows for M&M.NS
+2026-03-27 09:00:13,800 [INFO] data_fetcher: Fetching 5m data for ASIANPAINT.NS (period=1d)
+2026-03-27 09:00:13,942 [INFO] data_fetcher: Fetched 75 5m rows for ASIANPAINT.NS
+2026-03-27 09:00:14,245 [INFO] db: Saved 4349 intraday rows for HINDUNILVR.NS
+2026-03-27 09:00:14,245 [INFO] data_fetcher: Fetching 5m data for AXISBANK.NS (period=60d)
+2026-03-27 09:00:14,303 [INFO] db: Saved 75 intraday rows for ASIANPAINT.NS
+2026-03-27 09:00:14,304 [INFO] data_fetcher: Fetching 5m data for NESTLEIND.NS (period=1d)
+2026-03-27 09:00:14,355 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:14,425 [INFO] data_fetcher: Fetched 75 5m rows for NESTLEIND.NS
+2026-03-27 09:00:14,451 [INFO] db: Saved 75 intraday rows for NESTLEIND.NS
+2026-03-27 09:00:14,451 [INFO] data_fetcher: Fetching 5m data for ULTRACEMCO.NS (period=1d)
+2026-03-27 09:00:14,567 [INFO] data_fetcher: Fetched 4349 5m rows for AXISBANK.NS
+2026-03-27 09:00:14,629 [INFO] data_fetcher: Fetched 75 5m rows for ULTRACEMCO.NS
+2026-03-27 09:00:14,947 [INFO] db: Saved 4349 intraday rows for AXISBANK.NS
+2026-03-27 09:00:14,947 [INFO] data_fetcher: Fetching 5m data for BAJFINANCE.NS (period=60d)
+2026-03-27 09:00:14,984 [INFO] db: Saved 75 intraday rows for ULTRACEMCO.NS
+2026-03-27 09:00:14,984 [INFO] data_fetcher: Fetching 5m data for JSWSTEEL.NS (period=1d)
+2026-03-27 09:00:15,120 [INFO] data_fetcher: Fetched 75 5m rows for JSWSTEEL.NS
+2026-03-27 09:00:15,149 [INFO] db: Saved 75 intraday rows for JSWSTEEL.NS
+2026-03-27 09:00:15,149 [INFO] data_fetcher: Fetching 5m data for TATASTEEL.NS (period=1d)
+2026-03-27 09:00:15,211 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:15,345 [INFO] data_fetcher: Fetched 75 5m rows for TATASTEEL.NS
+2026-03-27 09:00:15,413 [INFO] data_fetcher: Fetched 4348 5m rows for BAJFINANCE.NS
+2026-03-27 09:00:15,430 [INFO] db: Saved 75 intraday rows for TATASTEEL.NS
+2026-03-27 09:00:15,430 [INFO] data_fetcher: Fetching 5m data for BAJAJFINSV.NS (period=1d)
+2026-03-27 09:00:15,600 [INFO] data_fetcher: Fetched 75 5m rows for BAJAJFINSV.NS
+2026-03-27 09:00:15,887 [INFO] db: Saved 4348 intraday rows for BAJFINANCE.NS
+2026-03-27 09:00:15,889 [INFO] data_fetcher: Fetching 5m data for MARUTI.NS (period=60d)
+2026-03-27 09:00:15,945 [INFO] db: Saved 75 intraday rows for BAJAJFINSV.NS
+2026-03-27 09:00:15,945 [INFO] data_fetcher: Fetching 5m data for HCLTECH.NS (period=1d)
+2026-03-27 09:00:16,101 [INFO] data_fetcher: Fetched 75 5m rows for HCLTECH.NS
+2026-03-27 09:00:16,126 [INFO] db: Saved 75 intraday rows for HCLTECH.NS
+2026-03-27 09:00:16,126 [INFO] data_fetcher: Fetching 5m data for WIPRO.NS (period=1d)
+2026-03-27 09:00:16,233 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:16,335 [INFO] data_fetcher: Fetched 4349 5m rows for MARUTI.NS
+2026-03-27 09:00:16,362 [INFO] data_fetcher: Fetched 75 5m rows for WIPRO.NS
+2026-03-27 09:00:16,810 [INFO] db: Saved 4349 intraday rows for MARUTI.NS
+2026-03-27 09:00:16,810 [INFO] data_fetcher: Fetching 5m data for TRENT.NS (period=60d)
+2026-03-27 09:00:16,909 [INFO] db: Saved 75 intraday rows for WIPRO.NS
+2026-03-27 09:00:16,912 [INFO] data_fetcher: Fetching 5m data for INDUSINDBK.NS (period=1d)
+2026-03-27 09:00:17,051 [INFO] data_fetcher: Fetched 75 5m rows for INDUSINDBK.NS
+2026-03-27 09:00:17,078 [INFO] db: Saved 75 intraday rows for INDUSINDBK.NS
+2026-03-27 09:00:17,078 [INFO] data_fetcher: Fetching 5m data for TECHM.NS (period=1d)
+2026-03-27 09:00:17,123 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:17,205 [INFO] data_fetcher: Fetched 4348 5m rows for TRENT.NS
+2026-03-27 09:00:17,347 [INFO] data_fetcher: Fetched 75 5m rows for TECHM.NS
+2026-03-27 09:00:17,620 [INFO] db: Saved 4348 intraday rows for TRENT.NS
+2026-03-27 09:00:17,620 [INFO] data_fetcher: Fetching 5m data for SUNPHARMA.NS (period=60d)
+2026-03-27 09:00:17,692 [INFO] db: Saved 75 intraday rows for TECHM.NS
+2026-03-27 09:00:17,693 [INFO] data_fetcher: Fetching 5m data for HINDALCO.NS (period=1d)
+2026-03-27 09:00:17,836 [INFO] data_fetcher: Fetched 75 5m rows for HINDALCO.NS
+2026-03-27 09:00:17,864 [INFO] db: Saved 75 intraday rows for HINDALCO.NS
+2026-03-27 09:00:17,864 [INFO] data_fetcher: Fetching 5m data for GRASIM.NS (period=1d)
+2026-03-27 09:00:17,994 [INFO] data_fetcher: Fetched 4348 5m rows for SUNPHARMA.NS
+2026-03-27 09:00:18,060 [INFO] data_fetcher: Fetched 75 5m rows for GRASIM.NS
+2026-03-27 09:00:18,127 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:18,510 [INFO] db: Saved 4348 intraday rows for SUNPHARMA.NS
+2026-03-27 09:00:18,510 [INFO] data_fetcher: Fetching 5m data for TITAN.NS (period=60d)
+2026-03-27 09:00:18,611 [INFO] db: Saved 75 intraday rows for GRASIM.NS
+2026-03-27 09:00:18,611 [INFO] data_fetcher: Fetching 5m data for DRREDDY.NS (period=1d)
+2026-03-27 09:00:18,751 [INFO] data_fetcher: Fetched 75 5m rows for DRREDDY.NS
+2026-03-27 09:00:18,781 [INFO] db: Saved 75 intraday rows for DRREDDY.NS
+2026-03-27 09:00:18,781 [INFO] data_fetcher: Fetching 5m data for CIPLA.NS (period=1d)
+2026-03-27 09:00:18,899 [INFO] data_fetcher: Fetched 4348 5m rows for TITAN.NS
+2026-03-27 09:00:18,957 [INFO] data_fetcher: Fetched 75 5m rows for CIPLA.NS
+2026-03-27 09:00:19,135 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:19,345 [INFO] db: Saved 4348 intraday rows for TITAN.NS
+2026-03-27 09:00:19,345 [INFO] data_fetcher: Fetching 5m data for ONGC.NS (period=60d)
+2026-03-27 09:00:19,407 [INFO] db: Saved 75 intraday rows for CIPLA.NS
+2026-03-27 09:00:19,407 [INFO] data_fetcher: Fetching 5m data for EICHERMOT.NS (period=1d)
+2026-03-27 09:00:19,531 [INFO] data_fetcher: Fetched 75 5m rows for EICHERMOT.NS
+2026-03-27 09:00:19,558 [INFO] db: Saved 75 intraday rows for EICHERMOT.NS
+2026-03-27 09:00:19,558 [INFO] data_fetcher: Fetching 5m data for DIVISLAB.NS (period=1d)
+2026-03-27 09:00:19,749 [INFO] data_fetcher: Fetched 4348 5m rows for ONGC.NS
+2026-03-27 09:00:19,760 [INFO] data_fetcher: Fetched 75 5m rows for DIVISLAB.NS
+2026-03-27 09:00:20,014 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:20,047 [INFO] db: Saved 4348 intraday rows for ONGC.NS
+2026-03-27 09:00:20,047 [INFO] data_fetcher: Fetching 5m data for NTPC.NS (period=60d)
+2026-03-27 09:00:20,113 [INFO] db: Saved 75 intraday rows for DIVISLAB.NS
+2026-03-27 09:00:20,113 [INFO] data_fetcher: Fetching 5m data for BPCL.NS (period=1d)
+2026-03-27 09:00:20,258 [INFO] data_fetcher: Fetched 75 5m rows for BPCL.NS
+2026-03-27 09:00:20,293 [INFO] db: Saved 75 intraday rows for BPCL.NS
+2026-03-27 09:00:20,293 [INFO] data_fetcher: Fetching 5m data for COALINDIA.NS (period=1d)
+2026-03-27 09:00:20,433 [INFO] data_fetcher: Fetched 4348 5m rows for NTPC.NS
+2026-03-27 09:00:20,480 [INFO] data_fetcher: Fetched 75 5m rows for COALINDIA.NS
+2026-03-27 09:00:20,763 [INFO] db: Saved 4348 intraday rows for NTPC.NS
+2026-03-27 09:00:20,763 [INFO] data_fetcher: Fetching 5m data for ADANIENT.NS (period=60d)
+2026-03-27 09:00:20,799 [INFO] db: Saved 75 intraday rows for COALINDIA.NS
+2026-03-27 09:00:20,799 [INFO] data_fetcher: Fetching 5m data for BRITANNIA.NS (period=1d)
+2026-03-27 09:00:20,943 [INFO] data_fetcher: Fetched 75 5m rows for BRITANNIA.NS
+2026-03-27 09:00:20,968 [INFO] db: Saved 75 intraday rows for BRITANNIA.NS
+2026-03-27 09:00:20,968 [INFO] data_fetcher: Fetching 5m data for APOLLOHOSP.NS (period=1d)
+2026-03-27 09:00:21,126 [INFO] data_fetcher: Fetched 75 5m rows for APOLLOHOSP.NS
+2026-03-27 09:00:21,171 [INFO] data_fetcher: Fetched 4348 5m rows for ADANIENT.NS
+2026-03-27 09:00:21,187 [INFO] db: Saved 75 intraday rows for APOLLOHOSP.NS
+2026-03-27 09:00:21,188 [INFO] data_fetcher: Fetching 5m data for TATACONSUM.NS (period=1d)
+2026-03-27 09:00:21,337 [INFO] data_fetcher: Fetched 75 5m rows for TATACONSUM.NS
+2026-03-27 09:00:21,369 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:21,522 [INFO] db: Saved 4348 intraday rows for ADANIENT.NS
+2026-03-27 09:00:21,523 [INFO] data_fetcher: Fetching 5m data for ADANIPORTS.NS (period=60d)
+2026-03-27 09:00:21,533 [INFO] db: Saved 75 intraday rows for TATACONSUM.NS
+2026-03-27 09:00:21,533 [INFO] data_fetcher: Fetching 5m data for SBILIFE.NS (period=1d)
+2026-03-27 09:00:21,680 [INFO] data_fetcher: Fetched 75 5m rows for SBILIFE.NS
+2026-03-27 09:00:21,702 [INFO] db: Saved 75 intraday rows for SBILIFE.NS
+2026-03-27 09:00:21,702 [INFO] data_fetcher: Fetching 5m data for HDFCLIFE.NS (period=1d)
+2026-03-27 09:00:21,857 [INFO] data_fetcher: Fetched 75 5m rows for HDFCLIFE.NS
+2026-03-27 09:00:21,935 [INFO] data_fetcher: Fetched 4348 5m rows for ADANIPORTS.NS
+2026-03-27 09:00:21,946 [INFO] db: Saved 75 intraday rows for HDFCLIFE.NS
+2026-03-27 09:00:21,946 [INFO] data_fetcher: Fetching 5m data for BAJAJ-AUTO.NS (period=1d)
+2026-03-27 09:00:22,081 [INFO] data_fetcher: Fetched 75 5m rows for BAJAJ-AUTO.NS
+2026-03-27 09:00:22,249 [INFO] db: Saved 4348 intraday rows for ADANIPORTS.NS
+2026-03-27 09:00:22,249 [INFO] data_fetcher: Fetching 5m data for POWERGRID.NS (period=60d)
+2026-03-27 09:00:22,274 [INFO] db: Saved 75 intraday rows for BAJAJ-AUTO.NS
+2026-03-27 09:00:22,275 [INFO] data_fetcher: Fetching 5m data for HEROMOTOCO.NS (period=1d)
+2026-03-27 09:00:22,394 [INFO] data_fetcher: Fetched 75 5m rows for HEROMOTOCO.NS
+2026-03-27 09:00:22,402 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:22,419 [INFO] db: Saved 75 intraday rows for HEROMOTOCO.NS
+2026-03-27 09:00:22,419 [INFO] data_fetcher: Fetching 5m data for SHRIRAMFIN.NS (period=1d)
+2026-03-27 09:00:22,545 [INFO] data_fetcher: Fetched 75 5m rows for SHRIRAMFIN.NS
+2026-03-27 09:00:22,567 [INFO] db: Saved 75 intraday rows for SHRIRAMFIN.NS
+2026-03-27 09:00:22,567 [INFO] data_fetcher: Fetching 5m data for LTIM.NS (period=1d)
+2026-03-27 09:00:22,663 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=1d)
+2026-03-27 09:00:22,666 [WARNING] data_fetcher: No 5m data returned for LTIM.NS
+2026-03-27 09:00:22,666 [INFO] data_fetcher: Fetching 5m data for BANKBARODA.NS (period=1d)
+2026-03-27 09:00:22,738 [INFO] data_fetcher: Fetched 4348 5m rows for POWERGRID.NS
+2026-03-27 09:00:22,810 [INFO] data_fetcher: Fetched 75 5m rows for BANKBARODA.NS
+2026-03-27 09:00:23,048 [INFO] db: Saved 4348 intraday rows for POWERGRID.NS
+2026-03-27 09:00:23,050 [INFO] data_fetcher: Fetching 5m data for M&M.NS (period=60d)
+2026-03-27 09:00:23,077 [INFO] db: Saved 75 intraday rows for BANKBARODA.NS
+2026-03-27 09:00:23,077 [INFO] data_fetcher: Fetching 5m data for PNB.NS (period=1d)
+2026-03-27 09:00:23,144 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:23,200 [INFO] data_fetcher: Fetched 75 5m rows for PNB.NS
+2026-03-27 09:00:23,227 [INFO] db: Saved 75 intraday rows for PNB.NS
+2026-03-27 09:00:23,227 [INFO] data_fetcher: Fetching 5m data for CANBK.NS (period=1d)
+2026-03-27 09:00:23,363 [INFO] data_fetcher: Fetched 4348 5m rows for M&M.NS
+2026-03-27 09:00:23,408 [INFO] data_fetcher: Fetched 75 5m rows for CANBK.NS
+2026-03-27 09:00:23,652 [INFO] db: Saved 4348 intraday rows for M&M.NS
+2026-03-27 09:00:23,652 [INFO] data_fetcher: Fetching 5m data for ASIANPAINT.NS (period=60d)
+2026-03-27 09:00:23,694 [INFO] db: Saved 75 intraday rows for CANBK.NS
+2026-03-27 09:00:23,694 [INFO] data_fetcher: Fetching 5m data for AUBANK.NS (period=1d)
+2026-03-27 09:00:23,846 [INFO] data_fetcher: Fetched 75 5m rows for AUBANK.NS
+2026-03-27 09:00:23,869 [INFO] db: Saved 75 intraday rows for AUBANK.NS
+2026-03-27 09:00:23,872 [INFO] data_fetcher: Fetching 5m data for FEDERALBNK.NS (period=1d)
+2026-03-27 09:00:23,928 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:23,979 [INFO] data_fetcher: Fetched 4349 5m rows for ASIANPAINT.NS
+2026-03-27 09:00:24,024 [INFO] data_fetcher: Fetched 75 5m rows for FEDERALBNK.NS
+2026-03-27 09:00:24,269 [INFO] db: Saved 4349 intraday rows for ASIANPAINT.NS
+2026-03-27 09:00:24,269 [INFO] data_fetcher: Fetching 5m data for NESTLEIND.NS (period=60d)
+2026-03-27 09:00:24,306 [INFO] db: Saved 75 intraday rows for FEDERALBNK.NS
+2026-03-27 09:00:24,306 [INFO] data_fetcher: Fetching 5m data for IDFCFIRSTB.NS (period=1d)
+2026-03-27 09:00:24,442 [INFO] data_fetcher: Fetched 75 5m rows for IDFCFIRSTB.NS
+2026-03-27 09:00:24,466 [INFO] db: Saved 75 intraday rows for IDFCFIRSTB.NS
+2026-03-27 09:00:24,466 [INFO] scheduler: Scheduler: Intraday fetch complete — 56 symbols
+2026-03-27 09:00:24,466 [INFO] apscheduler.executors.default: Job "Fetch 5m intraday candles (trigger: cron[day_of_week='mon-fri', hour='9-15', minute='*/5'], next run at: 2026-03-27 09:05:00 IST)" executed successfully
+2026-03-27 09:00:24,633 [INFO] data_fetcher: Fetched 4349 5m rows for NESTLEIND.NS
+2026-03-27 09:00:24,919 [INFO] db: Saved 4349 intraday rows for NESTLEIND.NS
+2026-03-27 09:00:24,919 [INFO] data_fetcher: Fetching 5m data for ULTRACEMCO.NS (period=60d)
+2026-03-27 09:00:24,979 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:25,290 [INFO] data_fetcher: Fetched 4348 5m rows for ULTRACEMCO.NS
+2026-03-27 09:00:25,549 [INFO] db: Saved 4348 intraday rows for ULTRACEMCO.NS
+2026-03-27 09:00:25,549 [INFO] data_fetcher: Fetching 5m data for JSWSTEEL.NS (period=60d)
+2026-03-27 09:00:25,877 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:26,052 [INFO] data_fetcher: Fetched 4348 5m rows for JSWSTEEL.NS
+2026-03-27 09:00:26,356 [INFO] db: Saved 4348 intraday rows for JSWSTEEL.NS
+2026-03-27 09:00:26,356 [INFO] data_fetcher: Fetching 5m data for TATASTEEL.NS (period=60d)
+2026-03-27 09:00:26,668 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:26,739 [INFO] data_fetcher: Fetched 4348 5m rows for TATASTEEL.NS
+2026-03-27 09:00:27,015 [INFO] db: Saved 4348 intraday rows for TATASTEEL.NS
+2026-03-27 09:00:27,015 [INFO] data_fetcher: Fetching 5m data for BAJAJFINSV.NS (period=60d)
+2026-03-27 09:00:27,370 [INFO] data_fetcher: Fetched 4348 5m rows for BAJAJFINSV.NS
+2026-03-27 09:00:27,643 [INFO] db: Saved 4348 intraday rows for BAJAJFINSV.NS
+2026-03-27 09:00:27,644 [INFO] data_fetcher: Fetching 5m data for HCLTECH.NS (period=60d)
+2026-03-27 09:00:27,728 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:28,003 [INFO] data_fetcher: Fetched 4348 5m rows for HCLTECH.NS
+2026-03-27 09:00:28,273 [INFO] db: Saved 4348 intraday rows for HCLTECH.NS
+2026-03-27 09:00:28,273 [INFO] data_fetcher: Fetching 5m data for WIPRO.NS (period=60d)
+2026-03-27 09:00:28,508 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:28,698 [INFO] data_fetcher: Fetched 4349 5m rows for WIPRO.NS
+2026-03-27 09:00:29,326 [INFO] db: Saved 4349 intraday rows for WIPRO.NS
+2026-03-27 09:00:29,326 [INFO] data_fetcher: Fetching 5m data for INDUSINDBK.NS (period=60d)
+2026-03-27 09:00:29,420 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:29,746 [INFO] data_fetcher: Fetched 4348 5m rows for INDUSINDBK.NS
+2026-03-27 09:00:30,228 [INFO] db: Saved 4348 intraday rows for INDUSINDBK.NS
+2026-03-27 09:00:30,229 [INFO] data_fetcher: Fetching 5m data for TECHM.NS (period=60d)
+2026-03-27 09:00:30,286 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:30,565 [INFO] data_fetcher: Fetched 4348 5m rows for TECHM.NS
+2026-03-27 09:00:30,916 [INFO] db: Saved 4348 intraday rows for TECHM.NS
+2026-03-27 09:00:30,916 [INFO] data_fetcher: Fetching 5m data for HINDALCO.NS (period=60d)
+2026-03-27 09:00:31,340 [INFO] data_fetcher: Fetched 4349 5m rows for HINDALCO.NS
+2026-03-27 09:00:31,395 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:31,678 [INFO] db: Saved 4349 intraday rows for HINDALCO.NS
+2026-03-27 09:00:31,679 [INFO] data_fetcher: Fetching 5m data for GRASIM.NS (period=60d)
+2026-03-27 09:00:32,009 [INFO] data_fetcher: Fetched 4348 5m rows for GRASIM.NS
+2026-03-27 09:00:32,259 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:32,452 [INFO] db: Saved 4348 intraday rows for GRASIM.NS
+2026-03-27 09:00:32,452 [INFO] data_fetcher: Fetching 5m data for DRREDDY.NS (period=60d)
+2026-03-27 09:00:32,829 [INFO] data_fetcher: Fetched 4348 5m rows for DRREDDY.NS
+2026-03-27 09:00:33,185 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:33,315 [INFO] db: Saved 4348 intraday rows for DRREDDY.NS
+2026-03-27 09:00:33,315 [INFO] data_fetcher: Fetching 5m data for CIPLA.NS (period=60d)
+2026-03-27 09:00:33,750 [INFO] data_fetcher: Fetched 4349 5m rows for CIPLA.NS
+2026-03-27 09:00:34,060 [INFO] db: Saved 4349 intraday rows for CIPLA.NS
+2026-03-27 09:00:34,062 [INFO] data_fetcher: Fetching 5m data for EICHERMOT.NS (period=60d)
+2026-03-27 09:00:34,455 [INFO] data_fetcher: Fetched 4348 5m rows for EICHERMOT.NS
+2026-03-27 09:00:34,620 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:34,812 [INFO] db: Saved 4348 intraday rows for EICHERMOT.NS
+2026-03-27 09:00:34,812 [INFO] data_fetcher: Fetching 5m data for DIVISLAB.NS (period=60d)
+2026-03-27 09:00:35,086 [INFO] db: Database initialized at C:\Netra AI\netra\data\netra.db
+2026-03-27 09:00:35,097 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,097 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,097 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,097 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,098 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,098 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,098 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,098 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,098 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-03-27 09:00:35,098 [INFO] scheduler: Scheduler configured with 9 jobs
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Fetch and score news sentiment" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Pre-market news fetch" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Weekly fundamentals refresh" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Fetch 5m intraday candles" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Generate intraday signals" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Added job "Cleanup old intraday data" to job store "default"
+2026-03-27 09:00:35,100 [INFO] apscheduler.scheduler: Scheduler started
+2026-03-27 09:00:35,100 [INFO] main: Netra backend started — scheduler active
+2026-03-27 09:00:35,232 [INFO] data_fetcher: Fetched 4349 5m rows for DIVISLAB.NS
+2026-03-27 09:00:35,429 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:35,570 [INFO] db: Saved 4349 intraday rows for DIVISLAB.NS
+2026-03-27 09:00:35,570 [INFO] data_fetcher: Fetching 5m data for BPCL.NS (period=60d)
+2026-03-27 09:00:35,902 [INFO] data_fetcher: Fetched 4348 5m rows for BPCL.NS
+2026-03-27 09:00:36,316 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:36,361 [INFO] db: Saved 4348 intraday rows for BPCL.NS
+2026-03-27 09:00:36,361 [INFO] data_fetcher: Fetching 5m data for COALINDIA.NS (period=60d)
+2026-03-27 09:00:36,732 [INFO] data_fetcher: Fetched 4348 5m rows for COALINDIA.NS
+2026-03-27 09:00:37,083 [INFO] db: Saved 4348 intraday rows for COALINDIA.NS
+2026-03-27 09:00:37,083 [INFO] data_fetcher: Fetching 5m data for BRITANNIA.NS (period=60d)
+2026-03-27 09:00:37,266 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:37,530 [INFO] data_fetcher: Fetched 4348 5m rows for BRITANNIA.NS
+2026-03-27 09:00:37,921 [INFO] db: Saved 4348 intraday rows for BRITANNIA.NS
+2026-03-27 09:00:37,921 [INFO] data_fetcher: Fetching 5m data for APOLLOHOSP.NS (period=60d)
+2026-03-27 09:00:38,063 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:38,321 [INFO] data_fetcher: Fetched 4348 5m rows for APOLLOHOSP.NS
+2026-03-27 09:00:38,716 [INFO] db: Saved 4348 intraday rows for APOLLOHOSP.NS
+2026-03-27 09:00:38,716 [INFO] data_fetcher: Fetching 5m data for TATACONSUM.NS (period=60d)
+2026-03-27 09:00:39,016 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:39,016 [INFO] data_fetcher: Fetched 4348 5m rows for TATACONSUM.NS
+2026-03-27 09:00:39,423 [INFO] db: Saved 4348 intraday rows for TATACONSUM.NS
+2026-03-27 09:00:39,423 [INFO] data_fetcher: Fetching 5m data for SBILIFE.NS (period=60d)
+2026-03-27 09:00:39,772 [INFO] data_fetcher: Fetched 4349 5m rows for SBILIFE.NS
+2026-03-27 09:00:39,937 [INFO] httpx: HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-03-27 09:00:40,159 [INFO] db: Saved 4349 intraday rows for SBILIFE.NS
+2026-03-27 09:00:40,159 [INFO] data_fetcher: Fetching 5m data for HDFCLIFE.NS (period=60d)
+2026-03-27 09:00:40,558 [INFO] data_fetcher: Fetched 4348 5m rows for HDFCLIFE.NS
+2026-03-27 09:00:40,890 [INFO] db: Saved 4348 intraday rows for HDFCLIFE.NS
+2026-03-27 09:00:40,892 [INFO] data_fetcher: Fetching 5m data for BAJAJ-AUTO.NS (period=60d)
+2026-03-27 09:00:40,992 [INFO] news_sentiment: News sentiment scored: 32 headlines across 7 stocks
+2026-03-27 09:00:40,993 [INFO] scheduler: Scheduler: News sentiment done — scored 32 headlines
+2026-03-27 09:00:40,993 [INFO] apscheduler.executors.default: Job "Fetch and score news sentiment (trigger: cron[day_of_week='mon-fri', hour='8-15', minute='0,30'], next run at: 2026-03-27 09:30:00 IST)" executed successfully
+2026-03-27 09:00:41,247 [INFO] data_fetcher: Fetched 4348 5m rows for BAJAJ-AUTO.NS
+2026-03-27 09:00:41,598 [INFO] db: Saved 4348 intraday rows for BAJAJ-AUTO.NS
+2026-03-27 09:00:41,598 [INFO] data_fetcher: Fetching 5m data for HEROMOTOCO.NS (period=60d)
+2026-03-27 09:00:42,022 [INFO] data_fetcher: Fetched 4348 5m rows for HEROMOTOCO.NS
+2026-03-27 09:00:42,330 [INFO] db: Saved 4348 intraday rows for HEROMOTOCO.NS
+2026-03-27 09:00:42,330 [INFO] data_fetcher: Fetching 5m data for SHRIRAMFIN.NS (period=60d)
+2026-03-27 09:00:42,696 [INFO] data_fetcher: Fetched 4349 5m rows for SHRIRAMFIN.NS
+2026-03-27 09:00:43,001 [INFO] db: Saved 4349 intraday rows for SHRIRAMFIN.NS
+2026-03-27 09:00:43,001 [INFO] data_fetcher: Fetching 5m data for LTIM.NS (period=60d)
+2026-03-27 09:00:43,310 [INFO] data_fetcher: Fetched 2999 5m rows for LTIM.NS
+2026-03-27 09:00:43,557 [INFO] db: Saved 2999 intraday rows for LTIM.NS
+2026-03-27 09:00:43,557 [INFO] data_fetcher: Fetching 5m data for BANKBARODA.NS (period=60d)
+2026-03-27 09:00:44,142 [INFO] data_fetcher: Fetched 4348 5m rows for BANKBARODA.NS
+2026-03-27 09:00:44,429 [INFO] db: Saved 4348 intraday rows for BANKBARODA.NS
+2026-03-27 09:00:44,429 [INFO] data_fetcher: Fetching 5m data for PNB.NS (period=60d)
+2026-03-27 09:00:44,763 [INFO] data_fetcher: Fetched 4348 5m rows for PNB.NS
+2026-03-27 09:00:45,125 [INFO] db: Saved 4348 intraday rows for PNB.NS
+2026-03-27 09:00:45,125 [INFO] data_fetcher: Fetching 5m data for CANBK.NS (period=60d)
+2026-03-27 09:00:45,505 [INFO] data_fetcher: Fetched 4349 5m rows for CANBK.NS
+2026-03-27 09:00:45,854 [INFO] db: Saved 4349 intraday rows for CANBK.NS
+2026-03-27 09:00:45,854 [INFO] data_fetcher: Fetching 5m data for AUBANK.NS (period=60d)
+2026-03-27 09:00:46,218 [INFO] data_fetcher: Fetched 4349 5m rows for AUBANK.NS
+2026-03-27 09:00:46,584 [INFO] db: Saved 4349 intraday rows for AUBANK.NS
+2026-03-27 09:00:46,584 [INFO] data_fetcher: Fetching 5m data for FEDERALBNK.NS (period=60d)
+2026-03-27 09:00:46,933 [INFO] data_fetcher: Fetched 4348 5m rows for FEDERALBNK.NS
+2026-03-27 09:00:47,211 [INFO] db: Saved 4348 intraday rows for FEDERALBNK.NS
+2026-03-27 09:00:47,213 [INFO] data_fetcher: Fetching 5m data for IDFCFIRSTB.NS (period=60d)
+2026-03-27 09:00:47,688 [INFO] data_fetcher: Fetched 4348 5m rows for IDFCFIRSTB.NS
+2026-03-27 09:00:48,003 [INFO] db: Saved 4348 intraday rows for IDFCFIRSTB.NS
+2026-03-27 09:00:48,005 [INFO] data_fetcher: Intraday seed complete — 242157 total rows stored
+2026-03-27 09:00:48,005 [INFO] main: Intraday seed complete — 242157 total rows
+2026-03-27 09:01:00,013 [INFO] apscheduler.executors.default: Running job "Generate intraday signals (trigger: cron[day_of_week='mon-fri', hour='9-15', minute='1,6,11,16,21,26,31,36,41,46,51,56'], next run at: 2026-03-27 09:06:00 IST)" (scheduled at 2026-03-27 09:01:00+05:30)
+2026-03-27 09:01:00,016 [INFO] apscheduler.executors.default: Running job "Generate intraday signals (trigger: cron[day_of_week='mon-fri', hour='9-15', minute='1,6,11,16,21,26,31,36,41,46,51,56'], next run at: 2026-03-27 09:01:00 IST)" (scheduled at 2026-03-27 09:01:00+05:30)
+2026-03-27 09:01:00,075 [INFO] scheduler: Scheduler: Generating intraday signals...
+2026-03-27 09:01:00,075 [INFO] intraday_signals: Generating intraday signals for 56 stocks...
+2026-03-27 09:01:00,077 [INFO] scheduler: Scheduler: Generating intraday signals...
+2026-03-27 09:01:00,080 [INFO] intraday_signals: Generating intraday signals for 56 stocks...

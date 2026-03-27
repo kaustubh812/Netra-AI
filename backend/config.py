@@ -102,6 +102,35 @@ HISTORY_PERIOD = "10y"  # Max history for training
 INTRADAY_PERIOD = "60d"
 INTRADAY_INTERVAL = "1m"
 
+# ─── Intraday Signal Engine ─────────────────────────────────────────────────
+INTRADAY_CANDLE_INTERVAL = "5m"
+INTRADAY_SEED_PERIOD = "60d"
+
+# Intraday component weights (must sum to 1.0) — 8 components
+INTRADAY_WEIGHT_VWAP = 0.20
+INTRADAY_WEIGHT_ORB = 0.15
+INTRADAY_WEIGHT_EMA_CROSS = 0.15
+INTRADAY_WEIGHT_RSI = 0.10
+INTRADAY_WEIGHT_MACD = 0.10
+INTRADAY_WEIGHT_SUPERTREND = 0.10
+INTRADAY_WEIGHT_VOLUME_SURGE = 0.10
+INTRADAY_WEIGHT_DAILY_BIAS = 0.10
+
+# Intraday thresholds
+INTRADAY_BUY_THRESHOLD = 0.62
+INTRADAY_SELL_THRESHOLD = 0.38
+
+# Intraday SL/Target (percentage-based)
+INTRADAY_SL_PCT = 0.004       # 0.4%
+INTRADAY_TARGET_PCT = 0.008   # 0.8%
+
+# Time-of-day windows (IST hours)
+INTRADAY_BOOST_WINDOWS = [(9, 15, 10, 30), (14, 0, 15, 15)]   # (start_h, start_m, end_h, end_m)
+INTRADAY_SUPPRESS_WINDOWS = [(12, 30, 13, 30)]
+
+# Cleanup
+INTRADAY_DATA_RETENTION_DAYS = 30
+
 # ─── ATR Multipliers for Stop Loss / Target ─────────────────────────────────
 STOP_LOSS_ATR_MULTIPLIER = 1.5
 TARGET_ATR_MULTIPLIER = 2.0

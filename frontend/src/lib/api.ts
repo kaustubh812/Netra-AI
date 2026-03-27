@@ -195,6 +195,24 @@ export interface MarketNews {
   sentiment_label: string;
 }
 
+export interface IntradaySignal {
+  symbol: string;
+  name: string;
+  datetime: string;
+  signal: string;
+  confidence: number;
+  composite_score: number;
+  entry_price: number;
+  stop_loss: number;
+  target_price: number;
+  components: Record<string, number>;
+  regime: string;
+  orb_high?: number;
+  orb_low?: number;
+  gap_pct?: number;
+  vwap?: number;
+}
+
 // API functions
 export const api = {
   getStocks: () => fetchApi<{ stocks: StockInfo[]; count: number; market_open?: boolean }>("/api/stocks"),
@@ -217,4 +235,9 @@ export const api = {
   refreshData: () => postApi<{ status: string }>("/api/refresh-data"),
   getRegime: () => fetchApi<RegimeInfo>("/api/regime"),
   getSectors: () => fetchApi<SectorsOverview>("/api/sectors"),
+  // Intraday
+  getIntradaySignals: () => fetchApi<{ signals: IntradaySignal[]; count: number }>("/api/intraday/signals/latest"),
+  getIntradaySignal: (symbol: string) => fetchApi<IntradaySignal>(`/api/intraday/signal/${symbol}`),
+  seedIntraday: () => postApi<{ status: string }>("/api/intraday/seed"),
+  generateIntraday: () => postApi<{ status: string }>("/api/intraday/generate"),
 };

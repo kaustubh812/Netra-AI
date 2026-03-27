@@ -11,6 +11,20 @@ import { StockNewsPanel } from "@/components/news-sentiment-card";
 import { FundamentalsPanel } from "@/components/fundamentals-panel";
 import { SignalBadge } from "@/components/signal-badge";
 
+const INTRADAY_BADGE = "bg-cyan/15 text-cyan border border-cyan/30 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider";
+const DAILY_BADGE = "bg-amber/15 text-amber border border-amber/30 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider";
+
+const COMPONENT_LABELS: Record<string, string> = {
+  vwap: "VWAP",
+  orb: "ORB",
+  ema_cross: "EMA 9/21",
+  rsi: "RSI",
+  macd: "MACD",
+  supertrend: "Supertrend",
+  volume_surge: "Volume",
+  daily_bias: "Daily Bias",
+};
+
 export default function StockDetailPage({ params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = use(params);
   const decoded = decodeURIComponent(symbol);
@@ -18,6 +32,12 @@ export default function StockDetailPage({ params }: { params: Promise<{ symbol: 
   const { data: stock, isLoading, error } = useQuery({
     queryKey: ["stock", decoded],
     queryFn: () => api.getStock(decoded),
+  });
+
+  const { data: intradaySig } = useQuery({
+    queryKey: ["intraday-signal", decoded],
+    queryFn: () => api.getIntradaySignal(decoded).catch(() => null),
+    refetchInterval: 60_000,
   });
 
   if (isLoading) {
@@ -96,6 +116,82 @@ export default function StockDetailPage({ params }: { params: Promise<{ symbol: 
           </div>
         )}
       </div>
+
+      {/* Intraday Signal Card */}
+      {intradaySig && (
+        <div className="glass-card rounded-xl p-5 mb-5 animate-fade-in gradient-border-cyan">
+          <div className="flex items-center gap-3 mb-3">
+            <span className={INTRADAY_BADGE}>Intraday</span>
+            <SignalBadge signal={intradaySig.signal} confidence={intradaySig.confidence} size="lg" />
+            <span className="text-foreground/25 text-xs font-mono ml-auto">
+              {new Date(intradaySig.datetime).toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" })} IST
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-x-8 gap-y-3 pt-3 border-t border-white/[0.06]">
+            <div>
+              <div className="text-foreground/30 text-[10px] uppercase tracking-wide mb-0.5">Entry</div>
+              <div className="font-mono text-base font-semibold">{intradaySig.entry_price.toLocaleString("en-IN")}</div>
+            </div>
+            <div>
+              <div className="text-nred/50 text-[10px] uppercase tracking-wide mb-0.5">Stop Loss</div>
+              <div className="font-mono text-base font-semibold text-nred">{intradaySig.stop_loss.toLocaleString("en-IN")}</div>
+            </div>
+            <div>
+              <div className="text-ngreen/50 text-[10px] uppercase tracking-wide mb-0.5">Target</div>
+              <div className="font-mono text-base font-semibold text-ngreen">{intradaySig.target_price.toLocaleString("en-IN")}</div>
+            </div>
+            <div>
+              <div className="text-foreground/30 text-[10px] uppercase tracking-wide mb-0.5">Regime</div>
+              <div className="font-mono text-base font-semibold text-cyan">{intradaySig.regime}</div>
+            </div>
+            {intradaySig.vwap && (
+              <div>
+                <div className="text-foreground/30 text-[10px] uppercase tracking-wide mb-0.5">VWAP</div>
+                <div className="font-mono text-base font-semibold">{intradaySig.vwap.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</div>
+              </div>
+            )}
+            {intradaySig.orb_high && intradaySig.orb_low && (
+              <div>
+                <div className="text-foreground/30 text-[10px] uppercase tracking-wide mb-0.5">ORB Range</div>
+                <div className="font-mono text-sm font-semibold">
+                  {intradaySig.orb_low.toLocaleString("en-IN", { maximumFractionDigits: 2 })} &mdash; {intradaySig.orb_high.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                </div>
+              </div>
+            )}
+            {intradaySig.gap_pct !== undefined && intradaySig.gap_pct !== 0 && (
+              <div>
+                <div className="text-foreground/30 text-[10px] uppercase tracking-wide mb-0.5">Gap</div>
+                <div className={`font-mono text-base font-semibold ${intradaySig.gap_pct >= 0 ? "text-ngreen" : "text-nred"}`}>
+                  {intradaySig.gap_pct >= 0 ? "+" : ""}{intradaySig.gap_pct}%
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 8-component breakdown */}
+          <div className="mt-4 pt-3 border-t border-white/[0.06]">
+            <div className="text-foreground/25 text-[10px] uppercase tracking-wider mb-2">Component Scores</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {Object.entries(intradaySig.components).map(([key, val]) => (
+                <div key={key} className="flex items-center justify-between bg-white/[0.02] rounded-lg px-3 py-1.5">
+                  <span className="text-xs text-foreground/40">{COMPONENT_LABELS[key] || key}</span>
+                  <span className={`font-mono text-xs font-semibold ${val > 0.6 ? "text-ngreen" : val < 0.4 ? "text-nred" : "text-foreground/50"}`}>
+                    {(val * 100).toFixed(0)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Daily signal label */}
+      {sig && (
+        <div className="flex items-center gap-2 mb-2">
+          <span className={DAILY_BADGE}>Daily</span>
+        </div>
+      )}
 
       {/* Chart + Indicators — 7:5 split for better balance */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 animate-fade-in animate-fade-in-d1">

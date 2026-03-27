@@ -17,6 +17,8 @@ export default function SettingsPage() {
   const [newsStatus, setNewsStatus] = useState("");
   const [fundStatus, setFundStatus] = useState("");
   const [metaStatus, setMetaStatus] = useState("");
+  const [seedStatus, setSeedStatus] = useState("");
+  const [intradayGenStatus, setIntradayGenStatus] = useState("");
 
   const { data: metrics } = useQuery({
     queryKey: ["training-metrics"],
@@ -71,6 +73,23 @@ export default function SettingsPage() {
   const { data: metaMetrics } = useQuery({
     queryKey: ["meta-model"],
     queryFn: api.getMetaModelMetrics,
+  });
+
+  const seedMutation = useMutation({
+    mutationFn: api.seedIntraday,
+    onSuccess: (data) => {
+      setSeedStatus(data.status);
+    },
+    onError: (err) => setSeedStatus(`Error: ${err.message}`),
+  });
+
+  const intradayGenMutation = useMutation({
+    mutationFn: api.generateIntraday,
+    onSuccess: (data) => {
+      setIntradayGenStatus(data.status);
+      queryClient.invalidateQueries({ queryKey: ["intraday-signals"] });
+    },
+    onError: (err) => setIntradayGenStatus(`Error: ${err.message}`),
   });
 
   const metricEntries = Object.entries(metrics?.metrics ?? {});
@@ -146,6 +165,43 @@ export default function SettingsPage() {
           </button>
           {fundStatus && (
             <div className="mt-2 text-xs text-ngreen">{fundStatus}</div>
+          )}
+        </div>
+      </div>
+
+      {/* Intraday Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <div className="glass-card rounded-xl p-5 gradient-border-cyan">
+          <h3 className="font-medium mb-2">Seed Intraday Data</h3>
+          <p className="text-sm text-foreground/40 mb-4">
+            Fetch 60 days of 5-minute candles for all NIFTY 50 stocks. One-time setup for the intraday engine.
+          </p>
+          <button
+            onClick={() => seedMutation.mutate()}
+            disabled={seedMutation.isPending}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-50 ${BTN_STYLES.cyan}`}
+          >
+            {seedMutation.isPending ? "Seeding..." : "Seed Intraday Data"}
+          </button>
+          {seedStatus && (
+            <div className="mt-2 text-xs text-ngreen">{seedStatus}</div>
+          )}
+        </div>
+
+        <div className="glass-card rounded-xl p-5 gradient-border-cyan">
+          <h3 className="font-medium mb-2">Generate Intraday Signals</h3>
+          <p className="text-sm text-foreground/40 mb-4">
+            Run the 8-component intraday signal engine on the latest 5-minute candle data.
+          </p>
+          <button
+            onClick={() => intradayGenMutation.mutate()}
+            disabled={intradayGenMutation.isPending}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-50 ${BTN_STYLES.green}`}
+          >
+            {intradayGenMutation.isPending ? "Generating..." : "Generate Intraday Signals"}
+          </button>
+          {intradayGenStatus && (
+            <div className="mt-2 text-xs text-ngreen">{intradayGenStatus}</div>
           )}
         </div>
       </div>
