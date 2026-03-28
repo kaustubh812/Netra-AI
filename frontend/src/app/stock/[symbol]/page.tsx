@@ -42,7 +42,7 @@ export default function StockDetailPage({ params }: { params: Promise<{ symbol: 
 
   if (isLoading) {
     return (
-      <div className="max-w-screen-2xl mx-auto px-6 py-6 relative z-10">
+      <div className="px-6 py-6 relative z-10">
         <div className="shimmer h-5 w-36 rounded mb-3" />
         <div className="glass-card rounded-xl shimmer h-48" />
       </div>
@@ -51,7 +51,7 @@ export default function StockDetailPage({ params }: { params: Promise<{ symbol: 
 
   if (error || !stock) {
     return (
-      <div className="max-w-screen-2xl mx-auto px-6 py-6 relative z-10">
+      <div className="px-6 py-6 relative z-10">
         <Link href="/" className="text-cyan text-sm hover:text-cyan/80 transition-colors mb-4 inline-flex items-center gap-1.5">
           &larr; Back to Dashboard
         </Link>
@@ -66,7 +66,7 @@ export default function StockDetailPage({ params }: { params: Promise<{ symbol: 
     : null;
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-6 py-6 relative z-10">
+    <div className="px-6 py-6 relative z-10">
       <Link href="/" className="text-cyan text-sm hover:text-cyan/80 transition-colors mb-4 inline-flex items-center gap-1.5">
         &larr; Back to Dashboard
       </Link>

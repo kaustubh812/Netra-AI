@@ -73,6 +73,14 @@ def _cleanup_intraday_job():
     logger.info("Scheduler: Intraday cleanup done")
 
 
+def _scan_alerts_job():
+    """Job: Scan for alert conditions."""
+    from alerts import scan_for_alerts
+    logger.info("Scheduler: Scanning for alerts...")
+    scan_for_alerts()
+    logger.info("Scheduler: Alert scan complete")
+
+
 def _retrain_models_job():
     """Job: Retrain all models (weekly)."""
     from model import train_all_models
@@ -173,5 +181,24 @@ def create_scheduler() -> BackgroundScheduler:
         replace_existing=True,
     )
 
-    logger.info("Scheduler configured with 9 jobs")
+    # ─── Alert Scanning ────────────────────────────────────────────────────
+    # Scan for alerts every 5 minutes during market hours
+    scheduler.add_job(
+        _scan_alerts_job,
+        CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*/5", timezone=IST),
+        id="scan_alerts",
+        name="Scan for alert conditions",
+        replace_existing=True,
+    )
+
+    # Also scan after signal generation (at 3:55 PM)
+    scheduler.add_job(
+        _scan_alerts_job,
+        CronTrigger(day_of_week="mon-fri", hour=15, minute=55, timezone=IST),
+        id="scan_alerts_post_signal",
+        name="Post-signal alert scan",
+        replace_existing=True,
+    )
+
+    logger.info("Scheduler configured with 11 jobs")
     return scheduler

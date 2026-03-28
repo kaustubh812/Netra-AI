@@ -225,3 +225,37 @@ body::before {
   background: var(--cyan);
   flex-shrink: 0;
 }
+
+/* ─── News Ticker Scroll ─── */
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.news-ticker-scroll {
+  animation: tickerScroll 60s linear infinite;
+}
+.news-ticker-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Terminal Density Mode ─── */
+.terminal-mode .glass-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.terminal-mode {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.terminal-mode .glass-card {
+  padding: 0.75rem;
+}
+.terminal-mode table td,
+.terminal-mode table th {
+  padding: 0.25rem 0.75rem;
+}
+
+/* ─── Compact Number Utility ─── */
+.num-compact {
+  font-variant-numeric: tabular-nums;
+}

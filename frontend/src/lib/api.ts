@@ -240,4 +240,75 @@ export const api = {
   getIntradaySignal: (symbol: string) => fetchApi<IntradaySignal>(`/api/intraday/signal/${symbol}`),
   seedIntraday: () => postApi<{ status: string }>("/api/intraday/seed"),
   generateIntraday: () => postApi<{ status: string }>("/api/intraday/generate"),
+  // Phase 2: Intelligence Layer
+  getFiiDii: () => fetchApi<{ flows: FiiDiiFlow[]; summary: FiiDiiSummary; count: number }>("/api/fii-dii"),
+  getPeerComparison: (symbol: string) => fetchApi<PeerComparison>(`/api/peer-comparison/${symbol}`),
+  getEconomicCalendar: () => fetchApi<{ events: EconomicEvent[]; count: number }>("/api/calendar/economic"),
+  getEarningsCalendar: () => fetchApi<{ earnings: EarningsEvent[]; count: number }>("/api/calendar/earnings"),
 };
+
+// Phase 2+ Types
+export interface FiiDiiFlow {
+  date: string;
+  fii_buy: number;
+  fii_sell: number;
+  fii_net: number;
+  dii_buy: number;
+  dii_sell: number;
+  dii_net: number;
+}
+
+export interface FiiDiiSummary {
+  fii_net_30d: number;
+  dii_net_30d: number;
+  fii_net_5d: number;
+  dii_net_5d: number;
+  fii_latest: number;
+  dii_latest: number;
+  fii_streak: number;
+  fii_streak_direction: string;
+}
+
+export interface PeerComparison {
+  peers: PeerStock[];
+  sector: string;
+  medians: Record<string, number | null>;
+  count: number;
+}
+
+export interface PeerStock {
+  symbol: string;
+  name: string;
+  pe: number | null;
+  pb: number | null;
+  roe: number | null;
+  de: number | null;
+  market_cap: number | null;
+  profit_margin: number | null;
+  revenue_growth: number | null;
+  earnings_growth: number | null;
+  dividend_yield: number | null;
+  beta: number | null;
+  is_target: boolean;
+}
+
+export interface EconomicEvent {
+  date: string;
+  event: string;
+  category: string;
+  importance: string;
+  country: string;
+  previous: string | null;
+  forecast: string | null;
+  actual: string | null;
+}
+
+export interface EarningsEvent {
+  symbol: string;
+  name: string;
+  earnings_date: string;
+  eps_estimate: number | null;
+  eps_actual: number | null;
+  revenue_estimate: number | null;
+  revenue_actual: number | null;
+}

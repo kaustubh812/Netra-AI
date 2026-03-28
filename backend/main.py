@@ -13,6 +13,7 @@ import pytz
 import pandas as pd
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from config import NIFTY_50_STOCKS, INDEX_SYMBOLS, TIMEZONE, LOG_PATH, DATA_DIR
 from scheduler import create_scheduler
@@ -65,6 +66,359 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"name": "Netra (नेत्र)", "tagline": "The eye that sees the market", "status": "running"}
+
+
+# ─── Watchlist Endpoints ──────────────────────────────────────────────────
+
+@app.get("/api/watchlists")
+def get_watchlists_endpoint():
+    """Get all watchlists."""
+    from watchlists import get_all_watchlists
+    watchlists = get_all_watchlists()
+    return {"watchlists": watchlists, "count": len(watchlists)}
+
+
+@app.get("/api/watchlists/{watchlist_id}")
+def get_watchlist_endpoint(watchlist_id: int):
+    """Get a watchlist with stocks and signal summary."""
+    from watchlists import get_watchlist
+    wl = get_watchlist(watchlist_id)
+    if not wl:
+        raise HTTPException(status_code=404, detail="Watchlist not found")
+    return wl
+
+
+@app.post("/api/watchlists")
+def create_watchlist_endpoint(name: str, description: str = ""):
+    """Create a new watchlist."""
+    from watchlists import create_watchlist
+    wl_id = create_watchlist(name, description)
+    return {"status": "created", "id": wl_id}
+
+
+@app.delete("/api/watchlists/{watchlist_id}")
+def delete_watchlist_endpoint(watchlist_id: int):
+    """Delete a watchlist."""
+    from watchlists import delete_watchlist
+    ok = delete_watchlist(watchlist_id)
+    if not ok:
+        raise HTTPException(status_code=400, detail="Cannot delete default watchlist")
+    return {"status": "deleted"}
+
+
+@app.post("/api/watchlists/{watchlist_id}/add")
+def add_to_watchlist_endpoint(watchlist_id: int, symbol: str):
+    """Add a stock to a watchlist."""
+    from watchlists import add_to_watchlist
+    add_to_watchlist(watchlist_id, symbol)
+    return {"status": "added"}
+
+
+@app.delete("/api/watchlists/{watchlist_id}/remove")
+def remove_from_watchlist_endpoint(watchlist_id: int, symbol: str):
+    """Remove a stock from a watchlist."""
+    from watchlists import remove_from_watchlist
+    remove_from_watchlist(watchlist_id, symbol)
+    return {"status": "removed"}
+
+
+# ─── Signal Performance Endpoint ─────────────────────────────────────────
+
+@app.get("/api/signal-performance/{symbol}")
+def get_signal_performance_endpoint(symbol: str):
+    """Get historical signal performance metrics for a stock."""
+    from signal_performance import get_signal_performance
+
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+
+    return get_signal_performance(symbol)
+
+
+# ─── Correlation Matrix Endpoint ─────────────────────────────────────────
+
+@app.get("/api/correlation")
+def get_correlation_endpoint(lookback: int = 60):
+    """Get pairwise correlation matrix for all stocks."""
+    from analytics import get_correlation_matrix
+    return get_correlation_matrix(lookback)
+
+
+# ─── Data Export Endpoints ───────────────────────────────────────────────
+
+@app.get("/api/export/signals")
+def export_signals_csv():
+    """Export latest signals as CSV."""
+    from analytics import export_signals_csv
+    from fastapi.responses import Response
+    csv_data = export_signals_csv()
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=netra_signals.csv"},
+    )
+
+
+@app.get("/api/export/screener")
+def export_screener_csv(signal: Optional[str] = None, sector: Optional[str] = None):
+    """Export screener results as CSV."""
+    from analytics import export_screener_csv
+    from fastapi.responses import Response
+    csv_data = export_screener_csv(signal_filter=signal, sector=sector)
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=netra_screener.csv"},
+    )
+
+
+@app.get("/api/alerts")
+def get_alerts_endpoint(limit: int = 50):
+    """Get recent triggered alerts."""
+    from alerts import get_recent_alerts, get_unread_count
+    alerts = get_recent_alerts(limit)
+    unread = get_unread_count()
+    return {"alerts": alerts, "count": len(alerts), "unread": unread}
+
+
+@app.post("/api/alerts/read")
+def mark_alerts_read_endpoint():
+    """Mark all alerts as read."""
+    from alerts import mark_alerts_read
+    mark_alerts_read()
+    return {"status": "ok"}
+
+
+@app.get("/api/alerts/rules")
+def get_alert_rules_endpoint():
+    """Get all alert rules."""
+    from alerts import get_alert_rules
+    rules = get_alert_rules()
+    return {"rules": rules, "count": len(rules)}
+
+
+@app.post("/api/alerts/rules")
+def create_alert_rule_endpoint(
+    symbol: Optional[str] = None,
+    alert_type: str = "price_cross",
+    price: Optional[float] = None,
+    direction: str = "above",
+):
+    """Create a new alert rule."""
+    from alerts import create_alert_rule
+    conditions = {}
+    if alert_type == "price_cross":
+        conditions = {"price": price, "direction": direction}
+    rule_id = create_alert_rule(symbol, alert_type, conditions)
+    return {"status": "created", "rule_id": rule_id}
+
+
+@app.delete("/api/alerts/rules/{rule_id}")
+def delete_alert_rule_endpoint(rule_id: int):
+    """Delete an alert rule."""
+    from alerts import delete_alert_rule
+    delete_alert_rule(rule_id)
+    return {"status": "deleted"}
+
+
+@app.post("/api/alerts/scan")
+async def scan_alerts_endpoint(background_tasks: BackgroundTasks):
+    """Manually trigger alert scan."""
+    from alerts import scan_for_alerts
+
+    def _scan():
+        logger.info("Manual alert scan triggered")
+        scan_for_alerts()
+        logger.info("Manual alert scan complete")
+
+    background_tasks.add_task(_scan)
+    return {"status": "Alert scan started"}
+
+
+@app.get("/api/stream")
+async def live_stream():
+    """Server-Sent Events stream for live prices, signals, and news."""
+    import asyncio
+    import json
+
+    async def event_generator():
+        while True:
+            try:
+                from live_prices import fetch_live_prices, is_market_open
+
+                # Send live prices
+                prices = fetch_live_prices()
+                market_open = is_market_open()
+                yield f"event: prices\ndata: {json.dumps({'prices': prices, 'market_open': market_open, 'timestamp': datetime.now(IST).isoformat()})}\n\n"
+
+                # Send latest signals summary (less frequent)
+                import db as _db
+                signals_df = _db.get_latest_signals()
+                if not signals_df.empty:
+                    buy_count = len(signals_df[signals_df["signal"] == "BUY"])
+                    sell_count = len(signals_df[signals_df["signal"] == "SELL"])
+                    hold_count = len(signals_df[signals_df["signal"] == "HOLD"])
+                    yield f"event: breadth\ndata: {json.dumps({'buy': buy_count, 'sell': sell_count, 'hold': hold_count})}\n\n"
+
+                # Send latest news headlines
+                news = _db.get_market_news_sentiment(hours=6)
+                headlines = [
+                    {
+                        "headline": n["headline"],
+                        "source": n["source"],
+                        "symbol": n["symbol"],
+                        "sentiment": n["sentiment_score"],
+                        "time": n["fetched_at"],
+                    }
+                    for n in news[:15]
+                ]
+                yield f"event: news\ndata: {json.dumps({'headlines': headlines})}\n\n"
+
+            except Exception as e:
+                logger.error("SSE stream error: %s", e)
+                yield f"event: error\ndata: {json.dumps({'error': str(e)})}\n\n"
+
+            # Wait before next update (30s during market hours, 5min otherwise)
+            from live_prices import is_market_open as _is_open
+            interval = 30 if _is_open() else 300
+            await asyncio.sleep(interval)
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@app.get("/api/fii-dii")
+def get_fii_dii_endpoint():
+    """Get FII/DII institutional flow data."""
+    from fii_dii import get_fii_dii_flows
+    return get_fii_dii_flows()
+
+
+@app.get("/api/peer-comparison/{symbol}")
+def get_peer_comparison(symbol: str):
+    """Get peer comparison / relative valuation for a stock's sector."""
+    import db
+    from config import NIFTY_50_STOCKS
+
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+
+    # Get the target stock's sector
+    fund = db.get_fundamentals(symbol)
+    if not fund or not fund.get("sector"):
+        return {"peers": [], "sector": None, "count": 0}
+
+    target_sector = fund["sector"]
+
+    # Find all stocks in the same sector
+    peers = []
+    for sym in NIFTY_50_STOCKS:
+        f = db.get_fundamentals(sym)
+        if f and f.get("sector") == target_sector:
+            peers.append({
+                "symbol": sym,
+                "name": sym.replace(".NS", ""),
+                "pe": f.get("trailingPE"),
+                "pb": f.get("priceToBook"),
+                "roe": f.get("returnOnEquity"),
+                "de": f.get("debtToEquity"),
+                "market_cap": f.get("marketCap"),
+                "profit_margin": f.get("profitMargins"),
+                "revenue_growth": f.get("revenueGrowth"),
+                "earnings_growth": f.get("earningsGrowth"),
+                "dividend_yield": f.get("dividendYield"),
+                "beta": f.get("beta"),
+                "is_target": sym == symbol,
+            })
+
+    # Calculate sector medians
+    def median(values):
+        v = sorted([x for x in values if x is not None])
+        if not v:
+            return None
+        mid = len(v) // 2
+        return v[mid] if len(v) % 2 else (v[mid - 1] + v[mid]) / 2
+
+    metrics = ["pe", "pb", "roe", "de", "profit_margin", "revenue_growth"]
+    medians = {}
+    for m in metrics:
+        vals = [p[m] for p in peers if p[m] is not None]
+        medians[m] = median(vals)
+
+    return {
+        "peers": peers,
+        "sector": target_sector,
+        "medians": medians,
+        "count": len(peers),
+    }
+
+
+@app.get("/api/calendar/economic")
+def get_economic_calendar_endpoint():
+    """Get Indian economic calendar events."""
+    from calendar_data import get_economic_calendar
+    events = get_economic_calendar()
+    return {"events": events, "count": len(events)}
+
+
+@app.get("/api/calendar/earnings")
+def get_earnings_calendar_endpoint():
+    """Get NIFTY 50 earnings calendar."""
+    from calendar_data import get_earnings_calendar
+    earnings = get_earnings_calendar()
+    return {"earnings": earnings, "count": len(earnings)}
+
+
+@app.get("/api/screener")
+def get_screener(
+    signal: Optional[str] = None,
+    min_confidence: Optional[float] = None,
+    max_confidence: Optional[float] = None,
+    min_composite: Optional[float] = None,
+    max_composite: Optional[float] = None,
+    min_rsi: Optional[float] = None,
+    max_rsi: Optional[float] = None,
+    supertrend: Optional[int] = None,
+    min_pe: Optional[float] = None,
+    max_pe: Optional[float] = None,
+    min_roe: Optional[float] = None,
+    max_de: Optional[float] = None,
+    min_market_cap: Optional[float] = None,
+    sector: Optional[str] = None,
+    sort_by: str = "confidence",
+    sort_asc: bool = False,
+):
+    """Multi-criteria stock screener."""
+    from screener import run_screener, get_available_sectors
+
+    results = run_screener(
+        signal_filter=signal,
+        min_confidence=min_confidence,
+        max_confidence=max_confidence,
+        min_composite=min_composite,
+        max_composite=max_composite,
+        min_rsi=min_rsi,
+        max_rsi=max_rsi,
+        supertrend_direction=supertrend,
+        min_pe=min_pe,
+        max_pe=max_pe,
+        min_roe=min_roe,
+        max_de=max_de,
+        min_market_cap=min_market_cap,
+        sector=sector,
+        sort_by=sort_by,
+        sort_asc=sort_asc,
+    )
+
+    sectors = get_available_sectors()
+    return {"results": results, "count": len(results), "total": 56, "sectors": sectors}
 
 
 @app.get("/api/stocks")
