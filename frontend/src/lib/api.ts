@@ -276,12 +276,14 @@ export const api = {
   getSectorDetail: (sector: string) => fetchApi<SectorDetail>(`/api/sectors/detail/${encodeURIComponent(sector)}`),
   // Paper Trading
   getPaperPositions: () => fetchApi<{ positions: PaperPosition[]; count: number }>("/api/paper-trading/positions"),
-  placePaperTrade: (symbol: string, trade_type: string, quantity: number, price: number, stop_loss?: number, target_price?: number, signal_confidence?: number, notes?: string) => {
+  placePaperTrade: (symbol: string, trade_type: string, quantity: number, price: number, stop_loss?: number, target_price?: number, signal_confidence?: number, notes?: string, order_type?: string, product_type?: string) => {
     let url = `/api/paper-trading/trade?symbol=${encodeURIComponent(symbol)}&trade_type=${trade_type}&quantity=${quantity}&price=${price}`;
     if (stop_loss !== undefined) url += `&stop_loss=${stop_loss}`;
     if (target_price !== undefined) url += `&target_price=${target_price}`;
     if (signal_confidence !== undefined) url += `&signal_confidence=${signal_confidence}`;
     if (notes) url += `&notes=${encodeURIComponent(notes)}`;
+    if (order_type) url += `&order_type=${order_type}`;
+    if (product_type) url += `&product_type=${product_type}`;
     return postApi<{ status: string; id: number }>(url);
   },
   closePaperTrade: (id: number, exit_price: number) =>
@@ -460,6 +462,8 @@ export interface PaperPosition {
   trade_date: string;
   signal_confidence: number | null;
   notes: string | null;
+  order_type?: string;
+  product_type?: string;
 }
 
 export interface PaperTrade {
@@ -476,6 +480,8 @@ export interface PaperTrade {
   closed_date: string | null;
   signal_confidence: number | null;
   status: string;
+  order_type?: string;
+  product_type?: string;
 }
 
 export interface PaperTradingStats {

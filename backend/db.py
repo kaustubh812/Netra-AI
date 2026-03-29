@@ -204,12 +204,25 @@ def init_db():
                 stop_loss REAL,
                 target_price REAL,
                 notes TEXT,
+                order_type TEXT DEFAULT 'MARKET',
+                product_type TEXT DEFAULT 'DELIVERY',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
             CREATE INDEX IF NOT EXISTS idx_paper_trades_status ON paper_trades(status);
             CREATE INDEX IF NOT EXISTS idx_paper_trades_symbol ON paper_trades(symbol);
         """)
+
+        # Migration: add order_type and product_type columns if missing
+        try:
+            conn.execute("ALTER TABLE paper_trades ADD COLUMN order_type TEXT DEFAULT 'MARKET'")
+        except Exception:
+            pass  # column already exists
+        try:
+            conn.execute("ALTER TABLE paper_trades ADD COLUMN product_type TEXT DEFAULT 'DELIVERY'")
+        except Exception:
+            pass  # column already exists
+
     logger.info("Database initialized at %s", DB_PATH)
 
 
@@ -599,14 +612,15 @@ def delete_portfolio_holding(holding_id: int) -> bool:
 def save_paper_trade(symbol: str, trade_type: str, quantity: float, entry_price: float,
                      trade_date: str, signal_confidence: Optional[float] = None,
                      stop_loss: Optional[float] = None, target_price: Optional[float] = None,
-                     notes: Optional[str] = None) -> int:
+                     notes: Optional[str] = None, order_type: str = "MARKET",
+                     product_type: str = "DELIVERY") -> int:
     """Create a new paper trade. Returns the new row id."""
     with get_db() as conn:
         cur = conn.execute(
             """INSERT INTO paper_trades
-               (symbol, trade_type, quantity, entry_price, trade_date, signal_confidence, stop_loss, target_price, notes)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (symbol, trade_type, quantity, entry_price, trade_date, signal_confidence, stop_loss, target_price, notes),
+               (symbol, trade_type, quantity, entry_price, trade_date, signal_confidence, stop_loss, target_price, notes, order_type, product_type)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (symbol, trade_type, quantity, entry_price, trade_date, signal_confidence, stop_loss, target_price, notes, order_type, product_type),
         )
         return cur.lastrowid
 

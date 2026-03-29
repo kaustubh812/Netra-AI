@@ -441,9 +441,15 @@ def place_paper_trade(
     target_price: Optional[float] = None,
     signal_confidence: Optional[float] = None,
     notes: Optional[str] = None,
+    order_type: str = "MARKET",
+    product_type: str = "DELIVERY",
 ):
     """Place a new paper trade."""
     import db as _db
+    from live_prices import is_market_open
+
+    if not is_market_open():
+        raise HTTPException(status_code=400, detail="Market is closed. Trading is available Mon–Fri, 9:15 AM – 3:30 PM IST.")
 
     if trade_type not in ("BUY", "SELL"):
         raise HTTPException(status_code=400, detail="trade_type must be BUY or SELL")
@@ -451,6 +457,10 @@ def place_paper_trade(
         raise HTTPException(status_code=400, detail="quantity must be positive")
     if price <= 0:
         raise HTTPException(status_code=400, detail="price must be positive")
+    if order_type not in ("MARKET", "LIMIT"):
+        raise HTTPException(status_code=400, detail="order_type must be MARKET or LIMIT")
+    if product_type not in ("DELIVERY", "INTRADAY"):
+        raise HTTPException(status_code=400, detail="product_type must be DELIVERY or INTRADAY")
 
     if not symbol.endswith(".NS") and not symbol.startswith("^"):
         symbol = symbol + ".NS"
@@ -461,6 +471,7 @@ def place_paper_trade(
         entry_price=price, trade_date=trade_date,
         signal_confidence=signal_confidence, stop_loss=stop_loss,
         target_price=target_price, notes=notes,
+        order_type=order_type, product_type=product_type,
     )
     return {"status": "placed", "id": trade_id, "trade_date": trade_date}
 
@@ -498,6 +509,8 @@ def get_paper_trade_history(limit: int = 50):
             "closed_date": t["closed_date"],
             "signal_confidence": t["signal_confidence"],
             "status": t["status"],
+            "order_type": t.get("order_type", "MARKET"),
+            "product_type": t.get("product_type", "DELIVERY"),
         })
     return {"trades": results, "count": len(results)}
 
