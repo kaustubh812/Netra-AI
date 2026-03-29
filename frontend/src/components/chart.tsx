@@ -5,10 +5,12 @@ import {
   createChart,
   CandlestickSeries,
   HistogramSeries,
+  LineSeries,
   createSeriesMarkers,
   type IChartApi,
   type CandlestickData,
   type HistogramData,
+  type LineData,
   type Time,
   type SeriesMarker,
 } from "lightweight-charts";
@@ -22,15 +24,20 @@ interface ChartProps {
   signal?: string;
 }
 
-const PERIODS = ["1D", "1W", "1M", "3M", "6M", "1Y", "5Y"] as const;
+const DAILY_PERIODS = ["1D", "1W", "1M", "3M", "6M", "1Y", "5Y"] as const;
+const INTRADAY_INTERVALS = ["5m", "15m", "1H"] as const;
+const ALL_PERIODS = [...INTRADAY_INTERVALS, ...DAILY_PERIODS] as const;
 
 const PERIOD_ACTIVE = "bg-cyan/15 text-cyan border border-cyan/30 shadow-[0_0_8px_rgba(0,229,255,0.15)]";
 const PERIOD_INACTIVE = "bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground hover:bg-white/[0.06]";
+const INTRADAY_ACTIVE = "bg-purple/15 text-purple border border-purple/30 shadow-[0_0_8px_rgba(167,139,250,0.15)]";
+const INTRADAY_INACTIVE = "bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground hover:bg-white/[0.06]";
 
 export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }: ChartProps) {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<IChartApi | null>(null);
   const [period, setPeriod] = useState<string>("6M");
+  const [intradayInterval, setIntradayInterval] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,7 +66,7 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
       },
       timeScale: {
         borderColor: "rgba(255,255,255,0.06)",
-        timeVisible: period === "1D" || period === "1W",
+        timeVisible: period === "1D" || period === "1W" || intradayInterval !== null,
         secondsVisible: false,
         rightOffset: 5,
       },
@@ -91,7 +98,7 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
     });
 
     setLoading(true);
-    api.getChart(symbol, period)
+    api.getChart(symbol, period, intradayInterval || undefined)
       .then((data: ChartData) => {
         const candles: CandlestickData<Time>[] = data.candles.map((c) => ({
           time: (typeof c.time === "number" ? c.time : c.time) as Time,
@@ -153,6 +160,21 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
           createSeriesMarkers(candleSeries, markers);
         }
 
+        // VWAP overlay for intraday
+        if (data.vwap && data.vwap.length > 0) {
+          const vwapSeries = chart.addSeries(LineSeries, {
+            color: "#a78bfa",
+            lineWidth: 2,
+            priceLineVisible: false,
+            title: "VWAP",
+          });
+          const vwapData: LineData<Time>[] = data.vwap.map((v) => ({
+            time: v.time as Time,
+            value: v.value,
+          }));
+          vwapSeries.setData(vwapData);
+        }
+
         chart.timeScale().fitContent();
         setLoading(false);
       })
@@ -170,17 +192,29 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
       chart.remove();
       chartInstance.current = null;
     };
-  }, [symbol, period, entryPrice, stopLoss, targetPrice, signal]);
+  }, [symbol, period, intradayInterval, entryPrice, stopLoss, targetPrice, signal]);
 
   return (
     <div className="glass-card rounded-xl p-4 animate-fade-in">
-      <div className="flex gap-1.5 mb-3">
-        {PERIODS.map((p) => (
+      <div className="flex gap-1.5 mb-3 flex-wrap">
+        {INTRADAY_INTERVALS.map((iv) => (
+          <button
+            key={iv}
+            onClick={() => { setIntradayInterval(iv); setPeriod("1D"); }}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
+              intradayInterval === iv ? INTRADAY_ACTIVE : INTRADAY_INACTIVE
+            }`}
+          >
+            {iv}
+          </button>
+        ))}
+        <span className="w-px h-6 bg-white/[0.08] self-center mx-0.5" />
+        {DAILY_PERIODS.map((p) => (
           <button
             key={p}
-            onClick={() => setPeriod(p)}
+            onClick={() => { setPeriod(p); setIntradayInterval(null); }}
             className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
-              period === p ? PERIOD_ACTIVE : PERIOD_INACTIVE
+              period === p && intradayInterval === null ? PERIOD_ACTIVE : PERIOD_INACTIVE
             }`}
           >
             {p}

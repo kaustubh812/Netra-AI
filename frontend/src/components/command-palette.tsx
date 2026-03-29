@@ -16,6 +16,9 @@ interface CommandItem {
 
 const PAGES: CommandItem[] = [
   { id: "page-dashboard", label: "Dashboard", sublabel: "Home overview", type: "page", href: "/" },
+  { id: "page-portfolio", label: "Portfolio", sublabel: "Holdings tracker & P&L", type: "page", href: "/portfolio" },
+  { id: "page-paper-trading", label: "Paper Trading", sublabel: "Virtual trading simulator", type: "page", href: "/paper-trading" },
+  { id: "page-options", label: "Options", sublabel: "Option chain viewer & Greeks", type: "page", href: "/options" },
   { id: "page-heatmap", label: "Heatmap", sublabel: "NIFTY 50 treemap", type: "page", href: "/heatmap" },
   { id: "page-screener", label: "Screener", sublabel: "Multi-criteria stock filter", type: "page", href: "/screener" },
   { id: "page-calendar", label: "Calendar", sublabel: "Economic & earnings events", type: "page", href: "/calendar" },

@@ -154,6 +154,66 @@ _sector_cache: Dict = {}
 _sector_cache_ts: float = 0
 
 
+def get_sector_detail(sector_name: str) -> dict:
+    """
+    Get detailed info for a single sector: stocks with live prices, signals, fundamentals.
+    """
+    import db
+    from live_prices import fetch_live_prices
+
+    # Find stocks in this sector
+    sector_stocks = [sym for sym, sec in SECTOR_MAP.items() if sec.lower() == sector_name.lower()]
+    if not sector_stocks:
+        return {"sector": sector_name, "stocks": [], "count": 0}
+
+    live = fetch_live_prices()
+    signals_df = db.get_latest_signals()
+
+    # Sector-level info
+    sector_scores = get_cached_sector_scores()
+    sector_meta = sector_scores.get(sector_name, {})
+
+    stocks = []
+    for sym in sector_stocks:
+        stock: dict = {"symbol": sym, "name": sym.replace(".NS", "")}
+
+        # Live price
+        lp = live.get(sym)
+        if lp:
+            stock["ltp"] = lp["price"]
+            stock["change_pct"] = lp.get("change_pct")
+        else:
+            price_df = db.get_stock_data(sym)
+            if not price_df.empty:
+                stock["ltp"] = float(price_df.iloc[-1]["close"])
+
+        # Signal
+        sig_row = signals_df[signals_df["symbol"] == sym] if not signals_df.empty else None
+        if sig_row is not None and not sig_row.empty:
+            s = sig_row.iloc[0]
+            stock["signal"] = s["signal"]
+            stock["confidence"] = float(s["confidence"])
+
+        # Fundamentals
+        fund = db.get_fundamentals(sym)
+        if fund:
+            stock["pe"] = fund.get("trailingPE")
+            stock["roe"] = fund.get("returnOnEquity")
+            stock["market_cap"] = fund.get("marketCap")
+
+        stocks.append(stock)
+
+    return {
+        "sector": sector_name,
+        "momentum_score": sector_meta.get("momentum_score"),
+        "rank": sector_meta.get("rank"),
+        "avg_return": sector_meta.get("avg_return"),
+        "breadth": sector_meta.get("breadth"),
+        "stocks": stocks,
+        "count": len(stocks),
+    }
+
+
 def get_cached_sector_scores(ttl: int = 3600) -> Dict:
     """Get sector scores with 1-hour cache."""
     import time

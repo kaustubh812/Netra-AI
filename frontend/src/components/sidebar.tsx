@@ -34,6 +34,40 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/portfolio",
+    label: "Portfolio",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12V7H5a2 2 0 010-4h14v4" />
+        <path d="M3 5v14a2 2 0 002 2h16v-5" />
+        <path d="M18 12a2 2 0 000 4h4v-4h-4z" />
+      </svg>
+    ),
+    shortcut: "P",
+  },
+  {
+    href: "/paper-trading",
+    label: "Paper Trading",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+        <polyline points="16 7 22 7 22 13" />
+        <line x1="2" y1="20" x2="22" y2="20" />
+      </svg>
+    ),
+  },
+  {
+    href: "/options",
+    label: "Options",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M14.5 9l-5 6" />
+        <path d="M9.5 9h5v5" />
+      </svg>
+    ),
+  },
+  {
     href: "/screener",
     label: "Screener",
     icon: (

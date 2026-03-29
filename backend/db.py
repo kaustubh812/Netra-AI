@@ -178,6 +178,37 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_news_sentiment_symbol ON news_sentiment(symbol, fetched_at);
             CREATE INDEX IF NOT EXISTS idx_intraday_data_symbol_dt ON intraday_data(symbol, datetime);
             CREATE INDEX IF NOT EXISTS idx_intraday_signals_symbol_dt ON intraday_signals(symbol, datetime);
+
+            CREATE TABLE IF NOT EXISTS portfolio_holdings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                quantity REAL NOT NULL,
+                purchase_price REAL NOT NULL,
+                purchase_date TEXT,
+                notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS paper_trades (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                trade_type TEXT NOT NULL,
+                quantity REAL NOT NULL,
+                entry_price REAL NOT NULL,
+                exit_price REAL,
+                trade_date TEXT NOT NULL,
+                closed_date TEXT,
+                status TEXT DEFAULT 'OPEN',
+                pnl REAL,
+                signal_confidence REAL,
+                stop_loss REAL,
+                target_price REAL,
+                notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_paper_trades_status ON paper_trades(status);
+            CREATE INDEX IF NOT EXISTS idx_paper_trades_symbol ON paper_trades(symbol);
         """)
     logger.info("Database initialized at %s", DB_PATH)
 
@@ -533,6 +564,90 @@ def cleanup_old_intraday_data(days: int = 30):
             (f"-{days} days",),
         )
     logger.info("Cleaned up intraday data older than %d days", days)
+
+
+# ─── Portfolio Helpers ──────────────────────────────────────────────────────
+
+def save_portfolio_holding(symbol: str, quantity: float, purchase_price: float,
+                           purchase_date: Optional[str] = None, notes: Optional[str] = None) -> int:
+    """Add a new portfolio holding. Returns the new row id."""
+    with get_db() as conn:
+        cur = conn.execute(
+            """INSERT INTO portfolio_holdings (symbol, quantity, purchase_price, purchase_date, notes)
+               VALUES (?, ?, ?, ?, ?)""",
+            (symbol, quantity, purchase_price, purchase_date, notes),
+        )
+        return cur.lastrowid
+
+
+def get_all_portfolio_holdings() -> list[dict]:
+    """Get all portfolio holdings."""
+    with get_db() as conn:
+        rows = conn.execute("SELECT * FROM portfolio_holdings ORDER BY created_at DESC").fetchall()
+    return [dict(r) for r in rows]
+
+
+def delete_portfolio_holding(holding_id: int) -> bool:
+    """Delete a portfolio holding by id. Returns True if deleted."""
+    with get_db() as conn:
+        cur = conn.execute("DELETE FROM portfolio_holdings WHERE id = ?", (holding_id,))
+    return cur.rowcount > 0
+
+
+# ─── Paper Trading Helpers ──────────────────────────────────────────────────
+
+def save_paper_trade(symbol: str, trade_type: str, quantity: float, entry_price: float,
+                     trade_date: str, signal_confidence: Optional[float] = None,
+                     stop_loss: Optional[float] = None, target_price: Optional[float] = None,
+                     notes: Optional[str] = None) -> int:
+    """Create a new paper trade. Returns the new row id."""
+    with get_db() as conn:
+        cur = conn.execute(
+            """INSERT INTO paper_trades
+               (symbol, trade_type, quantity, entry_price, trade_date, signal_confidence, stop_loss, target_price, notes)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (symbol, trade_type, quantity, entry_price, trade_date, signal_confidence, stop_loss, target_price, notes),
+        )
+        return cur.lastrowid
+
+
+def get_open_paper_trades() -> list[dict]:
+    """Get all open paper trades."""
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT * FROM paper_trades WHERE status = 'OPEN' ORDER BY created_at DESC"
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def get_closed_paper_trades(limit: int = 50) -> list[dict]:
+    """Get closed paper trades, most recent first."""
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT * FROM paper_trades WHERE status = 'CLOSED' ORDER BY closed_date DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def close_paper_trade(trade_id: int, exit_price: float, closed_date: str, pnl: float) -> bool:
+    """Close a paper trade. Returns True if updated."""
+    with get_db() as conn:
+        cur = conn.execute(
+            """UPDATE paper_trades SET exit_price = ?, closed_date = ?, pnl = ?, status = 'CLOSED'
+               WHERE id = ? AND status = 'OPEN'""",
+            (exit_price, closed_date, pnl, trade_id),
+        )
+    return cur.rowcount > 0
+
+
+def get_all_paper_trades() -> list[dict]:
+    """Get all paper trades (open and closed)."""
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT * FROM paper_trades ORDER BY created_at DESC"
+        ).fetchall()
+    return [dict(r) for r in rows]
 
 
 # Initialize DB on import

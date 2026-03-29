@@ -9,6 +9,7 @@ import { IndicatorPanel } from "@/components/indicator-panel";
 import { BacktestSection } from "@/components/backtest-section";
 import { StockNewsPanel } from "@/components/news-sentiment-card";
 import { FundamentalsPanel } from "@/components/fundamentals-panel";
+import { AnalystPanel } from "@/components/analyst-panel";
 import { SignalBadge } from "@/components/signal-badge";
 
 const INTRADAY_BADGE = "bg-cyan/15 text-cyan border border-cyan/30 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider";
@@ -207,6 +208,13 @@ export default function StockDetailPage({ params }: { params: Promise<{ symbol: 
         <div className="lg:col-span-5">
           <IndicatorPanel stock={stock} />
         </div>
+      </div>
+
+      <div className="section-divider" />
+
+      {/* Analyst Estimates */}
+      <div className="animate-fade-in animate-fade-in-d2">
+        <AnalystPanel symbol={decoded} />
       </div>
 
       <div className="section-divider" />

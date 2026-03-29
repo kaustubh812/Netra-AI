@@ -12,7 +12,7 @@ const DELAY_CLASSES = [
   "animate-fade-in animate-fade-in-d4",
 ] as const;
 
-function IndexCard({ label, data, hero }: { label: string; data?: { value: number; change?: number; change_pct?: number; live?: boolean }; hero?: boolean }) {
+function IndexCard({ label, data, hero, marketOpen }: { label: string; data?: { value: number; change?: number; change_pct?: number; live?: boolean }; hero?: boolean; marketOpen?: boolean }) {
   if (!data) return null;
   const isPositive = (data.change_pct ?? 0) >= 0;
   const glowClass = hero ? (isPositive ? "card-glow-green" : "card-glow-red") : "";
@@ -21,7 +21,7 @@ function IndexCard({ label, data, hero }: { label: string; data?: { value: numbe
     <div className={`glass-card rounded-xl p-4 h-full ${glowClass}`}>
       <div className="flex items-center gap-2 mb-1.5">
         <span className="text-foreground/40 text-xs font-medium tracking-wide">{label}</span>
-        {data.live && (
+        {data.live && marketOpen && (
           <span className="flex items-center gap-1.5">
             <span className="relative w-1.5 h-1.5">
               <span className="absolute inset-0 rounded-full bg-ngreen pulse-ring-green" />
@@ -140,10 +140,10 @@ export function MarketOverviewCard() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 items-stretch">
         <div className={DELAY_CLASSES[0]}>
-          <IndexCard label="NIFTY 50" data={data.nifty50} hero />
+          <IndexCard label="NIFTY 50" data={data.nifty50} hero marketOpen={data.market_open} />
         </div>
         <div className={DELAY_CLASSES[1]}>
-          <IndexCard label="BANK NIFTY" data={data.banknifty} hero />
+          <IndexCard label="BANK NIFTY" data={data.banknifty} hero marketOpen={data.market_open} />
         </div>
         <div className={DELAY_CLASSES[2]}>
           <PcrCard sentiment={data.sentiment} />

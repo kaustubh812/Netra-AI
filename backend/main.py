@@ -421,6 +421,177 @@ def get_screener(
     return {"results": results, "count": len(results), "total": 56, "sectors": sectors}
 
 
+# ─── Paper Trading Endpoints ──────────────────────────────────────────────
+
+@app.get("/api/paper-trading/positions")
+def get_paper_positions():
+    """Get open paper trading positions with live P&L."""
+    from paper_trading import get_open_positions
+    positions = get_open_positions()
+    return {"positions": positions, "count": len(positions)}
+
+
+@app.post("/api/paper-trading/trade")
+def place_paper_trade(
+    symbol: str,
+    trade_type: str,
+    quantity: float,
+    price: float,
+    stop_loss: Optional[float] = None,
+    target_price: Optional[float] = None,
+    signal_confidence: Optional[float] = None,
+    notes: Optional[str] = None,
+):
+    """Place a new paper trade."""
+    import db as _db
+
+    if trade_type not in ("BUY", "SELL"):
+        raise HTTPException(status_code=400, detail="trade_type must be BUY or SELL")
+    if quantity <= 0:
+        raise HTTPException(status_code=400, detail="quantity must be positive")
+    if price <= 0:
+        raise HTTPException(status_code=400, detail="price must be positive")
+
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+
+    trade_date = datetime.now(IST).strftime("%Y-%m-%d")
+    trade_id = _db.save_paper_trade(
+        symbol=symbol, trade_type=trade_type, quantity=quantity,
+        entry_price=price, trade_date=trade_date,
+        signal_confidence=signal_confidence, stop_loss=stop_loss,
+        target_price=target_price, notes=notes,
+    )
+    return {"status": "placed", "id": trade_id, "trade_date": trade_date}
+
+
+@app.post("/api/paper-trading/close/{trade_id}")
+def close_paper_trade_endpoint(trade_id: int, exit_price: float):
+    """Close an open paper trade."""
+    from paper_trading import close_position
+    result = close_position(trade_id, exit_price)
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+    return result
+
+
+@app.get("/api/paper-trading/history")
+def get_paper_trade_history(limit: int = 50):
+    """Get closed paper trades."""
+    import db as _db
+    trades = _db.get_closed_paper_trades(limit)
+    results = []
+    for t in trades:
+        invested = t["entry_price"] * t["quantity"]
+        pnl_pct = round(t["pnl"] / invested * 100, 2) if t["pnl"] is not None and invested > 0 else None
+        results.append({
+            "id": t["id"],
+            "symbol": t["symbol"],
+            "name": t["symbol"].replace(".NS", ""),
+            "trade_type": t["trade_type"],
+            "quantity": t["quantity"],
+            "entry_price": t["entry_price"],
+            "exit_price": t["exit_price"],
+            "pnl": t["pnl"],
+            "pnl_pct": pnl_pct,
+            "trade_date": t["trade_date"],
+            "closed_date": t["closed_date"],
+            "signal_confidence": t["signal_confidence"],
+            "status": t["status"],
+        })
+    return {"trades": results, "count": len(results)}
+
+
+@app.get("/api/paper-trading/stats")
+def get_paper_trading_stats():
+    """Get paper trading performance statistics."""
+    from paper_trading import get_performance_stats
+    return get_performance_stats()
+
+
+@app.get("/api/paper-trading/suggestions")
+def get_paper_trade_suggestions():
+    """Get signal-based trade suggestions for paper trading."""
+    from paper_trading import get_trade_suggestions
+    suggestions = get_trade_suggestions()
+    return {"suggestions": suggestions, "count": len(suggestions)}
+
+
+# ─── Portfolio Endpoints ──────────────────────────────────────────────────
+
+@app.get("/api/portfolio")
+def get_portfolio_endpoint():
+    """Get all portfolio holdings with P&L."""
+    from portfolio import get_portfolio_with_pnl
+    holdings = get_portfolio_with_pnl()
+    return {"holdings": holdings, "count": len(holdings)}
+
+
+@app.post("/api/portfolio/add")
+def add_portfolio_holding_endpoint(
+    symbol: str, quantity: float, purchase_price: float,
+    purchase_date: Optional[str] = None, notes: Optional[str] = None,
+):
+    """Add a holding to portfolio."""
+    import db as _db
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+    row_id = _db.save_portfolio_holding(symbol, quantity, purchase_price, purchase_date, notes)
+    return {"status": "added", "id": row_id}
+
+
+@app.delete("/api/portfolio/{holding_id}")
+def delete_portfolio_holding_endpoint(holding_id: int):
+    """Delete a portfolio holding."""
+    import db as _db
+    ok = _db.delete_portfolio_holding(holding_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Holding not found")
+    return {"status": "deleted"}
+
+
+@app.get("/api/portfolio/summary")
+def get_portfolio_summary_endpoint():
+    """Get aggregated portfolio summary."""
+    from portfolio import get_portfolio_summary, get_sector_exposure
+    return {
+        "summary": get_portfolio_summary(),
+        "sector_exposure": get_sector_exposure(),
+    }
+
+
+# ─── Options Chain Endpoint ──────────────────────────────────────────────
+
+@app.get("/api/options/{symbol}")
+def get_options_chain_endpoint(symbol: str, expiry: Optional[str] = None):
+    """Get full option chain with Greeks for an index."""
+    from option_chain import get_full_option_chain
+    chain = get_full_option_chain(symbol, expiry)
+    if not chain:
+        raise HTTPException(status_code=404, detail=f"No option chain data for {symbol}")
+    return chain
+
+
+# ─── Analyst Estimates Endpoint ──────────────────────────────────────────
+
+@app.get("/api/analyst/{symbol}")
+def get_analyst_estimates_endpoint(symbol: str):
+    """Get analyst price targets and recommendations."""
+    from fundamentals import get_analyst_estimates
+    if not symbol.endswith(".NS") and not symbol.startswith("^"):
+        symbol = symbol + ".NS"
+    return get_analyst_estimates(symbol)
+
+
+# ─── Sector Detail Endpoint ─────────────────────────────────────────────
+
+@app.get("/api/sectors/detail/{sector_name}")
+def get_sector_detail_endpoint(sector_name: str):
+    """Get detailed sector info with constituent stocks."""
+    from sector_rotation import get_sector_detail
+    return get_sector_detail(sector_name)
+
+
 @app.get("/api/stocks")
 def get_stocks():
     """List all tracked stocks with their latest signals and live prices."""
@@ -554,13 +725,20 @@ def get_stock_detail(symbol: str):
 
 
 @app.get("/api/stock/{symbol}/chart")
-def get_stock_chart(symbol: str, period: str = "1Y"):
+def get_stock_chart(symbol: str, period: str = "1Y", interval: Optional[str] = None):
     """OHLCV candlestick data with signal markers for charting."""
     import db
     from data_fetcher import fetch_stock_history
 
     if not symbol.endswith(".NS") and not symbol.startswith("^"):
         symbol = symbol + ".NS"
+
+    # Custom interval mapping (new intraday intervals)
+    custom_interval_map = {
+        "5m": ("5d", "5m"),
+        "15m": ("5d", "15m"),
+        "1h": ("1mo", "1h"),
+    }
 
     # Intraday periods fetched live from yfinance (not stored in DB)
     intraday_map = {
@@ -570,9 +748,15 @@ def get_stock_chart(symbol: str, period: str = "1Y"):
     # Daily periods from DB
     daily_map = {"1M": 22, "3M": 66, "6M": 132, "1Y": 252, "5Y": 1260}
 
-    is_intraday = period in intraday_map
+    is_custom_interval = interval in custom_interval_map
+    is_intraday = period in intraday_map and not is_custom_interval
 
-    if is_intraday:
+    if is_custom_interval:
+        yf_period, yf_interval = custom_interval_map[interval]
+        price_df = fetch_stock_history(symbol, period=yf_period, interval=yf_interval)
+        if price_df.empty:
+            raise HTTPException(status_code=404, detail=f"No intraday data for {symbol}")
+    elif is_intraday:
         yf_period, yf_interval = intraday_map[period]
         price_df = fetch_stock_history(symbol, period=yf_period, interval=yf_interval)
         if price_df.empty:
@@ -628,7 +812,21 @@ def get_stock_chart(symbol: str, period: str = "1Y"):
                 "text": f"SELL ({sig['confidence']:.0f}%)",
             })
 
-    return {"symbol": symbol, "candles": candles, "markers": markers}
+    # Calculate VWAP for intraday intervals
+    vwap_data = []
+    if is_custom_interval or is_intraday:
+        cum_vol = 0
+        cum_tp_vol = 0
+        for _, row in price_df.iterrows():
+            vol = int(row["volume"]) if pd.notna(row["volume"]) else 0
+            tp = (float(row["high"]) + float(row["low"]) + float(row["close"])) / 3
+            cum_vol += vol
+            cum_tp_vol += tp * vol
+            vwap_val = round(cum_tp_vol / cum_vol, 2) if cum_vol > 0 else 0
+            ts = pd.Timestamp(row["date"])
+            vwap_data.append({"time": int(ts.timestamp()), "value": vwap_val})
+
+    return {"symbol": symbol, "candles": candles, "markers": markers, "vwap": vwap_data}
 
 
 @app.get("/api/signals/latest")

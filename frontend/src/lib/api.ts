@@ -6,8 +6,19 @@ async function fetchApi<T>(path: string): Promise<T> {
   return res.json();
 }
 
-async function postApi<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, { method: "POST", cache: "no-store" });
+async function postApi<T>(path: string, body?: Record<string, unknown>): Promise<T> {
+  const opts: RequestInit = { method: "POST", cache: "no-store" };
+  if (body) {
+    opts.headers = { "Content-Type": "application/json" };
+    opts.body = JSON.stringify(body);
+  }
+  const res = await fetch(`${API_BASE}${path}`, opts);
+  if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
+  return res.json();
+}
+
+async function deleteApi<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, { method: "DELETE", cache: "no-store" });
   if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
   return res.json();
 }
@@ -67,6 +78,7 @@ export interface ChartData {
   symbol: string;
   candles: Candle[];
   markers: ChartMarker[];
+  vwap?: { time: number; value: number }[];
 }
 
 export interface BacktestResult {
@@ -218,7 +230,11 @@ export const api = {
   getStocks: () => fetchApi<{ stocks: StockInfo[]; count: number; market_open?: boolean }>("/api/stocks"),
   getLivePrices: () => fetchApi<LivePrices>("/api/live-prices"),
   getStock: (symbol: string) => fetchApi<StockDetail>(`/api/stock/${symbol}`),
-  getChart: (symbol: string, period = "1Y") => fetchApi<ChartData>(`/api/stock/${symbol}/chart?period=${period}`),
+  getChart: (symbol: string, period = "1Y", interval?: string) => {
+    let url = `/api/stock/${symbol}/chart?period=${period}`;
+    if (interval) url += `&interval=${interval}`;
+    return fetchApi<ChartData>(url);
+  },
   getLatestSignals: () => fetchApi<{ signals: Signal[]; count: number }>("/api/signals/latest"),
   getBacktest: (symbol: string) => fetchApi<BacktestResult>(`/api/backtest/${symbol}`),
   getMarketOverview: () => fetchApi<MarketOverview>("/api/market-overview"),
@@ -245,6 +261,35 @@ export const api = {
   getPeerComparison: (symbol: string) => fetchApi<PeerComparison>(`/api/peer-comparison/${symbol}`),
   getEconomicCalendar: () => fetchApi<{ events: EconomicEvent[]; count: number }>("/api/calendar/economic"),
   getEarningsCalendar: () => fetchApi<{ earnings: EarningsEvent[]; count: number }>("/api/calendar/earnings"),
+  // Portfolio
+  getPortfolio: () => fetchApi<{ holdings: PortfolioHolding[]; count: number }>("/api/portfolio"),
+  getPortfolioSummary: () => fetchApi<{ summary: PortfolioSummary; sector_exposure: SectorExposure[] }>("/api/portfolio/summary"),
+  addPortfolioHolding: (symbol: string, quantity: number, purchase_price: number, purchase_date?: string, notes?: string) =>
+    postApi<{ status: string; id: number }>(`/api/portfolio/add?symbol=${encodeURIComponent(symbol)}&quantity=${quantity}&purchase_price=${purchase_price}${purchase_date ? `&purchase_date=${purchase_date}` : ""}${notes ? `&notes=${encodeURIComponent(notes)}` : ""}`),
+  deletePortfolioHolding: (id: number) => deleteApi<{ status: string }>(`/api/portfolio/${id}`),
+  // Options
+  getOptionsChain: (symbol: string, expiry?: string) =>
+    fetchApi<OptionChainData>(`/api/options/${symbol}${expiry ? `?expiry=${encodeURIComponent(expiry)}` : ""}`),
+  // Analyst
+  getAnalystEstimates: (symbol: string) => fetchApi<AnalystEstimates>(`/api/analyst/${symbol}`),
+  // Sector Detail
+  getSectorDetail: (sector: string) => fetchApi<SectorDetail>(`/api/sectors/detail/${encodeURIComponent(sector)}`),
+  // Paper Trading
+  getPaperPositions: () => fetchApi<{ positions: PaperPosition[]; count: number }>("/api/paper-trading/positions"),
+  placePaperTrade: (symbol: string, trade_type: string, quantity: number, price: number, stop_loss?: number, target_price?: number, signal_confidence?: number, notes?: string) => {
+    let url = `/api/paper-trading/trade?symbol=${encodeURIComponent(symbol)}&trade_type=${trade_type}&quantity=${quantity}&price=${price}`;
+    if (stop_loss !== undefined) url += `&stop_loss=${stop_loss}`;
+    if (target_price !== undefined) url += `&target_price=${target_price}`;
+    if (signal_confidence !== undefined) url += `&signal_confidence=${signal_confidence}`;
+    if (notes) url += `&notes=${encodeURIComponent(notes)}`;
+    return postApi<{ status: string; id: number }>(url);
+  },
+  closePaperTrade: (id: number, exit_price: number) =>
+    postApi<{ status: string; trade_id: number; pnl: number }>(`/api/paper-trading/close/${id}?exit_price=${exit_price}`),
+  getPaperTradeHistory: (limit = 50) =>
+    fetchApi<{ trades: PaperTrade[]; count: number }>(`/api/paper-trading/history?limit=${limit}`),
+  getPaperTradingStats: () => fetchApi<PaperTradingStats>("/api/paper-trading/stats"),
+  getTradeSuggestions: () => fetchApi<{ suggestions: TradeSuggestion[]; count: number }>("/api/paper-trading/suggestions"),
 };
 
 // Phase 2+ Types
@@ -311,4 +356,172 @@ export interface EarningsEvent {
   eps_actual: number | null;
   revenue_estimate: number | null;
   revenue_actual: number | null;
+}
+
+// Portfolio types
+export interface PortfolioHolding {
+  id: number;
+  symbol: string;
+  name: string;
+  quantity: number;
+  purchase_price: number;
+  purchase_date: string | null;
+  notes: string | null;
+  ltp: number | null;
+  change_pct: number | null;
+  invested: number;
+  current_value: number | null;
+  pnl: number | null;
+  pnl_pct: number | null;
+  signal: string | null;
+  sector: string;
+}
+
+export interface PortfolioSummary {
+  total_invested: number;
+  current_value: number;
+  unrealized_pnl: number;
+  unrealized_pnl_pct: number;
+  day_pnl: number;
+  holdings_count: number;
+}
+
+export interface SectorExposure {
+  sector: string;
+  value: number;
+  pct: number;
+}
+
+// Options types
+export interface OptionStrike {
+  strike: number;
+  call_oi: number;
+  call_change_oi: number;
+  call_ltp: number;
+  call_iv: number;
+  call_delta: number;
+  call_gamma: number;
+  call_theta: number;
+  call_vega: number;
+  put_oi: number;
+  put_change_oi: number;
+  put_ltp: number;
+  put_iv: number;
+  put_delta: number;
+  put_gamma: number;
+  put_theta: number;
+  put_vega: number;
+}
+
+export interface OptionChainData {
+  symbol: string;
+  underlying: number;
+  expiry: string;
+  expiry_dates: string[];
+  strikes: OptionStrike[];
+  pcr: number;
+  max_pain: number;
+  atm_strike: number;
+  total_call_oi: number;
+  total_put_oi: number;
+  source?: string;
+}
+
+// Analyst types
+export interface AnalystEstimates {
+  symbol: string;
+  name: string;
+  current_price: number | null;
+  target_mean: number | null;
+  target_high: number | null;
+  target_low: number | null;
+  num_analysts: number | null;
+  recommendation: string | null;
+  recommendation_mean: number | null;
+  upside_pct: number | null;
+  available: boolean;
+}
+
+// Paper trading types
+export interface PaperPosition {
+  id: number;
+  symbol: string;
+  name: string;
+  trade_type: string;
+  quantity: number;
+  entry_price: number;
+  ltp: number | null;
+  unrealized_pnl: number | null;
+  unrealized_pnl_pct: number | null;
+  signal: string | null;
+  signal_alignment: boolean;
+  stop_loss: number | null;
+  target_price: number | null;
+  trade_date: string;
+  signal_confidence: number | null;
+  notes: string | null;
+}
+
+export interface PaperTrade {
+  id: number;
+  symbol: string;
+  name: string;
+  trade_type: string;
+  quantity: number;
+  entry_price: number;
+  exit_price: number | null;
+  pnl: number | null;
+  pnl_pct: number | null;
+  trade_date: string;
+  closed_date: string | null;
+  signal_confidence: number | null;
+  status: string;
+}
+
+export interface PaperTradingStats {
+  total_trades: number;
+  open_count: number;
+  closed_count: number;
+  win_rate: number;
+  avg_return_pct: number;
+  total_realized_pnl: number;
+  total_unrealized_pnl: number;
+  best_trade: { symbol: string; pnl: number } | null;
+  worst_trade: { symbol: string; pnl: number } | null;
+  profit_factor: number;
+}
+
+export interface TradeSuggestion {
+  symbol: string;
+  name: string;
+  signal: string;
+  confidence: number;
+  entry_price: number;
+  stop_loss: number;
+  target_price: number;
+  composite_score: number;
+  ltp: number | null;
+}
+
+// Sector detail types
+export interface SectorDetailStock {
+  symbol: string;
+  name: string;
+  ltp?: number;
+  change_pct?: number;
+  signal?: string;
+  confidence?: number;
+  pe?: number | null;
+  roe?: number | null;
+  market_cap?: number | null;
+}
+
+export interface SectorDetail {
+  sector: string;
+  momentum_score: number | null;
+  rank: number | null;
+  avg_return: number | null;
+  breadth: number | null;
+  stocks: SectorDetailStock[];
+  count: number;
 }

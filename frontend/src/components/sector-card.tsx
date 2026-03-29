@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { api, SectorsOverview } from "@/lib/api";
 
 export function SectorRotationCard() {
@@ -49,9 +50,12 @@ export function SectorRotationCard() {
                 <span className={`font-mono w-5 text-right flex-shrink-0 ${isTop3 ? "text-ngreen" : isBottom3 ? "text-nred" : "text-foreground/25"}`}>
                   #{score.rank}
                 </span>
-                <span className={`truncate ${isTop3 ? "text-ngreen/90 font-medium" : isBottom3 ? "text-nred/90 font-medium" : ""}`}>
+                <Link
+                  href={`/sector/${encodeURIComponent(sector)}`}
+                  className={`truncate hover:text-cyan transition-colors ${isTop3 ? "text-ngreen/90 font-medium" : isBottom3 ? "text-nred/90 font-medium" : ""}`}
+                >
                   {sector}
-                </span>
+                </Link>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                 <div className="w-10 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">

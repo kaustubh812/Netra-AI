@@ -27,6 +27,8 @@ _FUNDAMENTAL_KEYS = [
     "dividendYield", "bookValue", "earningsQuarterlyGrowth", "pegRatio",
     "trailingEps", "forwardEps", "sector", "industry", "beta",
     "fiftyTwoWeekHigh", "fiftyTwoWeekLow",
+    "targetMeanPrice", "targetHighPrice", "targetLowPrice",
+    "numberOfAnalystOpinions", "recommendationKey", "recommendationMean",
 ]
 
 
@@ -206,4 +208,46 @@ def get_stock_fundamentals(symbol: str) -> dict:
         "fundamentals": data,
         "score": score,
         "label": label,
+    }
+
+
+def get_analyst_estimates(symbol: str) -> dict:
+    """Get analyst estimates: price targets, recommendation, upside/downside."""
+    data = db.get_fundamentals(symbol)
+    if not data:
+        return {"symbol": symbol, "available": False}
+
+    from live_prices import fetch_live_prices
+    live = fetch_live_prices()
+    lp = live.get(symbol)
+    current_price = lp["price"] if lp else None
+
+    if not current_price:
+        price_df = db.get_stock_data(symbol)
+        if not price_df.empty:
+            current_price = float(price_df.iloc[-1]["close"])
+
+    target_mean = data.get("targetMeanPrice")
+    target_high = data.get("targetHighPrice")
+    target_low = data.get("targetLowPrice")
+    num_analysts = data.get("numberOfAnalystOpinions")
+    rec_key = data.get("recommendationKey")
+    rec_mean = data.get("recommendationMean")
+
+    upside = None
+    if current_price and target_mean:
+        upside = round((target_mean - current_price) / current_price * 100, 2)
+
+    return {
+        "symbol": symbol,
+        "name": symbol.replace(".NS", ""),
+        "current_price": current_price,
+        "target_mean": target_mean,
+        "target_high": target_high,
+        "target_low": target_low,
+        "num_analysts": num_analysts,
+        "recommendation": rec_key,
+        "recommendation_mean": rec_mean,
+        "upside_pct": upside,
+        "available": target_mean is not None,
     }
