@@ -5,10 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 const CHART_COLORS = [
-  "#00e5ff", // cyan
+  "#22d3ee", // cyan
   "#a78bfa", // purple
-  "#00c853", // green
-  "#ff1744", // red
+  "#10b981", // green
+  "#f43f5e", // red
   "#ffab00", // amber
 ];
 

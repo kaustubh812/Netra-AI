@@ -39,6 +39,28 @@ async def lifespan(app: FastAPI):
     scheduler = create_scheduler()
     scheduler.start()
     logger.info("Netra backend started — scheduler active")
+
+    # Warm up caches in background thread so first request is fast
+    import threading
+    def _warmup():
+        from live_prices import warmup_cache
+        warmup_cache()
+        # Also warm regime cache
+        try:
+            from regime_detector import detect_nifty_regime
+            detect_nifty_regime()
+            logger.info("Regime cache warmed up")
+        except Exception as e:
+            logger.error("Regime warmup failed: %s", e)
+        # Warm sentiment cache (NSE/VIX — has 1.5s sleeps)
+        try:
+            from option_chain import get_market_sentiment
+            get_market_sentiment()
+            logger.info("Sentiment cache warmed up")
+        except Exception as e:
+            logger.error("Sentiment warmup failed: %s", e)
+    threading.Thread(target=_warmup, daemon=True).start()
+
     yield
     scheduler.shutdown()
     logger.info("Netra backend shut down")
@@ -67,6 +89,112 @@ app.add_middleware(
 def root():
     return {"name": "Netra (नेत्र)", "tagline": "The eye that sees the market", "status": "running"}
 
+
+@app.get("/api/dashboard")
+def get_dashboard():
+    """
+    Combined dashboard endpoint — returns market overview, stocks, portfolio
+    stats, and regime all in one call. Uses cached prices (non-blocking).
+    If the cache is cold, uses DB data and the background thread fills it.
+    """
+    import db
+    from live_prices import _price_cache, is_market_open
+    from option_chain import get_market_sentiment
+    from regime_detector import detect_nifty_regime
+    from paper_trading import get_performance_stats
+
+    # Use whatever is in the price cache (don't trigger a new download)
+    live = dict(_price_cache)
+    market_open = is_market_open()
+
+    # Start a background price refresh if cache is empty
+    if not live:
+        import threading
+        from live_prices import fetch_live_prices as _fetch_prices
+        threading.Thread(target=_fetch_prices, daemon=True).start()
+
+    # 2. Market overview
+    overview = {"timestamp": datetime.now(IST).isoformat(), "market_open": market_open}
+    for idx_symbol in INDEX_SYMBOLS:
+        name = "nifty50" if idx_symbol == "^NSEI" else "banknifty"
+        lp = live.get(idx_symbol)
+        if lp:
+            overview[name] = {
+                "value": lp["price"], "change": lp["change"],
+                "change_pct": lp["change_pct"], "high": lp["high"],
+                "low": lp["low"], "prev_close": lp["prev_close"], "live": True,
+            }
+        else:
+            price_df = db.get_stock_data(idx_symbol)
+            if not price_df.empty:
+                latest = price_df.iloc[-1]
+                overview[name] = {"value": float(latest["close"]), "date": str(latest["date"]), "live": False}
+                if len(price_df) > 1:
+                    prev = float(price_df.iloc[-2]["close"])
+                    overview[name]["change"] = round(float(latest["close"]) - prev, 2)
+                    overview[name]["change_pct"] = round(((float(latest["close"]) - prev) / prev) * 100, 2)
+
+    # Sentiment — use cache if available, don't block on first fetch
+    from option_chain import _sentiment_cache
+    if _sentiment_cache:
+        overview["sentiment"] = _sentiment_cache
+    else:
+        # Return placeholder; background warmup will fill the cache
+        overview["sentiment"] = {"pcr": None, "available": False, "source": None}
+
+    # Breadth from signals
+    signals_df = db.get_latest_signals()
+    if not signals_df.empty:
+        bullish = len(signals_df[signals_df["signal"] == "BUY"])
+        bearish = len(signals_df[signals_df["signal"] == "SELL"])
+        neutral = len(signals_df[signals_df["signal"] == "HOLD"])
+        overview["breadth"] = {"bullish": bullish, "bearish": bearish, "neutral": neutral, "total": len(signals_df)}
+
+    # 3. Stocks list (reusing cached live prices + signals_df)
+    stocks = []
+    for symbol in NIFTY_50_STOCKS:
+        stock_info = {"symbol": symbol, "name": symbol.replace(".NS", "")}
+        lp = live.get(symbol)
+        if lp:
+            stock_info.update({
+                "ltp": lp["price"], "change": lp["change"], "change_pct": lp["change_pct"],
+                "day_high": lp["high"], "day_low": lp["low"], "volume": lp["volume"],
+                "prev_close": lp["prev_close"], "live": True,
+            })
+        else:
+            price_df = db.get_stock_data(symbol)
+            if not price_df.empty:
+                latest_row = price_df.iloc[-1]
+                stock_info["ltp"] = float(latest_row["close"])
+                if len(price_df) > 1:
+                    prev_close = float(price_df.iloc[-2]["close"])
+                    stock_info["change"] = round(float(latest_row["close"]) - prev_close, 2)
+                    stock_info["change_pct"] = round(((float(latest_row["close"]) - prev_close) / prev_close) * 100, 2)
+                stock_info["live"] = False
+
+        sig_row = signals_df[signals_df["symbol"] == symbol] if not signals_df.empty else pd.DataFrame()
+        if not sig_row.empty:
+            sig = sig_row.iloc[0]
+            stock_info.update({
+                "signal": sig["signal"], "confidence": float(sig["confidence"]),
+                "entry_price": float(sig["entry_price"]), "stop_loss": float(sig["stop_loss"]),
+                "target_price": float(sig["target_price"]), "composite_score": float(sig["composite_score"]),
+            })
+        stocks.append(stock_info)
+
+    # 4. Regime — use cache if available, don't block on first compute
+    from regime_detector import _regime_cache
+    regime = _regime_cache if _regime_cache else {"regime": "ranging", "confidence": 0.0, "metrics": {}}
+
+    # 5. Paper trading stats (fast DB read)
+    paper_stats = get_performance_stats()
+
+    return {
+        "market_overview": overview,
+        "stocks": {"stocks": stocks, "count": len(stocks), "market_open": market_open},
+        "regime": regime,
+        "paper_stats": paper_stats,
+    }
 
 # ─── Watchlist Endpoints ──────────────────────────────────────────────────
 
@@ -968,11 +1096,59 @@ def get_sectors_endpoint():
     return {"sectors": scores, "count": len(scores)}
 
 
+@app.get("/api/global-markets")
+def get_global_markets_endpoint():
+    """Get global market indices for world map display."""
+    from global_markets import get_global_markets
+    return get_global_markets()
+
+
 @app.get("/api/macro")
 def get_macro_endpoint():
     """Get macro environment indicators and score."""
     from macro_signals import get_macro_overview
     return get_macro_overview()
+
+
+@app.get("/api/anomalies")
+def get_anomalies_endpoint():
+    """Scan for unusual market activity."""
+    from anomaly_detector import scan_anomalies
+    return scan_anomalies()
+
+
+@app.get("/api/breadth")
+def get_breadth_endpoint():
+    """Get market breadth indicators."""
+    from market_breadth import compute_breadth
+    return compute_breadth()
+
+
+@app.get("/api/daily-brief")
+def get_daily_brief():
+    """Get AI-generated market daily brief."""
+    from daily_brief import generate_daily_brief
+    return generate_daily_brief()
+
+
+@app.get("/api/position-size")
+def get_position_size(
+    account_size: float,
+    risk_pct: float,
+    entry_price: float,
+    stop_loss: float,
+    target_price: float = None,
+):
+    """Calculate optimal position size based on risk parameters."""
+    from position_sizing import calculate_position_size
+    return calculate_position_size(account_size, risk_pct, entry_price, stop_loss, target_price)
+
+
+@app.get("/api/position-size/kelly")
+def get_kelly_criterion():
+    """Get Kelly Criterion from paper trading history."""
+    from position_sizing import get_kelly_from_paper_trading
+    return get_kelly_from_paper_trading()
 
 
 @app.post("/api/fundamentals/refresh")

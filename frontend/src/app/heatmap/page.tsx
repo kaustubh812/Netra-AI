@@ -21,31 +21,31 @@ function getColorForMode(stock: StockInfo, mode: ColorMode): string {
   switch (mode) {
     case "change": {
       const pct = stock.change_pct ?? 0;
-      if (pct > 3) return "rgba(0,200,83,0.6)";
-      if (pct > 1.5) return "rgba(0,200,83,0.4)";
-      if (pct > 0) return "rgba(0,200,83,0.2)";
-      if (pct > -1.5) return "rgba(255,23,68,0.2)";
-      if (pct > -3) return "rgba(255,23,68,0.4)";
-      return "rgba(255,23,68,0.6)";
+      if (pct > 3) return "rgba(16,185,129,0.6)";
+      if (pct > 1.5) return "rgba(16,185,129,0.4)";
+      if (pct > 0) return "rgba(16,185,129,0.2)";
+      if (pct > -1.5) return "rgba(244,63,94,0.2)";
+      if (pct > -3) return "rgba(244,63,94,0.4)";
+      return "rgba(244,63,94,0.6)";
     }
     case "signal": {
-      if (stock.signal === "BUY") return "rgba(0,200,83,0.35)";
-      if (stock.signal === "SELL") return "rgba(255,23,68,0.35)";
+      if (stock.signal === "BUY") return "rgba(16,185,129,0.35)";
+      if (stock.signal === "SELL") return "rgba(244,63,94,0.35)";
       return "rgba(255,255,255,0.05)";
     }
     case "composite": {
       const score = stock.composite_score ?? 0.5;
-      if (score > 0.7) return "rgba(0,200,83,0.5)";
-      if (score > 0.6) return "rgba(0,200,83,0.25)";
+      if (score > 0.7) return "rgba(16,185,129,0.5)";
+      if (score > 0.6) return "rgba(16,185,129,0.25)";
       if (score > 0.4) return "rgba(255,171,0,0.2)";
-      if (score > 0.3) return "rgba(255,23,68,0.25)";
-      return "rgba(255,23,68,0.5)";
+      if (score > 0.3) return "rgba(244,63,94,0.25)";
+      return "rgba(244,63,94,0.5)";
     }
     case "strength": {
       const conf = stock.confidence ?? 0;
       const alpha = Math.min(0.7, 0.1 + (conf / 100) * 0.6);
-      if (stock.signal === "BUY") return `rgba(0,200,83,${alpha})`;
-      if (stock.signal === "SELL") return `rgba(255,23,68,${alpha})`;
+      if (stock.signal === "BUY") return `rgba(16,185,129,${alpha})`;
+      if (stock.signal === "SELL") return `rgba(244,63,94,${alpha})`;
       return `rgba(255,171,0,${alpha * 0.5})`;
     }
   }
@@ -54,10 +54,10 @@ function getColorForMode(stock: StockInfo, mode: ColorMode): string {
 function getTextColor(stock: StockInfo, mode: ColorMode): string {
   switch (mode) {
     case "change":
-      return (stock.change_pct ?? 0) >= 0 ? "rgba(0,200,83,0.9)" : "rgba(255,23,68,0.9)";
+      return (stock.change_pct ?? 0) >= 0 ? "rgba(16,185,129,0.9)" : "rgba(244,63,94,0.9)";
     case "signal":
-      if (stock.signal === "BUY") return "rgba(0,200,83,0.9)";
-      if (stock.signal === "SELL") return "rgba(255,23,68,0.9)";
+      if (stock.signal === "BUY") return "rgba(16,185,129,0.9)";
+      if (stock.signal === "SELL") return "rgba(244,63,94,0.9)";
       return "rgba(255,255,255,0.4)";
     default:
       return "rgba(255,255,255,0.7)";
@@ -154,7 +154,7 @@ export default function HeatmapPage() {
                 <div
                   className="text-[10px] font-mono mt-0.5"
                   style={{
-                    color: (stock.change_pct ?? 0) >= 0 ? "rgba(0,200,83,0.8)" : "rgba(255,23,68,0.8)",
+                    color: (stock.change_pct ?? 0) >= 0 ? "rgba(16,185,129,0.8)" : "rgba(244,63,94,0.8)",
                   }}
                 >
                   {(stock.change_pct ?? 0) >= 0 ? "+" : ""}{stock.change_pct?.toFixed(1)}%

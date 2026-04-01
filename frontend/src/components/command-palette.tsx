@@ -152,21 +152,21 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md" onClick={onClose} />
 
       {/* Palette */}
       <div className="fixed top-[15%] left-1/2 -translate-x-1/2 z-50 w-full max-w-xl">
         <div
           className="rounded-xl overflow-hidden shadow-2xl"
           style={{
-            background: "rgba(12, 12, 22, 0.95)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(0,229,255,0.05)",
+            background: "rgba(8, 8, 16, 0.96)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 25px 60px rgba(0,0,0,0.55), 0 0 60px rgba(34,211,238,0.06), 0 0 120px rgba(167,139,250,0.03)",
           }}
         >
           {/* Input */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06]">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-cyan/50 shrink-0">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.05]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-cyan/60 shrink-0">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -195,8 +195,8 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
                   key={item.id}
                   onClick={() => execute(item)}
                   onMouseEnter={() => setSelectedIndex(i)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                    i === selectedIndex ? "bg-cyan/8 text-foreground" : "text-foreground/60 hover:bg-white/[0.03]"
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all duration-150 ${
+                    i === selectedIndex ? "bg-cyan/10 text-foreground" : "text-foreground/60 hover:bg-white/[0.03]"
                   }`}
                 >
                   {TYPE_ICONS[item.type]}
@@ -217,7 +217,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           </div>
 
           {/* Footer */}
-          <div className="flex items-center gap-4 px-4 py-2 border-t border-white/[0.06] text-[10px] text-foreground/15">
+          <div className="flex items-center gap-4 px-4 py-2 border-t border-white/[0.05] text-[10px] text-foreground/15">
             <span><kbd className="font-mono bg-white/[0.05] px-1 py-0.5 rounded">&uarr;&darr;</kbd> navigate</span>
             <span><kbd className="font-mono bg-white/[0.05] px-1 py-0.5 rounded">&crarr;</kbd> select</span>
             <span><kbd className="font-mono bg-white/[0.05] px-1 py-0.5 rounded">esc</kbd> close</span>

@@ -125,7 +125,7 @@ export function IntradaySignalTable() {
                         className="confidence-bar-fill"
                         style={{
                           width: `${sig.confidence}%`,
-                          backgroundColor: sig.confidence > 65 ? "rgba(0,200,83,0.7)" : sig.confidence > 45 ? "rgba(255,171,0,0.7)" : "rgba(255,23,68,0.7)",
+                          backgroundColor: sig.confidence > 65 ? "rgba(16,185,129,0.7)" : sig.confidence > 45 ? "rgba(255,171,0,0.7)" : "rgba(244,63,94,0.7)",
                         }}
                       />
                     </div>

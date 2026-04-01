@@ -9,13 +9,13 @@ const PILL_ACTIVE = "bg-cyan/20 text-cyan border-cyan/40";
 const PILL_INACTIVE = "bg-white/[0.03] text-foreground/40 border-white/[0.08] hover:bg-white/[0.06]";
 
 function corrColor(val: number): string {
-  if (val >= 0.7) return "rgba(0,200,83,0.5)";
-  if (val >= 0.4) return "rgba(0,200,83,0.25)";
-  if (val >= 0.1) return "rgba(0,200,83,0.1)";
+  if (val >= 0.7) return "rgba(16,185,129,0.5)";
+  if (val >= 0.4) return "rgba(16,185,129,0.25)";
+  if (val >= 0.1) return "rgba(16,185,129,0.1)";
   if (val >= -0.1) return "rgba(255,255,255,0.03)";
-  if (val >= -0.4) return "rgba(255,23,68,0.1)";
-  if (val >= -0.7) return "rgba(255,23,68,0.25)";
-  return "rgba(255,23,68,0.5)";
+  if (val >= -0.4) return "rgba(244,63,94,0.1)";
+  if (val >= -0.7) return "rgba(244,63,94,0.25)";
+  return "rgba(244,63,94,0.5)";
 }
 
 export function CorrelationMatrix() {
@@ -87,7 +87,7 @@ export function CorrelationMatrix() {
                         onMouseLeave={() => setHoveredCell(null)}
                         className="aspect-square rounded-sm cursor-crosshair transition-opacity"
                         style={{
-                          backgroundColor: i === j ? "rgba(0,229,255,0.15)" : corrColor(val),
+                          backgroundColor: i === j ? "rgba(34,211,238,0.15)" : corrColor(val),
                           opacity: hoveredCell && (hoveredCell.i === i || hoveredCell.j === j) ? 1 : hoveredCell ? 0.5 : 1,
                         }}
                         title={`${s1} vs ${s2}: ${val.toFixed(3)}`}
@@ -101,7 +101,7 @@ export function CorrelationMatrix() {
             {/* Legend */}
             <div className="flex items-center gap-2 mt-3 text-[10px] text-foreground/25">
               <span>-1.0</span>
-              <div className="flex-1 h-2 rounded" style={{ background: "linear-gradient(90deg, rgba(255,23,68,0.5), rgba(255,255,255,0.03), rgba(0,200,83,0.5))" }} />
+              <div className="flex-1 h-2 rounded" style={{ background: "linear-gradient(90deg, rgba(244,63,94,0.5), rgba(255,255,255,0.03), rgba(16,185,129,0.5))" }} />
               <span>+1.0</span>
             </div>
           </div>

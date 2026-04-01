@@ -30,10 +30,16 @@ export function NewsTicker() {
   const items = [...headlines, ...headlines];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-white/[0.06]" style={{ background: "rgba(7,7,13,0.9)", backdropFilter: "blur(12px)" }}>
+    <div
+      className="fixed bottom-0 left-0 right-0 z-30 border-t border-white/[0.05]"
+      style={{
+        background: "rgba(6, 6, 12, 0.92)",
+        backdropFilter: "blur(16px) saturate(140%)",
+      }}
+    >
       <div className="flex items-center h-8 overflow-hidden">
         {/* Label */}
-        <div className="shrink-0 px-3 flex items-center gap-1.5 border-r border-white/[0.06] h-full bg-white/[0.02]">
+        <div className="shrink-0 px-3 flex items-center gap-1.5 border-r border-white/[0.05] h-full bg-white/[0.02]">
           <span className="w-1.5 h-1.5 rounded-full bg-ngreen pulse-ring-green" />
           <span className="text-[10px] font-mono text-foreground/30 uppercase tracking-wider">LIVE</span>
         </div>

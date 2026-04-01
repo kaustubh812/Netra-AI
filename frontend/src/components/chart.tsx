@@ -28,7 +28,7 @@ const DAILY_PERIODS = ["1D", "1W", "1M", "3M", "6M", "1Y", "5Y"] as const;
 const INTRADAY_INTERVALS = ["5m", "15m", "1H"] as const;
 const ALL_PERIODS = [...INTRADAY_INTERVALS, ...DAILY_PERIODS] as const;
 
-const PERIOD_ACTIVE = "bg-cyan/15 text-cyan border border-cyan/30 shadow-[0_0_8px_rgba(0,229,255,0.15)]";
+const PERIOD_ACTIVE = "bg-cyan/15 text-cyan border border-cyan/30 shadow-[0_0_8px_rgba(34,211,238,0.15)]";
 const PERIOD_INACTIVE = "bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground hover:bg-white/[0.06]";
 const INTRADAY_ACTIVE = "bg-purple/15 text-purple border border-purple/30 shadow-[0_0_8px_rgba(167,139,250,0.15)]";
 const INTRADAY_INACTIVE = "bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground hover:bg-white/[0.06]";
@@ -61,8 +61,8 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
       },
       crosshair: {
         mode: 0,
-        vertLine: { color: "#00e5ff40", width: 1, style: 2 },
-        horzLine: { color: "#00e5ff40", width: 1, style: 2 },
+        vertLine: { color: "#22d3ee40", width: 1, style: 2 },
+        horzLine: { color: "#22d3ee40", width: 1, style: 2 },
       },
       timeScale: {
         borderColor: "rgba(255,255,255,0.06)",
@@ -80,12 +80,12 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
     chartInstance.current = chart;
 
     const candleSeries = chart.addSeries(CandlestickSeries, {
-      upColor: "#00c853",
-      downColor: "#ff1744",
-      borderUpColor: "#00c853",
-      borderDownColor: "#ff1744",
-      wickUpColor: "#00c85380",
-      wickDownColor: "#ff174480",
+      upColor: "#10b981",
+      downColor: "#f43f5e",
+      borderUpColor: "#10b981",
+      borderDownColor: "#f43f5e",
+      wickUpColor: "#10b98180",
+      wickDownColor: "#f43f5e80",
     });
 
     const volumeSeries = chart.addSeries(HistogramSeries, {
@@ -111,7 +111,7 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
         const volumes: HistogramData<Time>[] = data.candles.map((c) => ({
           time: (typeof c.time === "number" ? c.time : c.time) as Time,
           value: c.volume,
-          color: c.close >= c.open ? "#00c85320" : "#ff174420",
+          color: c.close >= c.open ? "#10b98120" : "#f43f5e20",
         }));
 
         candleSeries.setData(candles);
@@ -121,7 +121,7 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
         if (entryPrice) {
           candleSeries.createPriceLine({
             price: entryPrice,
-            color: "#00e5ff",
+            color: "#22d3ee",
             lineWidth: 1,
             lineStyle: 2,
             axisLabelVisible: true,
@@ -131,7 +131,7 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
         if (stopLoss) {
           candleSeries.createPriceLine({
             price: stopLoss,
-            color: "#ff1744",
+            color: "#f43f5e",
             lineWidth: 1,
             lineStyle: 2,
             axisLabelVisible: true,
@@ -141,7 +141,7 @@ export function StockChart({ symbol, entryPrice, stopLoss, targetPrice, signal }
         if (targetPrice) {
           candleSeries.createPriceLine({
             price: targetPrice,
-            color: "#00c853",
+            color: "#10b981",
             lineWidth: 1,
             lineStyle: 2,
             axisLabelVisible: true,

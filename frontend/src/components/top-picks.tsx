@@ -62,7 +62,7 @@ function PickCard({ signal, delay }: { signal: Signal; delay: string }) {
               className="confidence-bar-fill"
               style={{
                 width: `${signal.confidence}%`,
-                backgroundColor: isBuy ? "rgba(0,200,83,0.7)" : "rgba(255,23,68,0.7)",
+                backgroundColor: isBuy ? "rgba(16,185,129,0.7)" : "rgba(244,63,94,0.7)",
               }}
             />
           </div>

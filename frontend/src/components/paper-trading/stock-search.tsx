@@ -87,9 +87,9 @@ export function StockSearch({ stocks, onSelect, selectedSymbol }: StockSearchPro
           ref={dropdownRef}
           className="absolute top-full left-0 right-0 mt-1 z-50 glass-card rounded-xl overflow-hidden max-h-[320px] overflow-y-auto"
           style={{
-            background: "rgba(12,12,22,0.96)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 12px 48px rgba(0,0,0,0.5)",
+            background: "rgba(8,8,16,0.97)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 12px 48px rgba(0,0,0,0.55), 0 0 30px rgba(34,211,238,0.04)",
           }}
         >
           {filtered.map((s) => (
@@ -137,8 +137,8 @@ export function StockSearch({ stocks, onSelect, selectedSymbol }: StockSearchPro
           ref={dropdownRef}
           className="absolute top-full left-0 right-0 mt-1 z-50 glass-card rounded-xl p-4 text-center text-foreground/30 text-sm"
           style={{
-            background: "rgba(12,12,22,0.96)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(8,8,16,0.97)",
+            border: "1px solid rgba(255,255,255,0.07)",
           }}
         >
           No stocks found for &ldquo;{query}&rdquo;

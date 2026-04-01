@@ -285,13 +285,13 @@ function MiniHeatmapPanel() {
       {stocks.map((s) => {
         const pct = s.change_pct ?? 0;
         const bg = pct > 1.5
-          ? "rgba(0,200,83,0.35)"
+          ? "rgba(16,185,129,0.35)"
           : pct > 0
-            ? "rgba(0,200,83,0.15)"
+            ? "rgba(16,185,129,0.15)"
             : pct < -1.5
-              ? "rgba(255,23,68,0.35)"
+              ? "rgba(244,63,94,0.35)"
               : pct < 0
-                ? "rgba(255,23,68,0.15)"
+                ? "rgba(244,63,94,0.15)"
                 : "rgba(255,255,255,0.03)";
         return (
           <button

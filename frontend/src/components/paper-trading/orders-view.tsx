@@ -62,7 +62,7 @@ export function OrdersView({ trades }: OrdersViewProps) {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-foreground/30 uppercase tracking-wider border-b border-white/[0.06]">
+                <tr className="text-foreground/30 uppercase tracking-wider border-b border-white/[0.05]">
                   <th className="text-left py-2 px-2">Date</th>
                   <th className="text-left py-2 px-2">Stock</th>
                   <th className="text-center py-2 px-2">Type</th>
@@ -83,7 +83,7 @@ export function OrdersView({ trades }: OrdersViewProps) {
                       {t.closed_date ?? t.trade_date}
                     </td>
                     <td className="py-2.5 px-2">
-                      <Link href={`/stock/${encodeURIComponent(t.symbol)}`} className="text-cyan hover:text-cyan/80 font-medium">
+                      <Link href={`/stock/${encodeURIComponent(t.symbol)}`} className="text-cyan hover:text-cyan-bright font-medium transition-colors duration-150">
                         {t.name}
                       </Link>
                     </td>

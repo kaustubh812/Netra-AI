@@ -61,7 +61,7 @@ export function IndicatorPanel({ stock }: Props) {
             min={0}
             max={100}
             label="RSI (14)"
-            color={(ind.rsi ?? 50) > 60 ? "#ff1744" : (ind.rsi ?? 50) < 40 ? "#00c853" : "#ffab00"}
+            color={(ind.rsi ?? 50) > 60 ? "#f43f5e" : (ind.rsi ?? 50) < 40 ? "#10b981" : "#ffab00"}
           />
 
           <Gauge
@@ -69,7 +69,7 @@ export function IndicatorPanel({ stock }: Props) {
             min={0}
             max={60}
             label="ADX (Trend Strength)"
-            color={(ind.adx ?? 0) > 25 ? "#00e5ff" : "#666"}
+            color={(ind.adx ?? 0) > 25 ? "#22d3ee" : "#666"}
           />
 
           <Gauge
@@ -77,7 +77,7 @@ export function IndicatorPanel({ stock }: Props) {
             min={0}
             max={100}
             label="Stochastic %K"
-            color={(ind.stoch_k ?? 50) > 80 ? "#ff1744" : (ind.stoch_k ?? 50) < 20 ? "#00c853" : "#ffab00"}
+            color={(ind.stoch_k ?? 50) > 80 ? "#f43f5e" : (ind.stoch_k ?? 50) < 20 ? "#10b981" : "#ffab00"}
           />
 
           <MiniBar

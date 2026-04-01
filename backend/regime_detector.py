@@ -149,8 +149,21 @@ def get_regime_weight_adjustments(regime: str) -> dict:
         }
 
 
+# Cache for NIFTY regime detection (5 minutes)
+_regime_cache: dict | None = None
+_regime_cache_time: float = 0
+_REGIME_CACHE_TTL = 300  # 5 minutes
+
+
 def detect_nifty_regime() -> dict:
     """Detect regime for NIFTY 50 index as a market-wide signal."""
+    global _regime_cache, _regime_cache_time
+
+    import time
+    now = time.time()
+    if _regime_cache and (now - _regime_cache_time) < _REGIME_CACHE_TTL:
+        return _regime_cache
+
     from data_fetcher import get_stock_df
     from indicators import calculate_all_indicators
 
@@ -161,7 +174,11 @@ def detect_nifty_regime() -> dict:
         indicators_df = calculate_all_indicators(nifty_df)
         if indicators_df.empty:
             return {"regime": RANGING, "confidence": 0.0, "metrics": {}}
-        return detect_regime(indicators_df)
+        result = detect_regime(indicators_df)
+        _regime_cache = result
+        _regime_cache_time = now
+        return result
     except Exception as e:
         logger.error("Failed to detect NIFTY regime: %s", e)
         return {"regime": RANGING, "confidence": 0.0, "metrics": {}}
+

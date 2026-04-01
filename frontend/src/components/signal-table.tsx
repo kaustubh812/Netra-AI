@@ -65,7 +65,7 @@ export function SignalTable() {
 
   const SortHeader = ({ label, col }: { label: string; col: SortKey }) => (
     <th
-      className="px-4 py-3 text-left text-xs font-medium text-foreground/40 cursor-pointer select-none hover:text-cyan transition-colors"
+      className="px-4 py-3 text-left text-xs font-medium text-foreground/40 cursor-pointer select-none hover:text-cyan transition-colors duration-200"
       onClick={() => handleSort(col)}
     >
       {label} {sortKey === col ? (sortAsc ? "\u2191" : "\u2193") : ""}
@@ -86,7 +86,7 @@ export function SignalTable() {
     <div className="glass-card rounded-xl overflow-hidden animate-fade-in animate-fade-in-d4">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="border-b border-white/[0.06] bg-white/[0.02] sticky top-0 z-10 backdrop-blur-sm">
+          <thead className="border-b border-white/[0.05] bg-white/[0.02] sticky top-0 z-10 backdrop-blur-md">
             <tr>
               <SortHeader label="Stock" col="name" />
               <SortHeader label="LTP" col="ltp" />
@@ -100,7 +100,7 @@ export function SignalTable() {
           </thead>
           <tbody className="divide-y divide-white/[0.03]">
             {sorted.map((stock) => (
-              <tr key={stock.symbol} className={`transition-colors ${getRowStyle(stock.signal)}`}>
+              <tr key={stock.symbol} className={`transition-colors duration-150 ${getRowStyle(stock.signal)}`}>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     {stock.signal && (
@@ -108,7 +108,7 @@ export function SignalTable() {
                     )}
                     <Link
                       href={`/stock/${encodeURIComponent(stock.symbol)}`}
-                      className="text-cyan hover:underline font-medium"
+                      className="text-cyan hover:text-cyan-bright font-medium transition-colors duration-150"
                     >
                       {stock.name}
                     </Link>
@@ -135,7 +135,7 @@ export function SignalTable() {
                           className="confidence-bar-fill"
                           style={{
                             width: `${stock.confidence}%`,
-                            backgroundColor: stock.confidence > 65 ? "rgba(0,200,83,0.7)" : stock.confidence > 45 ? "rgba(255,171,0,0.7)" : "rgba(255,23,68,0.7)",
+                            backgroundColor: stock.confidence > 65 ? "rgba(16,185,129,0.7)" : stock.confidence > 45 ? "rgba(245,158,11,0.7)" : "rgba(244,63,94,0.7)",
                           }}
                         />
                       </div>

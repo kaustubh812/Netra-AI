@@ -72,7 +72,7 @@ export function AnalystPanel({ symbol }: { symbol: string }) {
         </div>
         <div className="relative h-3 bg-white/[0.04] rounded-full overflow-hidden">
           {/* Gradient fill from low to high */}
-          <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to right, #ff1744, #facc15, #00c853)" }} />
+          <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to right, #f43f5e, #facc15, #10b981)" }} />
           {/* Mean marker */}
           <div className="absolute top-0 h-full w-0.5 bg-foreground" style={{ left: `${meanPct}%` }} />
           {/* Current price marker */}

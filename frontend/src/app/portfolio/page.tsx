@@ -7,7 +7,7 @@ import { api, PortfolioHolding } from "@/lib/api";
 import { SignalBadge } from "@/components/signal-badge";
 
 const SECTOR_COLORS: Record<string, string> = {
-  Banking: "#00e5ff",
+  Banking: "#22d3ee",
   IT: "#a78bfa",
   Energy: "#f59e0b",
   FMCG: "#10b981",

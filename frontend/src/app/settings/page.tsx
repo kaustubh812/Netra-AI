@@ -5,9 +5,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 const BTN_STYLES = {
-  cyan: "bg-cyan/15 text-cyan border border-cyan/25 hover:bg-cyan/25 hover:shadow-[0_0_16px_rgba(0,229,255,0.15)]",
+  cyan: "bg-cyan/15 text-cyan border border-cyan/25 hover:bg-cyan/25 hover:shadow-[0_0_16px_rgba(34,211,238,0.15)]",
   amber: "bg-amber/15 text-amber border border-amber/25 hover:bg-amber/25 hover:shadow-[0_0_16px_rgba(255,171,0,0.15)]",
-  green: "bg-ngreen/15 text-ngreen border border-ngreen/25 hover:bg-ngreen/25 hover:shadow-[0_0_16px_rgba(0,200,83,0.15)]",
+  green: "bg-ngreen/15 text-ngreen border border-ngreen/25 hover:bg-ngreen/25 hover:shadow-[0_0_16px_rgba(16,185,129,0.15)]",
 } as const;
 
 export default function SettingsPage() {

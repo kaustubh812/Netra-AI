@@ -80,7 +80,7 @@ export function BuySellPanel({ symbol, stockName, ltp, signal, onTrade, isPlacin
   return (
     <div
       className="glass-card rounded-xl overflow-hidden animate-fade-in"
-      style={{ border: `1px solid ${isBuy ? "rgba(0,200,83,0.15)" : "rgba(255,23,68,0.15)"}` }}
+      style={{ border: `1px solid ${isBuy ? "rgba(16,185,129,0.15)" : "rgba(244,63,94,0.15)"}` }}
     >
       {/* BUY / SELL Toggle */}
       <div className="flex">
@@ -247,8 +247,8 @@ export function BuySellPanel({ symbol, stockName, ltp, signal, onTrade, isPlacin
           disabled={!isValid || isPlacing || !marketOpen}
           className={`w-full py-3 rounded-xl text-sm font-semibold tracking-wide transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
             isBuy
-              ? "bg-ngreen/20 text-ngreen border border-ngreen/30 hover:bg-ngreen/30 hover:shadow-[0_0_20px_rgba(0,200,83,0.15)]"
-              : "bg-nred/20 text-nred border border-nred/30 hover:bg-nred/30 hover:shadow-[0_0_20px_rgba(255,23,68,0.15)]"
+              ? "bg-ngreen/20 text-ngreen border border-ngreen/30 hover:bg-ngreen/30 hover:shadow-[0_0_24px_rgba(16,185,129,0.2)]"
+              : "bg-nred/20 text-nred border border-nred/30 hover:bg-nred/30 hover:shadow-[0_0_24px_rgba(244,63,94,0.2)]"
           }`}
           id="buy-sell-submit"
         >

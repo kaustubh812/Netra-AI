@@ -13,9 +13,9 @@ const SIGNAL_COLORS: Record<string, string> = {
 };
 
 const SIGNAL_GLOW: Record<string, string> = {
-  BUY: "shadow-[0_0_12px_rgba(0,200,83,0.3)]",
-  SELL: "shadow-[0_0_12px_rgba(255,23,68,0.3)]",
-  HOLD: "shadow-[0_0_12px_rgba(255,171,0,0.3)]",
+  BUY: "shadow-[0_0_16px_rgba(16,185,129,0.35)]",
+  SELL: "shadow-[0_0_16px_rgba(244,63,94,0.35)]",
+  HOLD: "shadow-[0_0_16px_rgba(245,158,11,0.35)]",
 };
 
 const SIZE_CLASSES: Record<string, string> = {
@@ -35,7 +35,7 @@ export function SignalBadge({ signal, confidence, size = "md" }: SignalBadgeProp
   return (
     <span className="inline-flex items-center gap-1.5">
       <span
-        className={`inline-block rounded-lg border font-mono font-bold ${colorClass} ${glowClass} ${sizeClass}`}
+        className={`inline-block rounded-lg border font-mono font-bold transition-all duration-200 ${colorClass} ${glowClass} ${sizeClass}`}
       >
         {clean}
       </span>

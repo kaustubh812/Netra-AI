@@ -152,7 +152,7 @@ export default function PaperTradingPage() {
             onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all ${
               activeTab === tab.key
-                ? "bg-cyan/10 text-cyan border border-cyan/20 shadow-[0_0_12px_rgba(0,229,255,0.1)]"
+                ? "bg-cyan/10 text-cyan border border-cyan/20 shadow-[0_0_16px_rgba(34,211,238,0.12)]"
                 : "text-foreground/40 hover:text-foreground/60 hover:bg-white/[0.03] border border-transparent"
             }`}
             id={`tab-${tab.key}`}

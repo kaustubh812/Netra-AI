@@ -158,7 +158,7 @@ export function PositionsView({ positions, onSelectSymbol, onClose, isClosing }:
       {/* Close Confirmation Inline */}
       {confirmClose && (
         <>
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={() => setConfirmClose(null)} />
+          <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md" onClick={() => setConfirmClose(null)} />
           <div className="fixed top-[25%] left-1/2 -translate-x-1/2 z-50 w-full max-w-sm">
             <div className="glass-card rounded-xl p-6" style={{ background: "rgba(12,12,22,0.95)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <h3 className="text-lg font-bold mb-1">Close Position</h3>

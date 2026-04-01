@@ -105,3 +105,13 @@ def get_live_price(symbol: str) -> Optional[dict]:
     """Get live price for a single symbol."""
     prices = fetch_live_prices()
     return prices.get(symbol)
+
+
+def warmup_cache():
+    """Pre-fill the price cache at startup so the first request is fast."""
+    try:
+        logger.info("Warming up live price cache...")
+        fetch_live_prices()
+        logger.info("Price cache warmed up with %d symbols", len(_price_cache))
+    except Exception as e:
+        logger.error("Cache warmup failed: %s", e)

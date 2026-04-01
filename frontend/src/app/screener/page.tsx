@@ -220,7 +220,7 @@ export default function ScreenerPage() {
                             className="confidence-bar-fill"
                             style={{
                               width: `${r.confidence as number}%`,
-                              backgroundColor: (r.confidence as number) > 65 ? "rgba(0,200,83,0.7)" : (r.confidence as number) > 45 ? "rgba(255,171,0,0.7)" : "rgba(255,23,68,0.7)",
+                              backgroundColor: (r.confidence as number) > 65 ? "rgba(16,185,129,0.7)" : (r.confidence as number) > 45 ? "rgba(255,171,0,0.7)" : "rgba(244,63,94,0.7)",
                             }}
                           />
                         </div>

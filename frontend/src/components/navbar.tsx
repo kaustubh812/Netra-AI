@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_LINK_STYLES = {
-  active: "bg-cyan/10 text-cyan shadow-[0_0_12px_rgba(0,229,255,0.15)]",
+  active: "bg-cyan/10 text-cyan shadow-[0_0_16px_rgba(34,211,238,0.15)]",
   inactive: "text-foreground/50 hover:text-foreground hover:bg-white/[0.04]",
 } as const;
 
@@ -17,7 +17,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="glass-card border-b border-white/[0.06] sticky top-0 z-50">
+    <nav className="glass-card border-b border-white/[0.05] sticky top-0 z-50">
       <div className="max-w-screen-2xl mx-auto px-6 flex items-center h-16 gap-8">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           {/* Eye icon */}
@@ -26,7 +26,7 @@ export function Navbar() {
             <circle cx="12" cy="12" r="3.5" stroke="url(#eyeGrad)" strokeWidth="1.5"/>
             <defs>
               <linearGradient id="eyeGrad" x1="1" y1="12" x2="23" y2="12">
-                <stop stopColor="#00e5ff"/>
+                <stop stopColor="#22d3ee"/>
                 <stop offset="1" stopColor="#a78bfa"/>
               </linearGradient>
             </defs>
@@ -46,7 +46,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${isActive ? NAV_LINK_STYLES.active : NAV_LINK_STYLES.inactive}`}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${isActive ? NAV_LINK_STYLES.active : NAV_LINK_STYLES.inactive}`}
               >
                 {link.label}
               </Link>
@@ -59,7 +59,7 @@ export function Navbar() {
         </div>
       </div>
       {/* Gradient accent line */}
-      <div className="h-px bg-gradient-to-r from-transparent via-cyan/30 to-transparent" />
+      <div className="h-px bg-gradient-to-r from-transparent via-cyan/25 to-transparent" />
     </nav>
   );
 }

@@ -225,8 +225,130 @@ export interface IntradaySignal {
   vwap?: number;
 }
 
+// Global Markets types
+export interface GlobalMarketIndex {
+  key: string;
+  name: string;
+  price: number;
+  change_pct: number;
+  sparkline: number[];
+}
+
+export interface GlobalMarketCountry {
+  country: string;
+  flag: string;
+  indices: GlobalMarketIndex[];
+  overall_change_pct: number;
+}
+
+export interface GlobalMarketsData {
+  countries: Record<string, GlobalMarketCountry>;
+  count: number;
+  timestamp: string;
+}
+
+// Anomaly types
+export interface Anomaly {
+  symbol: string;
+  name: string;
+  type: string;
+  severity: number;
+  z_score: number;
+  detail: string;
+  value: number;
+  change_pct: number;
+  price: number;
+}
+
+export interface AnomalyData {
+  anomalies: Anomaly[];
+  count: number;
+  timestamp: string;
+  stocks_scanned: number;
+}
+
+// Market Breadth types
+export interface BreadthCurrent {
+  advances: number;
+  declines: number;
+  unchanged: number;
+  ad_ratio: number;
+  above_20dma: number;
+  above_50dma: number;
+  above_200dma: number;
+  above_20dma_pct: number;
+  above_50dma_pct: number;
+  above_200dma_pct: number;
+  high_52w: number;
+  low_52w: number;
+}
+
+export interface BreadthHistory {
+  dates: string[];
+  advances: number[];
+  declines: number[];
+  net_advances: number[];
+  above_50dma: number[];
+  above_200dma: number[];
+  mcclellan: number[];
+}
+
+export interface BreadthData {
+  available: boolean;
+  timestamp: string;
+  total_stocks: number;
+  current: BreadthCurrent;
+  history: BreadthHistory;
+  mcclellan_current: number;
+  breadth_signal: string;
+}
+
+// Daily Brief types
+export interface DailyBrief {
+  brief: string;
+  generated_at: string;
+  available: boolean;
+  context_summary?: { data_points: number };
+}
+
+// Position Sizing types
+export interface PositionSizeResult {
+  shares: number;
+  position_value: number;
+  position_pct: number;
+  risk_amount: number;
+  risk_per_share: number;
+  max_loss: number;
+  potential_gain: number | null;
+  rr_ratio: number | null;
+  direction: string;
+  entry_price: number;
+  stop_loss: number;
+  target_price: number | null;
+  error?: string;
+}
+
+export interface KellyCriterion {
+  available: boolean;
+  reason?: string;
+  kelly_pct?: number;
+  half_kelly_pct?: number;
+  quarter_kelly_pct?: number;
+  win_rate?: number;
+  avg_win?: number;
+  avg_loss?: number;
+  payoff_ratio?: number;
+  closed_trades?: number;
+}
+
 // API functions
 export const api = {
+  getDashboard: () => fetchApi<{
+    market_overview: MarketOverview;
+    stocks: { stocks: StockInfo[]; count: number; market_open?: boolean };
+    regime: RegimeInfo;
+    paper_stats: PaperTradingStats;
+  }>("/api/dashboard"),
   getStocks: () => fetchApi<{ stocks: StockInfo[]; count: number; market_open?: boolean }>("/api/stocks"),
   getLivePrices: () => fetchApi<LivePrices>("/api/live-prices"),
   getStock: (symbol: string) => fetchApi<StockDetail>(`/api/stock/${symbol}`),
@@ -251,6 +373,17 @@ export const api = {
   refreshData: () => postApi<{ status: string }>("/api/refresh-data"),
   getRegime: () => fetchApi<RegimeInfo>("/api/regime"),
   getSectors: () => fetchApi<SectorsOverview>("/api/sectors"),
+  getGlobalMarkets: () => fetchApi<GlobalMarketsData>("/api/global-markets"),
+  getDailyBrief: () => fetchApi<DailyBrief>("/api/daily-brief"),
+  getBreadth: () => fetchApi<BreadthData>("/api/breadth"),
+  getAnomalies: () => fetchApi<AnomalyData>("/api/anomalies"),
+  getPositionSize: (params: { account_size: number; risk_pct: number; entry_price: number; stop_loss: number; target_price?: number }) => {
+    const p = params;
+    let url = `/api/position-size?account_size=${p.account_size}&risk_pct=${p.risk_pct}&entry_price=${p.entry_price}&stop_loss=${p.stop_loss}`;
+    if (p.target_price) url += `&target_price=${p.target_price}`;
+    return fetchApi<PositionSizeResult>(url);
+  },
+  getKellyCriterion: () => fetchApi<KellyCriterion>("/api/position-size/kelly"),
   // Intraday
   getIntradaySignals: () => fetchApi<{ signals: IntradaySignal[]; count: number }>("/api/intraday/signals/latest"),
   getIntradaySignal: (symbol: string) => fetchApi<IntradaySignal>(`/api/intraday/signal/${symbol}`),

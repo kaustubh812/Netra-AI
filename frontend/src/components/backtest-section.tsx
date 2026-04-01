@@ -87,7 +87,7 @@ export function BacktestSection({ symbol }: Props) {
 
       {beatsBH && (
         <div className="text-xs text-ngreen rounded-lg p-2.5 font-medium"
-          style={{ background: "linear-gradient(135deg, rgba(0,200,83,0.1), rgba(0,229,255,0.05))" }}
+          style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(34,211,238,0.05))" }}
         >
           Strategy outperforms buy-and-hold by {(data.total_return - data.buy_hold_return).toFixed(2)}%
         </div>

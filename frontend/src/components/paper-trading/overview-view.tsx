@@ -40,8 +40,8 @@ export function OverviewView({ stats, suggestions, onTakeTrade }: OverviewViewPr
                 style={{
                   width: `${stats.win_rate}%`,
                   background: stats.win_rate >= 50
-                    ? "linear-gradient(90deg, rgba(0,200,83,0.6), rgba(0,200,83,0.3))"
-                    : "linear-gradient(90deg, rgba(255,23,68,0.6), rgba(255,23,68,0.3))",
+                    ? "linear-gradient(90deg, rgba(16,185,129,0.6), rgba(16,185,129,0.3))"
+                    : "linear-gradient(90deg, rgba(244,63,94,0.6), rgba(244,63,94,0.3))",
                 }}
               />
             </div>
