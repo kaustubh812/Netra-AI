@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { api, StockInfo } from "@/lib/api";
+import { toUrlSymbol } from "@/lib/symbol";
 
 type ColorMode = "change" | "signal" | "composite" | "strength";
 
@@ -135,7 +136,7 @@ export default function HeatmapPage() {
             {sorted.map((stock) => (
               <button
                 key={stock.symbol}
-                onClick={() => router.push(`/stock/${encodeURIComponent(stock.symbol)}`)}
+                onClick={() => router.push(`/stock/${toUrlSymbol(stock.symbol)}`)}
                 onMouseEnter={() => setHoveredStock(stock)}
                 onMouseLeave={() => setHoveredStock(null)}
                 className="relative rounded-lg p-2 transition-all hover:scale-105 hover:z-10 cursor-pointer"

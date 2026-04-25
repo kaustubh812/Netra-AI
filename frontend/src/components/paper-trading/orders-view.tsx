@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PaperTrade } from "@/lib/api";
+import { toUrlSymbol } from "@/lib/symbol";
 
 interface OrdersViewProps {
   trades: PaperTrade[];
@@ -83,7 +84,7 @@ export function OrdersView({ trades }: OrdersViewProps) {
                       {t.closed_date ?? t.trade_date}
                     </td>
                     <td className="py-2.5 px-2">
-                      <Link href={`/stock/${encodeURIComponent(t.symbol)}`} className="text-cyan hover:text-cyan-bright font-medium transition-colors duration-150">
+                      <Link href={`/stock/${toUrlSymbol(t.symbol)}`} className="text-cyan hover:text-cyan-bright font-medium transition-colors duration-150">
                         {t.name}
                       </Link>
                     </td>

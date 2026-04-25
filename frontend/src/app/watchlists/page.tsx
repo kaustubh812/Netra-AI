@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SignalBadge } from "@/components/signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -191,7 +192,7 @@ export default function WatchlistsPage() {
                         {stocks.map((s: Record<string, unknown>) => (
                           <tr key={s.symbol as string} className="hover:bg-white/[0.02] transition-colors">
                             <td className="px-4 py-2.5">
-                              <Link href={`/stock/${encodeURIComponent(s.symbol as string)}`} className="text-cyan hover:underline font-medium">
+                              <Link href={`/stock/${toUrlSymbol(s.symbol as string)}`} className="text-cyan hover:underline font-medium">
                                 {s.name as string}
                               </Link>
                             </td>

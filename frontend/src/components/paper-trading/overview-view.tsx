@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PaperTradingStats, TradeSuggestion } from "@/lib/api";
 import { SignalBadge } from "@/components/signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 interface OverviewViewProps {
   stats: PaperTradingStats | null;
@@ -100,7 +101,7 @@ export function OverviewView({ stats, suggestions, onTakeTrade }: OverviewViewPr
               >
                 <div className="flex items-center justify-between mb-2.5">
                   <Link
-                    href={`/stock/${encodeURIComponent(s.symbol)}`}
+                    href={`/stock/${toUrlSymbol(s.symbol)}`}
                     className="text-cyan hover:text-cyan/80 text-sm font-medium"
                   >
                     {s.name}

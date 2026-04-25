@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { api, AnomalyData } from "@/lib/api";
 import Link from "next/link";
+import { toUrlSymbol } from "@/lib/symbol";
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string }> = {
   volume_spike: { icon: "\u{1F4CA}", color: "var(--cyan)" },
@@ -79,7 +80,7 @@ export function AnomalyFeed() {
           return (
             <Link
               key={`${a.symbol}-${a.type}-${i}`}
-              href={`/stock/${a.symbol}`}
+              href={`/stock/${toUrlSymbol(a.symbol)}`}
               className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02] transition-colors"
             >
               {/* Severity dots */}

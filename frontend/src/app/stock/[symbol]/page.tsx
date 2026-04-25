@@ -11,6 +11,7 @@ import { StockNewsPanel } from "@/components/news-sentiment-card";
 import { FundamentalsPanel } from "@/components/fundamentals-panel";
 import { AnalystPanel } from "@/components/analyst-panel";
 import { SignalBadge } from "@/components/signal-badge";
+import { fromUrlSymbol } from "@/lib/symbol";
 
 const INTRADAY_BADGE = "bg-cyan/15 text-cyan border border-cyan/30 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider";
 const DAILY_BADGE = "bg-amber/15 text-amber border border-amber/30 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider";
@@ -28,7 +29,7 @@ const COMPONENT_LABELS: Record<string, string> = {
 
 export default function StockDetailPage({ params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = use(params);
-  const decoded = decodeURIComponent(symbol);
+  const decoded = fromUrlSymbol(symbol);
 
   const { data: stock, isLoading, error } = useQuery({
     queryKey: ["stock", decoded],

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PaperPosition } from "@/lib/api";
 import { SignalBadge } from "@/components/signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 interface PositionsViewProps {
   positions: PaperPosition[];
@@ -103,7 +104,7 @@ export function PositionsView({ positions, onSelectSymbol, onClose, isClosing }:
                   >
                     <td className="py-2.5 px-2">
                       <Link
-                        href={`/stock/${encodeURIComponent(p.symbol)}`}
+                        href={`/stock/${toUrlSymbol(p.symbol)}`}
                         className="text-cyan hover:text-cyan/80 font-medium"
                         onClick={(e) => e.stopPropagation()}
                       >

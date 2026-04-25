@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { api, StockInfo } from "@/lib/api";
 import { SignalBadge } from "./signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 type SortKey = "name" | "ltp" | "change_pct" | "signal" | "confidence";
 
@@ -107,7 +108,7 @@ export function SignalTable() {
                       <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${getSignalDot(stock.signal)}`} />
                     )}
                     <Link
-                      href={`/stock/${encodeURIComponent(stock.symbol)}`}
+                      href={`/stock/${toUrlSymbol(stock.symbol)}`}
                       className="text-cyan hover:text-cyan-bright font-medium transition-colors duration-150"
                     >
                       {stock.name}

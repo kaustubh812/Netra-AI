@@ -211,6 +211,34 @@ def init_db():
 
             CREATE INDEX IF NOT EXISTS idx_paper_trades_status ON paper_trades(status);
             CREATE INDEX IF NOT EXISTS idx_paper_trades_symbol ON paper_trades(symbol);
+
+            CREATE TABLE IF NOT EXISTS option_paper_trades (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                strategy_code TEXT NOT NULL,
+                strategy_name TEXT NOT NULL,
+                bias TEXT NOT NULL,
+                expiry TEXT NOT NULL,
+                lot_size INTEGER NOT NULL,
+                lots INTEGER NOT NULL DEFAULT 1,
+                legs_json TEXT NOT NULL,
+                entry_net_debit REAL NOT NULL,
+                max_profit REAL NOT NULL,
+                max_loss REAL NOT NULL,
+                breakevens_json TEXT,
+                pop REAL,
+                signal_confidence REAL,
+                trade_date TEXT NOT NULL,
+                closed_date TEXT,
+                exit_net_debit REAL,
+                pnl REAL,
+                status TEXT DEFAULT 'OPEN',
+                notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_option_trades_status ON option_paper_trades(status);
+            CREATE INDEX IF NOT EXISTS idx_option_trades_symbol ON option_paper_trades(symbol);
         """)
 
         # Migration: add order_type and product_type columns if missing
@@ -662,6 +690,67 @@ def get_all_paper_trades() -> list[dict]:
             "SELECT * FROM paper_trades ORDER BY created_at DESC"
         ).fetchall()
     return [dict(r) for r in rows]
+
+
+# ─── Option Paper Trading Helpers ───────────────────────────────────────────
+
+def save_option_paper_trade(symbol: str, strategy_code: str, strategy_name: str,
+                            bias: str, expiry: str, lot_size: int, lots: int,
+                            legs_json: str, entry_net_debit: float,
+                            max_profit: float, max_loss: float,
+                            breakevens_json: Optional[str], pop: Optional[float],
+                            signal_confidence: Optional[float], trade_date: str,
+                            notes: Optional[str] = None) -> int:
+    with get_db() as conn:
+        cur = conn.execute(
+            """INSERT INTO option_paper_trades
+               (symbol, strategy_code, strategy_name, bias, expiry, lot_size, lots,
+                legs_json, entry_net_debit, max_profit, max_loss, breakevens_json,
+                pop, signal_confidence, trade_date, notes)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (symbol, strategy_code, strategy_name, bias, expiry, lot_size, lots,
+             legs_json, entry_net_debit, max_profit, max_loss, breakevens_json,
+             pop, signal_confidence, trade_date, notes),
+        )
+        return cur.lastrowid
+
+
+def get_open_option_trades() -> list[dict]:
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT * FROM option_paper_trades WHERE status = 'OPEN' ORDER BY created_at DESC"
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def get_closed_option_trades(limit: int = 50) -> list[dict]:
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT * FROM option_paper_trades WHERE status = 'CLOSED' "
+            "ORDER BY closed_date DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def get_option_trade(trade_id: int) -> Optional[dict]:
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT * FROM option_paper_trades WHERE id = ?", (trade_id,)
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def close_option_paper_trade(trade_id: int, exit_net_debit: float,
+                             closed_date: str, pnl: float) -> bool:
+    with get_db() as conn:
+        cur = conn.execute(
+            """UPDATE option_paper_trades
+               SET exit_net_debit = ?, closed_date = ?, pnl = ?, status = 'CLOSED'
+               WHERE id = ? AND status = 'OPEN'""",
+            (exit_net_debit, closed_date, pnl, trade_id),
+        )
+    return cur.rowcount > 0
 
 
 # Initialize DB on import

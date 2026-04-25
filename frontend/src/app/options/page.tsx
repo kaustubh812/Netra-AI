@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, OptionStrike, OptionChainData } from "@/lib/api";
+import { OptionsTabs } from "@/components/options-tabs";
 
 const SYMBOLS = ["NIFTY", "BANKNIFTY"];
 
@@ -61,7 +62,8 @@ export default function OptionsPage() {
 
   return (
     <div className="px-6 py-6 relative z-10">
-      <h1 className="text-xl font-bold text-foreground mb-5">Options Chain</h1>
+      <h1 className="text-xl font-bold text-foreground mb-3">Options</h1>
+      <OptionsTabs />
 
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3 mb-5">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { api, IntradaySignal } from "@/lib/api";
 import { SignalBadge } from "./signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 type SortKey = "name" | "confidence" | "signal" | "entry_price" | "regime";
 
@@ -109,7 +110,7 @@ export function IntradaySignalTable() {
               <tr key={sig.symbol} className={`transition-colors ${getRowStyle(sig.signal)}`}>
                 <td className="px-4 py-3">
                   <Link
-                    href={`/stock/${encodeURIComponent(sig.symbol)}`}
+                    href={`/stock/${toUrlSymbol(sig.symbol)}`}
                     className="text-cyan hover:underline font-medium"
                   >
                     {sig.name}

@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { SignalBadge } from "@/components/signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 export default function SectorDetailPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = use(params);
@@ -98,7 +99,7 @@ export default function SectorDetailPage({ params }: { params: Promise<{ name: s
               {data.stocks.map(stock => (
                 <tr key={stock.symbol} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                   <td className="py-2.5 px-2">
-                    <Link href={`/stock/${encodeURIComponent(stock.symbol)}`} className="text-cyan hover:text-cyan/80 font-medium">
+                    <Link href={`/stock/${toUrlSymbol(stock.symbol)}`} className="text-cyan hover:text-cyan/80 font-medium">
                       {stock.name}
                     </Link>
                   </td>

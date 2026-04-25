@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { toUrlSymbol } from "@/lib/symbol";
 
 interface CommandItem {
   id: string;
@@ -73,7 +74,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     label: s.name,
     sublabel: `${s.signal ?? "—"} · ${s.ltp?.toLocaleString("en-IN", { maximumFractionDigits: 2 }) ?? "—"} · ${s.change_pct !== undefined ? (s.change_pct >= 0 ? "+" : "") + s.change_pct.toFixed(2) + "%" : ""}`,
     type: "stock" as const,
-    href: `/stock/${encodeURIComponent(s.symbol)}`,
+    href: `/stock/${toUrlSymbol(s.symbol)}`,
   }));
 
   const allItems = [...PAGES, ...stockItems];

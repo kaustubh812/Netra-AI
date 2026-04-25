@@ -56,7 +56,7 @@
 ## Phase 2 — Short-term (3-5 days each)
 
 ### 2.1 Natural Language AI Stock Screener
-- **Status:** Not Started
+- **Status:** DONE
 - **Priority:** Very High | **Complexity:** Medium
 - **What:** Search bar where users type: "oversold large caps with good fundamentals and BUY signal" or "IT stocks with RSI below 35 and positive news sentiment". GPT-5.4-mini parses intent → structured filters → existing screener logic → results.
 - **Why:** Intellectia AI reports this as most-used feature. 70% of retail traders find traditional screener dropdowns too complex.
@@ -67,7 +67,7 @@
 - **Files to modify:** `backend/main.py`, sidebar (add Screener link)
 
 ### 2.2 Multi-Condition Smart Alert Builder
-- **Status:** Not Started
+- **Status:** DONE
 - **Priority:** High | **Complexity:** Medium
 - **What:** Visual builder to combine: "RELIANCE RSI < 30 AND volume > 2x avg AND news sentiment > 0.6 AND regime = trending_up". Supports AND/OR groups, up to 5 conditions. Alerts via dashboard notification + optional Telegram.
 - **Why:** TradingView's multi-condition alerts are their most-engaged premium feature. Indian traders on r/IndianStreetBets constantly request "smart alerts that actually matter."
@@ -78,7 +78,7 @@
 - **Files to modify:** `backend/main.py`, `backend/db.py` (alerts tables), `backend/scheduler.py`, sidebar
 
 ### 2.3 Tax Harvesting Optimizer (India-Specific)
-- **Status:** Not Started
+- **Status:** DONE
 - **Priority:** Very High (seasonal — peaks March) | **Complexity:** Medium
 - **What:** Analyze portfolio holdings: (a) unrealized losses to book for tax offset (STCL offsets STCG+LTCG; LTCL offsets only LTCG), (b) positions approaching Rs 1.25 lakh LTCG exemption, (c) holding period tracking (ST < 12 months vs LT). Shows net tax savings estimate.
 - **Why:** 20% STCG + 12.5% LTCG from FY 2024-25. "Tax loss harvesting India" spikes every March. No Indian platform offers integrated suggestions.
@@ -89,7 +89,7 @@
 - **Files to modify:** `backend/main.py`
 
 ### 2.4 Stock Comparison Tool (Side-by-Side)
-- **Status:** Not Started
+- **Status:** DONE
 - **Priority:** High | **Complexity:** Simple-Medium
 - **What:** Compare 2-4 stocks head-to-head: normalized price performance, fundamentals (PE, ROE, margins), technicals (RSI, MACD), signal scores, sector position, news sentiment. Radar chart for visual comparison.
 - **Why:** "HDFC Bank vs ICICI Bank" is the most common retail investor question. Screener.in's comparison page is one of their highest-traffic features.

@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { api, PortfolioHolding } from "@/lib/api";
 import { SignalBadge } from "@/components/signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 const SECTOR_COLORS: Record<string, string> = {
   Banking: "#22d3ee",
@@ -82,6 +83,12 @@ export default function PortfolioPage() {
 
   return (
     <div className="px-6 py-6 relative z-10">
+      <div className="flex items-center gap-1.5 mb-4">
+        <span className="px-4 py-1.5 rounded-full text-xs font-mono bg-cyan/15 text-cyan border border-cyan/30">Holdings</span>
+        <Link href="/paper-trading" className="px-4 py-1.5 rounded-full text-xs font-mono bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground transition-all">Paper Trading</Link>
+        <Link href="/tools/position-sizing" className="px-4 py-1.5 rounded-full text-xs font-mono bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground transition-all">Position Sizing</Link>
+        <Link href="/tools/tax-harvest" className="px-4 py-1.5 rounded-full text-xs font-mono bg-white/[0.03] text-foreground/40 border border-white/[0.06] hover:text-foreground transition-all">Tax Harvest</Link>
+      </div>
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-xl font-bold text-foreground">Portfolio Tracker</h1>
         <button
@@ -150,7 +157,7 @@ export default function PortfolioPage() {
                       return (
                         <tr key={h.id} className={`border-b border-white/[0.03] hover:bg-white/[0.02] ${warning ? "bg-nred/[0.03]" : ""}`}>
                           <td className="py-2.5 px-2">
-                            <Link href={`/stock/${encodeURIComponent(h.symbol)}`} className="text-cyan hover:text-cyan/80 font-medium">
+                            <Link href={`/stock/${toUrlSymbol(h.symbol)}`} className="text-cyan hover:text-cyan/80 font-medium">
                               {h.name}
                             </Link>
                           </td>

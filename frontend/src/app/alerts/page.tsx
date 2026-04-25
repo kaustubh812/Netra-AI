@@ -1,214 +1,306 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { api, SmartAlert, SmartAlertCondition, TriggeredAlert, ConditionTypeDef } from "@/lib/api";
 import Link from "next/link";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-const ALERT_TYPE_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  signal_change: { bg: "bg-purple/15", text: "text-purple", label: "SIGNAL CHANGE" },
-  strength_spike: { bg: "bg-cyan/15", text: "text-cyan", label: "STRENGTH SPIKE" },
-  volume_surge: { bg: "bg-amber/15", text: "text-amber", label: "VOLUME SURGE" },
-  price_cross: { bg: "bg-ngreen/15", text: "text-ngreen", label: "PRICE CROSS" },
-  regime_change: { bg: "bg-nred/15", text: "text-nred", label: "REGIME CHANGE" },
-};
+import { toUrlSymbol } from "@/lib/symbol";
 
 export default function AlertsPage() {
-  const queryClient = useQueryClient();
-  const [newSymbol, setNewSymbol] = useState("");
-  const [newPrice, setNewPrice] = useState("");
-  const [newDirection, setNewDirection] = useState("above");
+  const [alerts, setAlerts] = useState<SmartAlert[]>([]);
+  const [triggered, setTriggered] = useState<TriggeredAlert[]>([]);
+  const [conditionTypes, setConditionTypes] = useState<Record<string, ConditionTypeDef>>({});
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
 
-  const { data: alertsData, isLoading } = useQuery({
-    queryKey: ["alerts"],
-    queryFn: async () => {
-      const res = await fetch(`${API_BASE}/api/alerts?limit=100`);
-      return res.json();
-    },
-    refetchInterval: 30 * 1000,
-  });
+  // Builder state
+  const [alertName, setAlertName] = useState("");
+  const [alertSymbol, setAlertSymbol] = useState("");
+  const [alertLogic, setAlertLogic] = useState<"AND" | "OR">("AND");
+  const [conditions, setConditions] = useState<SmartAlertCondition[]>([
+    { type: "signal", value: "BUY" },
+  ]);
 
-  const { data: rulesData } = useQuery({
-    queryKey: ["alert-rules"],
-    queryFn: async () => {
-      const res = await fetch(`${API_BASE}/api/alerts/rules`);
-      return res.json();
-    },
-  });
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const markReadMutation = useMutation({
-    mutationFn: async () => {
-      await fetch(`${API_BASE}/api/alerts/read`, { method: "POST" });
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alerts"] }),
-  });
+  async function loadData() {
+    setLoading(true);
+    try {
+      const [alertsData, typesData] = await Promise.all([
+        api.getSmartAlerts(),
+        api.getConditionTypes(),
+      ]);
+      setAlerts(alertsData.alerts);
+      setTriggered(alertsData.triggered);
+      setConditionTypes(typesData.types);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  const createRuleMutation = useMutation({
-    mutationFn: async () => {
-      const params = new URLSearchParams({
-        symbol: newSymbol.endsWith(".NS") ? newSymbol : newSymbol + ".NS",
-        alert_type: "price_cross",
-        price: newPrice,
-        direction: newDirection,
-      });
-      await fetch(`${API_BASE}/api/alerts/rules?${params}`, { method: "POST" });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["alert-rules"] });
-      setNewSymbol("");
-      setNewPrice("");
-    },
-  });
+  function addCondition() {
+    if (conditions.length >= 5) return;
+    setConditions([...conditions, { type: "rsi_below", value: "40" }]);
+  }
 
-  const deleteRuleMutation = useMutation({
-    mutationFn: async (ruleId: number) => {
-      await fetch(`${API_BASE}/api/alerts/rules/${ruleId}`, { method: "DELETE" });
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert-rules"] }),
-  });
+  function removeCondition(idx: number) {
+    if (conditions.length <= 1) return;
+    setConditions(conditions.filter((_, i) => i !== idx));
+  }
 
-  const alerts = alertsData?.alerts ?? [];
-  const unread = alertsData?.unread ?? 0;
-  const rules = rulesData?.rules ?? [];
+  function updateCondition(idx: number, field: "type" | "value", val: string) {
+    const updated = [...conditions];
+    updated[idx] = { ...updated[idx], [field]: val };
+    setConditions(updated);
+  }
+
+  async function handleCreate() {
+    if (!alertName.trim() || conditions.length === 0) return;
+    setCreating(true);
+    try {
+      await api.createSmartAlert(
+        alertName,
+        conditions,
+        alertSymbol || undefined,
+        alertLogic,
+      );
+      setAlertName("");
+      setAlertSymbol("");
+      setConditions([{ type: "signal", value: "BUY" }]);
+      await loadData();
+    } catch {
+      // silent
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function handleDelete(id: number) {
+    try {
+      await api.deleteSmartAlert(id);
+      await loadData();
+    } catch {
+      // silent
+    }
+  }
+
+  async function handleScan() {
+    try {
+      const res = await api.scanSmartAlerts();
+      if (res.new_triggers > 0) await loadData();
+    } catch {
+      // silent
+    }
+  }
+
+  const typeKeys = Object.keys(conditionTypes);
 
   return (
-    <div className="px-6 py-6 relative z-10">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="section-header text-xs font-medium text-foreground/40 uppercase tracking-widest mb-1">
-            Alerts
-          </h1>
-          <p className="text-foreground/20 text-xs">
-            {unread > 0 ? `${unread} unread alert${unread > 1 ? "s" : ""}` : "All caught up"}
-          </p>
-        </div>
-        {unread > 0 && (
-          <button
-            onClick={() => markReadMutation.mutate()}
-            className="text-xs text-cyan hover:text-cyan/80 px-3 py-1.5 rounded-lg border border-cyan/20 hover:border-cyan/30 transition-colors"
-          >
-            Mark all read
-          </button>
-        )}
+    <div className="min-h-screen p-6 animate-fade-in">
+      <div className="mb-6">
+        <h1 className="section-header text-xl font-bold text-foreground/90">Smart Alert Builder</h1>
+        <p className="text-foreground/30 text-sm mt-1 ml-5">Create multi-condition alerts with AND/OR logic</p>
       </div>
 
-      {/* Create Price Alert */}
-      <div className="glass-card rounded-xl p-4 mb-6 animate-fade-in">
-        <h3 className="text-xs font-medium text-foreground/40 uppercase tracking-wider mb-3">Create Price Alert</h3>
-        <div className="flex items-end gap-3">
-          <div>
-            <label className="block text-[10px] text-foreground/25 mb-1">Symbol</label>
+      {/* Alert Builder */}
+      <div className="glass-card-glow rounded-2xl p-5 mb-5">
+        <h2 className="text-sm font-semibold text-foreground/70 mb-4">New Alert</h2>
+
+        <div className="grid grid-cols-12 gap-3 mb-4">
+          <div className="col-span-5">
+            <label className="text-[10px] text-foreground/30 uppercase tracking-wider mb-1 block">Alert Name</label>
             <input
-              value={newSymbol}
-              onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-              placeholder="RELIANCE"
-              className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs font-mono text-foreground placeholder-foreground/20 outline-none focus:border-cyan/30 w-32"
+              type="text"
+              value={alertName}
+              onChange={(e) => setAlertName(e.target.value)}
+              placeholder="e.g. Oversold BUY signals"
+              className="w-full rounded-lg py-2 px-3 text-sm text-foreground/80 outline-none"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
             />
           </div>
-          <div>
-            <label className="block text-[10px] text-foreground/25 mb-1">Direction</label>
-            <select
-              value={newDirection}
-              onChange={(e) => setNewDirection(e.target.value)}
-              className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-foreground outline-none w-24"
-            >
-              <option value="above">Above</option>
-              <option value="below">Below</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-[10px] text-foreground/25 mb-1">Price</label>
+          <div className="col-span-4">
+            <label className="text-[10px] text-foreground/30 uppercase tracking-wider mb-1 block">Stock (optional, blank = all)</label>
             <input
-              type="number"
-              value={newPrice}
-              onChange={(e) => setNewPrice(e.target.value)}
-              placeholder="0.00"
-              className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs font-mono text-foreground placeholder-foreground/20 outline-none focus:border-cyan/30 w-28"
+              type="text"
+              value={alertSymbol}
+              onChange={(e) => setAlertSymbol(e.target.value.toUpperCase())}
+              placeholder="e.g. RELIANCE.NS"
+              className="w-full rounded-lg py-2 px-3 text-sm text-foreground/80 outline-none"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
             />
           </div>
+          <div className="col-span-3">
+            <label className="text-[10px] text-foreground/30 uppercase tracking-wider mb-1 block">Logic</label>
+            <div className="flex gap-2">
+              {(["AND", "OR"] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setAlertLogic(l)}
+                  className="flex-1 py-2 rounded-lg text-xs font-bold transition-all"
+                  style={{
+                    background: alertLogic === l ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${alertLogic === l ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.06)"}`,
+                    color: alertLogic === l ? "var(--cyan)" : "rgba(255,255,255,0.35)",
+                  }}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Conditions */}
+        <div className="space-y-2 mb-4">
+          {conditions.map((cond, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              {idx > 0 && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded"
+                  style={{ background: "rgba(34,211,238,0.1)", color: "var(--cyan)" }}>
+                  {alertLogic}
+                </span>
+              )}
+              <select
+                value={cond.type}
+                onChange={(e) => updateCondition(idx, "type", e.target.value)}
+                className="rounded-lg py-2 px-3 text-sm text-foreground/70 outline-none flex-1"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                {typeKeys.map((tk) => (
+                  <option key={tk} value={tk}>{conditionTypes[tk]?.label || tk}</option>
+                ))}
+              </select>
+
+              {conditionTypes[cond.type]?.values ? (
+                <select
+                  value={String(cond.value)}
+                  onChange={(e) => updateCondition(idx, "value", e.target.value)}
+                  className="rounded-lg py-2 px-3 text-sm text-foreground/70 outline-none w-32"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                >
+                  {conditionTypes[cond.type].values?.map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="number"
+                  value={String(cond.value)}
+                  onChange={(e) => updateCondition(idx, "value", e.target.value)}
+                  className="rounded-lg py-2 px-3 text-sm text-foreground/70 outline-none w-32"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                />
+              )}
+
+              <span className="text-[10px] text-foreground/20 w-8">
+                {conditionTypes[cond.type]?.unit || ""}
+              </span>
+
+              <button onClick={() => removeCondition(idx)} className="text-foreground/20 hover:text-red-400 transition-colors text-lg px-1">
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-3">
           <button
-            onClick={() => createRuleMutation.mutate()}
-            disabled={!newSymbol || !newPrice}
-            className="px-4 py-1.5 rounded-lg text-xs font-medium bg-cyan/15 text-cyan border border-cyan/25 hover:bg-cyan/25 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            onClick={addCondition}
+            disabled={conditions.length >= 5}
+            className="text-xs px-3 py-1.5 rounded-lg transition-all"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)", opacity: conditions.length >= 5 ? 0.3 : 1 }}
           >
-            Create
+            + Add Condition
+          </button>
+          <button
+            onClick={handleCreate}
+            disabled={creating || !alertName.trim()}
+            className="text-xs px-5 py-1.5 rounded-lg font-semibold transition-all"
+            style={{
+              background: "linear-gradient(135deg, rgba(34,211,238,0.2), rgba(167,139,250,0.15))",
+              border: "1px solid rgba(34,211,238,0.3)",
+              color: "var(--cyan)",
+              opacity: creating || !alertName.trim() ? 0.4 : 1,
+            }}
+          >
+            {creating ? "Creating..." : "Create Alert"}
+          </button>
+          <button
+            onClick={handleScan}
+            className="text-xs px-4 py-1.5 rounded-lg transition-all ml-auto"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)" }}
+          >
+            Scan Now
           </button>
         </div>
       </div>
 
-      {/* Active Rules */}
-      {rules.length > 0 && (
-        <div className="glass-card rounded-xl p-4 mb-6 animate-fade-in animate-fade-in-d1">
-          <h3 className="text-xs font-medium text-foreground/40 uppercase tracking-wider mb-3">Active Rules ({rules.length})</h3>
+      {/* Active Alerts + Triggered Feed */}
+      <div className="grid grid-cols-12 gap-5">
+        <div className="col-span-7">
+          <h2 className="section-header text-sm font-semibold text-foreground/60 mb-3">Active Alerts ({alerts.length})</h2>
+          {loading && <div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="glass-card rounded-xl h-16 shimmer" />)}</div>}
+          {!loading && alerts.length === 0 && (
+            <div className="glass-card rounded-xl p-8 text-center"><p className="text-foreground/20 text-sm">No alerts created yet</p></div>
+          )}
           <div className="space-y-2">
-            {rules.map((rule: Record<string, unknown>) => {
-              const conditions = rule.condition_json ? JSON.parse(rule.condition_json as string) : {};
-              return (
-                <div key={rule.id as number} className="flex items-center justify-between py-2 border-b border-white/[0.03] last:border-0">
-                  <div className="flex items-center gap-3">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${rule.enabled ? "bg-ngreen/15 text-ngreen" : "bg-white/[0.05] text-foreground/25"}`}>
-                      {rule.enabled ? "ACTIVE" : "OFF"}
-                    </span>
-                    <span className="text-sm text-foreground/60">
-                      {(rule.symbol as string)?.replace(".NS", "")} &middot; {rule.alert_type as string} &middot;{" "}
-                      {conditions.direction} {conditions.price?.toLocaleString("en-IN")}
+            {alerts.map((alert) => (
+              <div key={alert.id} className="glass-card rounded-xl p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <span className="text-sm font-semibold text-foreground/80">{alert.name}</span>
+                    {alert.symbol && (
+                      <Link href={`/stock/${toUrlSymbol(alert.symbol)}`} className="ml-2 text-xs text-cyan/60 hover:text-cyan transition-colors">
+                        {alert.symbol.replace(".NS", "")}
+                      </Link>
+                    )}
+                    <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded"
+                      style={{ background: "rgba(34,211,238,0.1)", color: "var(--cyan)" }}>
+                      {alert.logic}
                     </span>
                   </div>
-                  <button
-                    onClick={() => deleteRuleMutation.mutate(rule.id as number)}
-                    className="text-nred/40 hover:text-nred text-xs transition-colors"
-                  >
+                  <button onClick={() => handleDelete(alert.id)} className="text-foreground/15 hover:text-red-400 transition-colors text-xs">
                     Delete
                   </button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Alert History */}
-      <div className="glass-card rounded-xl overflow-hidden animate-fade-in animate-fade-in-d2">
-        <div className="px-4 py-3 border-b border-white/[0.06]">
-          <h3 className="text-xs font-medium text-foreground/40 uppercase tracking-wider">Alert History</h3>
-        </div>
-        {isLoading ? (
-          <div className="p-8 text-center"><div className="shimmer h-4 w-40 rounded mx-auto" /></div>
-        ) : alerts.length === 0 ? (
-          <div className="py-12 text-center text-sm text-foreground/25">
-            No alerts triggered yet. Alerts are generated automatically when signals change, volume surges, or strength spikes.
-          </div>
-        ) : (
-          <div className="divide-y divide-white/[0.03]">
-            {alerts.map((alert: Record<string, unknown>) => {
-              const typeStyle = ALERT_TYPE_STYLES[(alert.alert_type as string)] ?? ALERT_TYPE_STYLES.signal_change;
-              return (
-                <div key={alert.id as number} className={`flex items-start gap-3 px-4 py-3 ${alert.read ? "" : "bg-cyan/[0.02]"}`}>
-                  <span className={`shrink-0 text-[9px] px-2 py-0.5 rounded-full font-mono font-medium ${typeStyle.bg} ${typeStyle.text} mt-0.5`}>
-                    {typeStyle.label}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm text-foreground/70">{alert.message as string}</div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Link
-                        href={`/stock/${encodeURIComponent(alert.symbol as string)}`}
-                        className="text-[10px] text-cyan hover:underline font-mono"
-                      >
-                        {(alert.symbol as string)?.replace(".NS", "")}
-                      </Link>
-                      <span className="text-[10px] text-foreground/20 font-mono">
-                        {alert.triggered_at as string}
-                      </span>
-                    </div>
-                  </div>
-                  {!alert.read && <span className="w-2 h-2 rounded-full bg-cyan shrink-0 mt-1.5" />}
+                <div className="flex flex-wrap gap-1.5">
+                  {alert.conditions.map((c, i) => (
+                    <span key={i} className="text-[10px] px-2 py-0.5 rounded font-mono"
+                      style={{ background: "rgba(167,139,250,0.08)", border: "1px solid rgba(167,139,250,0.15)", color: "rgba(167,139,250,0.7)" }}>
+                      {conditionTypes[c.type]?.label || c.type}: {String(c.value)}{conditionTypes[c.type]?.unit || ""}
+                    </span>
+                  ))}
                 </div>
-              );
-            })}
+                {alert.last_triggered_at && (
+                  <p className="text-[10px] text-foreground/20 mt-2">Last triggered: {new Date(alert.last_triggered_at).toLocaleString("en-IN")}</p>
+                )}
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+
+        <div className="col-span-5">
+          <h2 className="section-header text-sm font-semibold text-foreground/60 mb-3">Recent Triggers</h2>
+          {triggered.length === 0 && !loading && (
+            <div className="glass-card rounded-xl p-6 text-center"><p className="text-foreground/20 text-xs">No triggers yet</p></div>
+          )}
+          <div className="space-y-2 max-h-[600px] overflow-y-auto">
+            {triggered.map((t) => (
+              <div key={t.id} className="glass-card rounded-xl p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Link href={`/stock/${toUrlSymbol(t.symbol)}`} className="text-sm font-semibold text-foreground/70 hover:text-cyan transition-colors">
+                    {t.symbol.replace(".NS", "")}
+                  </Link>
+                  <span className="text-[10px] text-foreground/20">{new Date(t.triggered_at).toLocaleString("en-IN", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })}</span>
+                </div>
+                <p className="text-xs text-foreground/40">{t.message}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

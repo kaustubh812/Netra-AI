@@ -247,6 +247,32 @@ export interface GlobalMarketsData {
   timestamp: string;
 }
 
+// AI Screener types
+export interface ScreenerResult {
+  symbol: string;
+  name: string;
+  signal: string;
+  confidence: number;
+  composite_score: number;
+  price: number;
+  change_pct: number;
+  rsi: number | null;
+  pe: number | null;
+  sector: string;
+  entry_price: number;
+  stop_loss: number;
+  target_price: number;
+}
+
+export interface ScreenerResponse {
+  query: string;
+  filters: Record<string, unknown>;
+  results: ScreenerResult[];
+  count: number;
+  total_stocks: number;
+  error?: string;
+}
+
 // Anomaly types
 export interface Anomaly {
   symbol: string;
@@ -375,8 +401,10 @@ export const api = {
   getSectors: () => fetchApi<SectorsOverview>("/api/sectors"),
   getGlobalMarkets: () => fetchApi<GlobalMarketsData>("/api/global-markets"),
   getDailyBrief: () => fetchApi<DailyBrief>("/api/daily-brief"),
+  getMarketStory: () => fetchApi<MarketStory>("/api/market-story"),
   getBreadth: () => fetchApi<BreadthData>("/api/breadth"),
   getAnomalies: () => fetchApi<AnomalyData>("/api/anomalies"),
+  aiScreen: (query: string) => fetchApi<ScreenerResponse>(`/api/screener/ai?q=${encodeURIComponent(query)}`),
   getPositionSize: (params: { account_size: number; risk_pct: number; entry_price: number; stop_loss: number; target_price?: number }) => {
     const p = params;
     let url = `/api/position-size?account_size=${p.account_size}&risk_pct=${p.risk_pct}&entry_price=${p.entry_price}&stop_loss=${p.stop_loss}`;
@@ -403,6 +431,17 @@ export const api = {
   // Options
   getOptionsChain: (symbol: string, expiry?: string) =>
     fetchApi<OptionChainData>(`/api/options/${symbol}${expiry ? `?expiry=${encodeURIComponent(expiry)}` : ""}`),
+  // Options Signals & Paper Trading
+  getOptionsSignals: () => fetchApi<{ signals: OptionsSignal[] }>(`/api/options/signals`),
+  getOptionsSignal: (symbol: string) => fetchApi<OptionsSignal>(`/api/options/signals/${symbol}`),
+  computeOptionsPayoff: (symbol: string, strategy: OptionStrategy, range_pct = 0.07) =>
+    postApi<{ points: { spot: number; pnl: number }[] }>(`/api/options/signals/${symbol}/payoff`, { strategy, range_pct }),
+  placeOptionTrade: (symbol: string, strategy: OptionStrategy, lots = 1, notes?: string) =>
+    postApi<{ status: string; id: number }>(`/api/options/paper-trading/place`, { symbol, strategy, lots, notes }),
+  getOptionPositions: () => fetchApi<{ positions: OptionPosition[] }>(`/api/options/paper-trading/positions`),
+  getOptionTradeHistory: (limit = 50) => fetchApi<{ trades: OptionClosedTrade[] }>(`/api/options/paper-trading/history?limit=${limit}`),
+  getOptionTradeStats: () => fetchApi<OptionTradeStats>(`/api/options/paper-trading/stats`),
+  closeOptionTrade: (id: number) => postApi<{ status: string; pnl: number; exit_net_debit: number }>(`/api/options/paper-trading/close/${id}`),
   // Analyst
   getAnalystEstimates: (symbol: string) => fetchApi<AnalystEstimates>(`/api/analyst/${symbol}`),
   // Sector Detail
@@ -425,6 +464,20 @@ export const api = {
     fetchApi<{ trades: PaperTrade[]; count: number }>(`/api/paper-trading/history?limit=${limit}`),
   getPaperTradingStats: () => fetchApi<PaperTradingStats>("/api/paper-trading/stats"),
   getTradeSuggestions: () => fetchApi<{ suggestions: TradeSuggestion[]; count: number }>("/api/paper-trading/suggestions"),
+  // Smart Alerts
+  getSmartAlerts: () => fetchApi<SmartAlertsData>("/api/smart-alerts"),
+  createSmartAlert: (name: string, conditions: SmartAlertCondition[], symbol?: string, logic?: string) => {
+    const params = new URLSearchParams({ name, conditions: JSON.stringify(conditions), logic: logic || "AND" });
+    if (symbol) params.set("symbol", symbol);
+    return postApi<{ status: string; id: number }>(`/api/smart-alerts/create?${params.toString()}`);
+  },
+  deleteSmartAlert: (id: number) => deleteApi<{ status: string }>(`/api/smart-alerts/${id}`),
+  scanSmartAlerts: () => postApi<{ status: string; new_triggers: number }>("/api/smart-alerts/scan"),
+  getConditionTypes: () => fetchApi<{ types: Record<string, ConditionTypeDef> }>("/api/smart-alerts/condition-types"),
+  // Tax Harvest
+  getTaxHarvest: () => fetchApi<TaxHarvestData>("/api/portfolio/tax-harvest"),
+  // Stock Compare
+  compareStocks: (symbols: string[]) => fetchApi<StockCompareData>(`/api/compare?symbols=${symbols.join(",")}`),
 };
 
 // Phase 2+ Types
@@ -562,6 +615,131 @@ export interface OptionChainData {
   source?: string;
 }
 
+// ─── Options Signals & Paper Trading types ─────────────────────────────
+export interface OptionLeg {
+  action: "BUY" | "SELL";
+  opt_type: "CE" | "PE";
+  strike: number;
+  premium: number;
+  delta: number;
+  qty_lots: number;
+}
+
+export interface OptionStrategy {
+  name: string;
+  code: string;
+  bias: "bullish" | "bearish" | "neutral" | "volatility_long";
+  legs: OptionLeg[];
+  net_debit: number;
+  max_profit: number;
+  max_loss: number;
+  breakevens: number[];
+  pop: number;
+  risk_reward: number;
+  rationale: string;
+  confidence: number;
+  margin_required: number;
+}
+
+export interface OptionsSignal {
+  symbol: string;
+  underlying: number;
+  expiry: string;
+  atm_strike: number;
+  lot_size: number;
+  regime: string;
+  regime_confidence: number;
+  bias: "BUY" | "SELL" | "HOLD";
+  signal_confidence: number;
+  iv: number;
+  iv_regime: string;
+  iv_percentile: number;
+  pcr: number;
+  max_pain: number;
+  recommended: OptionStrategy;
+  alternatives: OptionStrategy[];
+  generated_at: number;
+}
+
+export interface OptionPosition {
+  id: number;
+  symbol: string;
+  strategy_code: string;
+  strategy_name: string;
+  bias: string;
+  expiry: string;
+  lot_size: number;
+  lots: number;
+  legs: OptionLeg[];
+  entry_net_debit: number;
+  current_net_value: number | null;
+  max_profit: number;
+  max_loss: number;
+  breakevens: number[];
+  pop: number | null;
+  signal_confidence: number | null;
+  trade_date: string;
+  spot: number | null;
+  unrealized_pnl: number | null;
+  unrealized_pnl_pct: number | null;
+  notes: string | null;
+}
+
+export interface OptionClosedTrade {
+  id: number;
+  symbol: string;
+  strategy_code: string;
+  strategy_name: string;
+  bias: string;
+  expiry: string;
+  lots: number;
+  legs: OptionLeg[];
+  entry_net_debit: number;
+  exit_net_debit: number;
+  pnl: number;
+  max_profit: number;
+  max_loss: number;
+  breakevens: number[];
+  pop: number | null;
+  trade_date: string;
+  closed_date: string;
+  notes: string | null;
+}
+
+export interface OptionTradeStats {
+  total_trades: number;
+  closed_trades: number;
+  open_trades: number;
+  win_rate: number | null;
+  total_pnl: number;
+  avg_pnl: number;
+  best_trade: number | null;
+  worst_trade: number | null;
+}
+
+// Market Story types
+export interface StoryDataPoint {
+  label: string;
+  value: string;
+  delta: string | null;
+  tone: "positive" | "negative" | "neutral" | "warning";
+  meaning: string | null;
+}
+export interface StorySection {
+  id: string;
+  title: string;
+  icon: string;
+  narrative: string;
+  tone: "positive" | "negative" | "neutral" | "warning";
+  data_points: StoryDataPoint[];
+}
+export interface MarketStory {
+  headline: string;
+  mood: "positive" | "negative" | "neutral" | "warning";
+  generated_at: string;
+  sections: StorySection[];
+}
+
 // Analyst types
 export interface AnalystEstimates {
   symbol: string;
@@ -663,4 +841,138 @@ export interface SectorDetail {
   breadth: number | null;
   stocks: SectorDetailStock[];
   count: number;
+}
+
+// Smart Alert types
+export interface SmartAlertCondition {
+  type: string;
+  value: string | number;
+}
+
+export interface ConditionTypeDef {
+  label: string;
+  unit?: string;
+  values?: string[];
+}
+
+export interface SmartAlert {
+  id: number;
+  name: string;
+  symbol: string | null;
+  conditions: SmartAlertCondition[];
+  conditions_json: string;
+  logic: string;
+  enabled: number;
+  created_at: string;
+  last_triggered_at: string | null;
+}
+
+export interface TriggeredAlert {
+  id: number;
+  alert_id: number;
+  symbol: string;
+  message: string;
+  matched_conditions: SmartAlertCondition[] | null;
+  triggered_at: string;
+  read: number;
+}
+
+export interface SmartAlertsData {
+  alerts: SmartAlert[];
+  triggered: TriggeredAlert[];
+  count: number;
+}
+
+// Tax Harvest types
+export interface TaxHolding {
+  id: number;
+  symbol: string;
+  name: string;
+  quantity: number;
+  purchase_price: number;
+  purchase_date: string | null;
+  days_held: number;
+  classification: string;
+  ltp: number;
+  invested: number;
+  current_value: number;
+  unrealized_pnl: number;
+  unrealized_pnl_pct: number;
+  is_loss: boolean;
+  potential_tax_savings?: number;
+  harvest_priority?: string;
+}
+
+export interface TaxSummary {
+  total_holdings: number;
+  total_invested: number;
+  total_current_value: number;
+  total_unrealized_pnl: number;
+  short_term_gains: number;
+  short_term_losses: number;
+  long_term_gains: number;
+  long_term_losses: number;
+  net_stcg_taxable: number;
+  net_ltcg_taxable: number;
+  ltcg_exemption_used: number;
+  ltcg_exemption_remaining: number;
+  estimated_stcg_tax: number;
+  estimated_ltcg_tax: number;
+  estimated_total_tax: number;
+  harvestable_losses: number;
+  potential_tax_savings: number;
+  stcg_rate: number;
+  ltcg_rate: number;
+}
+
+export interface TaxHarvestData {
+  holdings: TaxHolding[];
+  summary: TaxSummary;
+  harvestable: TaxHolding[];
+  available: boolean;
+  reason?: string;
+}
+
+// Stock Compare types
+export interface CompareStock {
+  symbol: string;
+  name: string;
+  price: number;
+  change_pct: number;
+  volume: number;
+  signal: string;
+  confidence: number;
+  composite_score: number;
+  entry_price?: number;
+  stop_loss?: number;
+  target_price?: number;
+  rsi?: number | null;
+  macd?: number | null;
+  adx?: number | null;
+  atr?: number | null;
+  sma_50?: number | null;
+  sma_200?: number | null;
+  supertrend_direction?: number | null;
+  pe?: number | null;
+  pb?: number | null;
+  roe?: number | null;
+  de?: number | null;
+  market_cap?: number | null;
+  profit_margin?: number | null;
+  revenue_growth?: number | null;
+  dividend_yield?: number | null;
+  sector?: string;
+  return_1w?: number | null;
+  return_1m?: number | null;
+  return_3m?: number | null;
+  return_6m?: number | null;
+  return_1y?: number | null;
+  radar: Record<string, number>;
+}
+
+export interface StockCompareData {
+  stocks: CompareStock[];
+  count: number;
+  performance: Record<string, { dates: string[]; values: number[] }>;
+  error?: string;
 }

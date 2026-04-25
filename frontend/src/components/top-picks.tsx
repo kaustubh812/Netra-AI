@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { api, Signal } from "@/lib/api";
 import { SignalBadge } from "./signal-badge";
+import { toUrlSymbol } from "@/lib/symbol";
 
 const BUY_DELAYS = [
   "animate-fade-in",
@@ -25,7 +26,7 @@ function PickCard({ signal, delay }: { signal: Signal; delay: string }) {
 
   return (
     <Link
-      href={`/stock/${encodeURIComponent(signal.symbol)}`}
+      href={`/stock/${toUrlSymbol(signal.symbol)}`}
       className={`block glass-card glass-card-hover rounded-xl overflow-hidden ${delay} ${isBuy ? "gradient-border-green" : "gradient-border-red"}`}
     >
       <div className="p-4">

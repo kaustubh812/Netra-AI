@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { StockTicker } from "@/components/stock-ticker";
-import { DailyBriefCard } from "@/components/daily-brief-card";
-import { AnomalyFeed } from "@/components/anomaly-feed";
+import { MarketStoryView } from "@/components/market-story";
+import { toUrlSymbol } from "@/lib/symbol";
 
 function isMarketHours(): boolean {
   const now = new Date();
@@ -179,7 +179,7 @@ function TopSignalCards({ stocks }: { stocks: any[] }) {
         return (
           <button
             key={stock.symbol}
-            onClick={() => router.push(`/stock/${encodeURIComponent(stock.symbol)}`)}
+            onClick={() => router.push(`/stock/${toUrlSymbol(stock.symbol)}`)}
             className="glass-card glass-card-hover rounded-xl p-3.5 text-left relative overflow-hidden animate-fade-in group flex flex-col"
             style={{ animationDelay: `${i * 0.06}s`, borderColor: `${accentColor}18` }}
           >
@@ -351,7 +351,7 @@ function CompactSignalTable({ mode, dashboardStocks }: { mode: "daily" | "intrad
               return (
                 <tr
                   key={s.symbol}
-                  onClick={() => router.push(`/stock/${encodeURIComponent(s.symbol)}`)}
+                  onClick={() => router.push(`/stock/${toUrlSymbol(s.symbol)}`)}
                   className="border-b border-white/[0.03] hover:bg-cyan/[0.04] cursor-pointer transition-colors group"
                 >
                   <td className="px-3 py-2">
@@ -415,10 +415,12 @@ export default function Dashboard() {
         <MarketStatusBar data={marketOverview} />
       )}
 
-      {/* AI DAILY BRIEF */}
-      <DailyBriefCard />
+      {/* THE STORY — narrative, plain-English meaning, the heart of Netra */}
+      <div className="my-4">
+        <MarketStoryView />
+      </div>
 
-      {/* ROW 2: Signal Cards (2x2) + Portfolio/Pulse */}
+      {/* Quick stats row (smaller, below the story) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2">
         <div className="lg:col-span-8">
           {isLoading ? (
@@ -434,9 +436,6 @@ export default function Dashboard() {
           <MarketPulseCard overview={marketOverview} />
         </div>
       </div>
-
-      {/* Anomaly Feed */}
-      <AnomalyFeed />
 
       {/* ROW 3: Signal Table */}
       <div>

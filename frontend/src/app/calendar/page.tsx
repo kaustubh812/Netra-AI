@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
+import { toUrlSymbol } from "@/lib/symbol";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -189,7 +190,7 @@ export default function CalendarPage() {
                   {earningsEvents.map((ev: Record<string, unknown>, i: number) => (
                     <tr key={i} className="hover:bg-white/[0.02] transition-colors">
                       <td className="px-4 py-2.5">
-                        <Link href={`/stock/${encodeURIComponent(ev.symbol as string)}`} className="text-cyan hover:underline font-medium text-sm">
+                        <Link href={`/stock/${toUrlSymbol(ev.symbol as string)}`} className="text-cyan hover:underline font-medium text-sm">
                           {ev.name as string}
                         </Link>
                       </td>

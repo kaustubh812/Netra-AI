@@ -701,6 +701,85 @@ def get_portfolio_summary_endpoint():
     }
 
 
+# ─── Options Signals & Paper Trading ────────────────────────────────────
+# NOTE: static routes MUST come before /api/options/{symbol}
+
+@app.get("/api/options/signals")
+def get_all_options_signals():
+    """Generate options trading signals for NIFTY + BANKNIFTY."""
+    from options_signals import generate_all_options_signals
+    return {"signals": generate_all_options_signals()}
+
+
+@app.get("/api/options/signals/{symbol}")
+def get_options_signal(symbol: str):
+    """Generate options signal for a single index."""
+    from options_signals import generate_options_signal
+    sig = generate_options_signal(symbol)
+    if not sig:
+        raise HTTPException(status_code=404, detail=f"Could not generate signal for {symbol}")
+    return sig
+
+
+@app.post("/api/options/signals/{symbol}/payoff")
+def compute_strategy_payoff(symbol: str, payload: dict):
+    """Compute payoff curve. payload = {strategy: {...}, range_pct: 0.05}."""
+    from options_signals import compute_payoff
+    from option_chain import get_full_option_chain
+    strategy = payload.get("strategy")
+    if not strategy:
+        raise HTTPException(status_code=400, detail="strategy required")
+    chain = get_full_option_chain(symbol)
+    if not chain:
+        raise HTTPException(status_code=404, detail="no chain")
+    spot = chain["underlying"]
+    range_pct = payload.get("range_pct", 0.07)
+    return {"points": compute_payoff(strategy, (spot * (1 - range_pct), spot * (1 + range_pct)))}
+
+
+@app.post("/api/options/paper-trading/place")
+def place_option_paper_trade(payload: dict):
+    """payload = {symbol, strategy: {...}, lots: 1, notes?: str}"""
+    from options_paper_trading import place_option_strategy
+    symbol = payload.get("symbol")
+    strategy = payload.get("strategy")
+    lots = int(payload.get("lots", 1))
+    if not symbol or not strategy:
+        raise HTTPException(status_code=400, detail="symbol and strategy required")
+    try:
+        tid = place_option_strategy(symbol, strategy, lots, payload.get("notes"))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"status": "placed", "id": tid}
+
+
+@app.get("/api/options/paper-trading/positions")
+def get_option_positions():
+    from options_paper_trading import get_open_positions
+    return {"positions": get_open_positions()}
+
+
+@app.get("/api/options/paper-trading/history")
+def get_option_trade_history(limit: int = 50):
+    from options_paper_trading import get_closed_positions
+    return {"trades": get_closed_positions(limit)}
+
+
+@app.get("/api/options/paper-trading/stats")
+def get_option_paper_trading_stats():
+    from options_paper_trading import get_stats
+    return get_stats()
+
+
+@app.post("/api/options/paper-trading/close/{trade_id}")
+def close_option_position(trade_id: int):
+    from options_paper_trading import close_position
+    result = close_position(trade_id)
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+    return result
+
+
 # ─── Options Chain Endpoint ──────────────────────────────────────────────
 
 @app.get("/api/options/{symbol}")
@@ -1110,6 +1189,77 @@ def get_macro_endpoint():
     return get_macro_overview()
 
 
+@app.get("/api/compare")
+def compare_stocks_endpoint(symbols: str):
+    """Compare 2-4 stocks side-by-side."""
+    from stock_compare import compare_stocks
+    symbol_list = [s.strip() for s in symbols.split(",") if s.strip()]
+    return compare_stocks(symbol_list)
+
+
+@app.get("/api/portfolio/tax-harvest")
+def get_tax_harvest_endpoint():
+    """Analyze portfolio for tax-loss harvesting opportunities."""
+    from tax_optimizer import analyze_tax_harvest
+    return analyze_tax_harvest()
+
+
+@app.get("/api/smart-alerts")
+def get_smart_alerts_endpoint():
+    """Get all smart alert rules."""
+    from smart_alerts import get_smart_alerts, get_triggered_alerts
+    alerts = get_smart_alerts()
+    triggered = get_triggered_alerts(limit=20)
+    return {"alerts": alerts, "triggered": triggered, "count": len(alerts)}
+
+
+@app.post("/api/smart-alerts/create")
+def create_smart_alert_json_endpoint(name: str, conditions: str,
+                                      symbol: Optional[str] = None,
+                                      logic: str = "AND"):
+    """Create a smart alert with conditions as JSON string."""
+    import json
+    from smart_alerts import create_smart_alert
+    try:
+        conds = json.loads(conditions)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid conditions JSON")
+    alert_id = create_smart_alert(name, symbol, conds, logic)
+    return {"status": "created", "id": alert_id}
+
+
+@app.delete("/api/smart-alerts/{alert_id}")
+def delete_smart_alert_endpoint(alert_id: int):
+    """Delete a smart alert."""
+    from smart_alerts import delete_smart_alert
+    ok = delete_smart_alert(alert_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    return {"status": "deleted"}
+
+
+@app.post("/api/smart-alerts/scan")
+def scan_smart_alerts_endpoint():
+    """Manually trigger smart alert scan."""
+    from smart_alerts import scan_smart_alerts
+    count = scan_smart_alerts()
+    return {"status": "scanned", "new_triggers": count}
+
+
+@app.get("/api/smart-alerts/condition-types")
+def get_condition_types_endpoint():
+    """Get available condition types for alert builder UI."""
+    from smart_alerts import get_condition_types
+    return {"types": get_condition_types()}
+
+
+@app.get("/api/screener/ai")
+def ai_screener_endpoint(q: str):
+    """AI-powered natural language stock screener."""
+    from ai_screener import ai_screen
+    return ai_screen(q)
+
+
 @app.get("/api/anomalies")
 def get_anomalies_endpoint():
     """Scan for unusual market activity."""
@@ -1129,6 +1279,13 @@ def get_daily_brief():
     """Get AI-generated market daily brief."""
     from daily_brief import generate_daily_brief
     return generate_daily_brief()
+
+
+@app.get("/api/market-story")
+def get_market_story_endpoint(refresh: bool = False):
+    """Structured market narrative — sections with plain-English meaning."""
+    from market_story import get_market_story
+    return get_market_story(force_refresh=refresh)
 
 
 @app.get("/api/position-size")
