@@ -29,6 +29,7 @@ A full-stack trading signal system for **Indian stock markets (NSE)** with ML-po
 # Backend
 cd backend
 pip install -r requirements.txt
+cp .env.example .env   # (Optional) Add your OPENAI_API_KEY for AI briefs & sentiment
 
 # Frontend
 cd ../frontend
