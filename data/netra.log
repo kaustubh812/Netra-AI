@@ -8666,3 +8666,102 @@ S
 2026-04-25 19:34:10,319 [INFO] live_prices: Live prices updated for 58 symbols
 2026-04-25 19:35:41,316 [INFO] live_prices: Live prices updated for 58 symbols
 2026-04-25 19:35:41,317 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:38:42,693 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:38:42,704 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:47:19,037 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-04-25 19:47:20,947 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:47:21,132 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:47:28,411 [INFO] option_chain: Sentiment from VIX: 19.71, estimated PCR=1.0570
+2026-04-25 19:47:53,571 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:48:52,633 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:48:52,697 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:49:32,275 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:50:08,820 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:50:18,762 [INFO] option_chain: Generating synthetic chain for NIFTY: spot=23897.95, VIX=19.71
+2026-04-25 19:50:51,915 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-04-25 19:50:56,555 [INFO] option_chain: Generating synthetic chain for BANKNIFTY: spot=56089.75, VIX=19.71
+2026-04-25 19:51:18,997 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:57:13,064 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:58:03,119 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-04-25 19:58:04,468 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 19:58:05,234 [INFO] option_chain: Sentiment from VIX: 19.71, estimated PCR=1.0570
+2026-04-25 19:58:18,097 [INFO] option_chain: Generating synthetic chain for NIFTY: spot=23897.95, VIX=19.71
+2026-04-25 21:32:55,455 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 22:00:09,406 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-25 22:01:25,153 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-26 19:47:43,327 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-04-26 19:47:47,447 [INFO] option_chain: Sentiment from VIX: 19.71, estimated PCR=1.0570
+2026-04-26 19:47:49,307 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-26 19:47:49,344 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-26 19:47:51,358 [INFO] sector_rotation: Recomputed sector momentum for 17 sectors
+2026-04-26 19:48:54,089 [INFO] live_prices: Live prices updated for 58 symbols
+2026-04-26 19:49:40,794 [INFO] live_prices: Live prices updated for 58 symbols
+2026-08-18 21:13:33,288 [INFO] db: Database initialized at D:\Projects\Ongoing\Netra AI\netra\data\netra.db
+2026-08-18 21:13:33,312 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,312 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,313 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,313 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,314 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,315 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,316 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,316 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,317 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,317 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,317 [INFO] apscheduler.scheduler: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-18 21:13:33,317 [INFO] scheduler: Scheduler configured with 11 jobs
+2026-08-18 21:13:33,318 [INFO] apscheduler.scheduler: Added job "Fetch market data after close" to job store "default"
+2026-08-18 21:13:33,318 [INFO] apscheduler.scheduler: Added job "Generate trading signals" to job store "default"
+2026-08-18 21:13:33,319 [INFO] apscheduler.scheduler: Added job "Fetch and score news sentiment" to job store "default"
+2026-08-18 21:13:33,319 [INFO] apscheduler.scheduler: Added job "Pre-market news fetch" to job store "default"
+2026-08-18 21:13:33,319 [INFO] apscheduler.scheduler: Added job "Weekly fundamentals refresh" to job store "default"
+2026-08-18 21:13:33,319 [INFO] apscheduler.scheduler: Added job "Weekly model retraining" to job store "default"
+2026-08-18 21:13:33,319 [INFO] apscheduler.scheduler: Added job "Fetch 5m intraday candles" to job store "default"
+2026-08-18 21:13:33,319 [INFO] apscheduler.scheduler: Added job "Generate intraday signals" to job store "default"
+2026-08-18 21:13:33,320 [INFO] apscheduler.scheduler: Added job "Cleanup old intraday data" to job store "default"
+2026-08-18 21:13:33,320 [INFO] apscheduler.scheduler: Added job "Scan for alert conditions" to job store "default"
+2026-08-18 21:13:33,320 [INFO] apscheduler.scheduler: Added job "Post-signal alert scan" to job store "default"
+2026-08-18 21:13:33,320 [INFO] apscheduler.scheduler: Scheduler started
+2026-08-18 21:13:33,322 [INFO] main: Netra backend started — scheduler active
+2026-08-18 21:13:33,683 [INFO] live_prices: Warming up live price cache...
+2026-08-18 21:13:34,701 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:13:36,743 [ERROR] yfinance: 
+1 Failed download:
+2026-08-18 21:13:36,743 [ERROR] yfinance: ['LTIM.NS']: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:13:36,951 [INFO] live_prices: Live prices updated for 57 symbols
+2026-08-18 21:13:36,953 [INFO] live_prices: Price cache warmed up with 57 symbols
+2026-08-18 21:13:37,814 [INFO] indicators: Calculated indicators: 2266 rows with 69 features
+2026-08-18 21:13:37,839 [INFO] main: Regime cache warmed up
+2026-08-18 21:13:40,033 [INFO] option_chain: Sentiment from VIX: 11.39, estimated PCR=0.7796
+2026-08-18 21:13:40,033 [INFO] main: Sentiment cache warmed up
+2026-08-18 21:14:31,357 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:14:39,655 [INFO] macro_signals: Fetched macro data for 8 indicators
+2026-08-18 21:14:41,091 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:14:42,052 [ERROR] yfinance: 
+1 Failed download:
+2026-08-18 21:14:42,053 [ERROR] yfinance: ['LTIM.NS']: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:14:42,060 [ERROR] yfinance: 
+1 Failed download:
+2026-08-18 21:14:42,073 [ERROR] yfinance: ['LTIM.NS']: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:14:45,556 [INFO] live_prices: Live prices updated for 57 symbols
+2026-08-18 21:14:45,678 [INFO] live_prices: Live prices updated for 57 symbols
+2026-08-18 21:14:49,769 [INFO] sector_rotation: Recomputed sector momentum for 17 sectors
+2026-08-18 21:15:17,095 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:15:22,073 [ERROR] yfinance: 
+1 Failed download:
+2026-08-18 21:15:22,073 [ERROR] yfinance: ['LTIM.NS']: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:15:22,583 [INFO] live_prices: Live prices updated for 57 symbols
+2026-08-18 21:15:48,543 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:15:56,747 [ERROR] yfinance: 
+1 Failed download:
+2026-08-18 21:15:56,748 [ERROR] yfinance: ['LTIM.NS']: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:15:57,318 [INFO] live_prices: Live prices updated for 57 symbols
+2026-08-18 21:21:15,773 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:21:18,545 [ERROR] yfinance: 
+1 Failed download:
+2026-08-18 21:21:18,545 [ERROR] yfinance: ['LTIM.NS']: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:21:18,697 [INFO] live_prices: Live prices updated for 57 symbols
+2026-08-18 21:26:19,928 [ERROR] yfinance: $LTIM.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:26:21,651 [ERROR] yfinance: 
+1 Failed download:
+2026-08-18 21:26:21,651 [ERROR] yfinance: ['LTIM.NS']: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-08-18 21:26:21,819 [INFO] live_prices: Live prices updated for 57 symbols
